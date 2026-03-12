@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { motion } from 'framer-motion';
 
-export function Register() {
-  const [name, setName] = useState('');
+export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,16 +13,16 @@ export function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/register', {
+      const response = await fetch('http://localhost:8081/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -32,7 +31,7 @@ export function Register() {
         navigate('/');
       } else {
         const errorText = await response.text();
-        setError(errorText || 'Registration failed.');
+        setError(errorText || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
       setError('Network error. Is the server running?');
@@ -49,22 +48,12 @@ export function Register() {
         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
         className="auth-card"
       >
-        <h2>Join StudentOS</h2>
-        <p>Create your university account</p>
+        <h2>Welcome Back</h2>
+        <p>Log in to your StudentOS account</p>
         
         {error && <div className="auth-error">{error}</div>}
         
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Full Name</label>
-            <input 
-              type="text" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              required 
-              placeholder="John Doe"
-            />
-          </div>
           <div className="form-group">
             <label>Email</label>
             <input 
@@ -83,17 +72,16 @@ export function Register() {
               onChange={(e) => setPassword(e.target.value)} 
               required 
               placeholder="••••••••"
-              minLength={6}
             />
           </div>
           <button type="submit" disabled={loading} className="auth-button">
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
         
         <div className="auth-links">
-          <span>Already have an account? </span>
-          <a href="/login">Log in</a>
+          <span>Don't have an account? </span>
+          <a href="/register">Register here</a>
         </div>
       </motion.div>
     </div>

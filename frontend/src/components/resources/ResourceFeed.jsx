@@ -5,24 +5,12 @@ import './Resources.css';
 import { Search, FileText, ArrowUpCircle, X, Plus, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type Resource = {
-  id: number;
-  title: string;
-  description: string;
-  courseCode: string;
-  fileUrl: string;
-  type: string;
-  upvotes: number;
-  uploader: { name: string };
-  uploadedAt: string;
-};
-
 export function ResourceFeed() {
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState([]);
   const [search, setSearch] = useState('');
   const [showUpload, setShowUpload] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [postError, setPostError] = useState<string | null>(null);
+  const [postError, setPostError] = useState(null);
   const { user } = useAuth();
 
   // Form State
@@ -54,7 +42,7 @@ export function ResourceFeed() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const handleUpload = async (e) => {
     e.preventDefault();
     if (!user) {
         setPostError("You must be logged in to share resources.");
@@ -89,7 +77,7 @@ export function ResourceFeed() {
     }
   };
 
-  const handleUpvote = async (id: number) => {
+  const handleUpvote = async (id) => {
     try {
       const response = await fetch(`http://localhost:8081/api/resources/${id}/upvote`, { method: 'POST' });
       if (response.ok) {

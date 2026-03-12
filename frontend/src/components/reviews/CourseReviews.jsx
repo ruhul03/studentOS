@@ -3,21 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import './CourseReviews.css';
 import { Star, MessageSquare, ThumbsUp, Search, GraduationCap } from 'lucide-react';
 
-export type CourseReview = {
-  id: number;
-  courseCode: string;
-  courseName: string;
-  professor: string;
-  difficultyRating: number;
-  qualityRating: number;
-  reviewText: string;
-  reviewer: { name: string };
-  helpfulVotes: number;
-  createdAt: string;
-};
-
 export function CourseReviews() {
-  const [reviews, setReviews] = useState<CourseReview[]>([]);
+  const [reviews, setReviews] = useState([]);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
@@ -52,7 +39,7 @@ export function CourseReviews() {
     return () => clearTimeout(delayDebounceFn);
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
     
@@ -74,7 +61,7 @@ export function CourseReviews() {
     }
   };
 
-  const handleHelpful = async (id: number) => {
+  const handleHelpful = async (id) => {
     try {
       await fetch(`http://localhost:8081/api/reviews/${id}/helpful`, { method: 'PUT' });
       fetchReviews(); // Re-fetch to update vote count
@@ -83,7 +70,7 @@ export function CourseReviews() {
     }
   };
 
-  const renderStars = (rating: number, colorClass: string) => {
+  const renderStars = (rating, colorClass) => {
     return [...Array(5)].map((_, i) => (
       <Star 
         key={i} 

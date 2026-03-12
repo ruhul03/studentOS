@@ -1,22 +1,9 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-};
+const AuthContext = createContext(undefined);
 
-type AuthContextType = {
-  user: User | null;
-  login: (userData: User) => void;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('studentos_user');
     if (!saved) return null;
     try {
@@ -28,7 +15,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const login = (userData: User) => {
+  const login = (userData) => {
     setUser(userData);
     localStorage.setItem('studentos_user', JSON.stringify(userData));
   };

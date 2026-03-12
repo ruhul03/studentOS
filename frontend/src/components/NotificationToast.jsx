@@ -2,12 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X } from 'lucide-react';
 import './NotificationToast.css';
 
-interface NotificationToastProps {
-  notifications: string[];
-  onClear: (index: number) => void;
-}
-
-export function NotificationToast({ notifications, onClear }: NotificationToastProps) {
+export function NotificationToast({ notifications, onClear }) {
   return (
     <div className="notification-container">
       <AnimatePresence>

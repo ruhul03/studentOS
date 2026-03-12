@@ -4,30 +4,18 @@ import './LostFound.css';
 import { MapPin, Phone, Plus, X, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type LostFoundItem = {
-  id: number;
-  title: string;
-  description: string;
-  type: 'LOST' | 'FOUND';
-  location: string;
-  contactInfo: string;
-  resolved: boolean;
-  reporter: { name: string };
-  reportedAt: string;
-};
-
 export function LostFoundBoard() {
-  const [items, setItems] = useState<LostFoundItem[]>([]);
-  const [filter, setFilter] = useState<'ALL' | 'LOST' | 'FOUND'>('ALL');
+  const [items, setItems] = useState([]);
+  const [filter, setFilter] = useState('ALL');
   const [showReportForm, setShowReportForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [postError, setPostError] = useState<string | null>(null);
+  const [postError, setPostError] = useState(null);
   const { user } = useAuth();
 
   // Form State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<'LOST' | 'FOUND'>('LOST');
+  const [type, setType] = useState('LOST');
   const [location, setLocation] = useState('');
   const [contactInfo, setContactInfo] = useState('');
 
@@ -50,7 +38,7 @@ export function LostFoundBoard() {
     fetchItems();
   }, [filter]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
         setPostError("Please log in to report items.");
@@ -85,7 +73,7 @@ export function LostFoundBoard() {
     }
   };
 
-  const handleResolve = async (id: number) => {
+  const handleResolve = async (id) => {
     try {
       const response = await fetch(`http://localhost:8081/api/lostfound/${id}/resolve`, { method: 'PUT' });
       if (response.ok) {
@@ -153,7 +141,7 @@ export function LostFoundBoard() {
               </div>
               <div className="form-group" style={{ width: '200px' }}>
                 <label>Type</label>
-                <select value={type} onChange={e => setType(e.target.value as 'LOST' | 'FOUND')}>
+                <select value={type} onChange={e => setType(e.target.value)}>
                   <option value="LOST">Lost</option>
                   <option value="FOUND">Found</option>
                 </select>

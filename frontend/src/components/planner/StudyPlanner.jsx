@@ -3,18 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import './Planner.css';
 import { Plus, Trash2, CheckCircle2, Circle, Clock, AlertTriangle } from 'lucide-react';
 
-export type StudyTask = {
-  id: number;
-  title: string;
-  description: string;
-  courseCode: string;
-  type: string;
-  dueDate: string;
-  completed: boolean;
-};
-
 export function StudyPlanner() {
-  const [tasks, setTasks] = useState<StudyTask[]>([]);
+  const [tasks, setTasks] = useState([]);
   const { user } = useAuth();
   const [showAdd, setShowAdd] = useState(false);
 
@@ -41,7 +31,7 @@ export function StudyPlanner() {
     fetchTasks();
   }, [user]);
 
-  const handleAddTask = async (e: React.FormEvent) => {
+  const handleAddTask = async (e) => {
     e.preventDefault();
     if (!user) return;
     try {
@@ -62,7 +52,7 @@ export function StudyPlanner() {
     }
   };
 
-  const toggleTask = async (id: number) => {
+  const toggleTask = async (id) => {
     try {
       await fetch(`http://localhost:8081/api/planner/${id}/toggle`, { method: 'PUT' });
       fetchTasks();
@@ -71,7 +61,7 @@ export function StudyPlanner() {
     }
   };
 
-  const deleteTask = async (id: number) => {
+  const deleteTask = async (id) => {
     try {
       await fetch(`http://localhost:8081/api/planner/${id}`, { method: 'DELETE' });
       fetchTasks();
@@ -80,7 +70,7 @@ export function StudyPlanner() {
     }
   };
 
-  const calculateDaysLeft = (dateString: string) => {
+  const calculateDaysLeft = (dateString) => {
     if (!dateString) return null;
     const due = new Date(dateString);
     const now = new Date();

@@ -18,7 +18,7 @@ import { NotificationToast } from './components/NotificationToast';
 import './App.css';
 
 // A simple protected route wrapper
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }) {
   const { user } = useAuth();
   if (!user) {
     return <Navigate to="/login" replace />;

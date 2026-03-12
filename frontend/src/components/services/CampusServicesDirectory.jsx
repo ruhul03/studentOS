@@ -2,19 +2,8 @@ import { useState, useEffect } from 'react';
 import './CampusServices.css';
 import { Search, MapPin, Clock, Phone, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-export type CampusService = {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  location: string;
-  operatingHours: string;
-  contactInfo: string;
-  status: string;
-};
-
 export function CampusServicesDirectory() {
-  const [services, setServices] = useState<CampusService[]>([]);
+  const [services, setServices] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
 
@@ -28,7 +17,7 @@ export function CampusServicesDirectory() {
       if (response.ok) {
         let data = await response.json();
         if (search) {
-          data = data.filter((s: CampusService) => 
+          data = data.filter((s) => 
             s.name.toLowerCase().includes(search.toLowerCase()) || 
             s.description.toLowerCase().includes(search.toLowerCase())
           );

@@ -3,21 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import './Marketplace.css';
 import { Tag, Phone, Search, Image as ImageIcon } from 'lucide-react';
 
-export type MarketplaceItem = {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  condition: string;
-  category: string;
-  contactInfo: string;
-  seller: { name: string };
-  listedAt: string;
-  sold: boolean;
-};
-
 export function StudentMarketplace() {
-  const [items, setItems] = useState<MarketplaceItem[]>([]);
+  const [items, setItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +28,7 @@ export function StudentMarketplace() {
       if (response.ok) {
         let data = await response.json();
         if (search) {
-          data = data.filter((item: MarketplaceItem) => 
+          data = data.filter((item) => 
             item.title.toLowerCase().includes(search.toLowerCase()) || 
             item.description.toLowerCase().includes(search.toLowerCase())
           );
@@ -57,7 +44,7 @@ export function StudentMarketplace() {
     fetchItems();
   }, [activeCategory, search]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
     
@@ -79,7 +66,7 @@ export function StudentMarketplace() {
     }
   };
 
-  const markAsSold = async (id: number) => {
+  const markAsSold = async (id) => {
     try {
       await fetch(`http://localhost:8081/api/marketplace/${id}/sold`, { method: 'PUT' });
       fetchItems();

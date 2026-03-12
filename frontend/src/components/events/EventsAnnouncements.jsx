@@ -1,17 +1,8 @@
 import { useState, useEffect } from 'react';
 import './EventsAnnouncements.css';
 
-interface CampusEvent {
-  id: number;
-  title: String;
-  description: String;
-  location: String;
-  eventDate: String;
-  organizer: String;
-}
-
 export function EventsAnnouncements() {
-  const [events, setEvents] = useState<CampusEvent[]>([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
@@ -40,7 +31,7 @@ export function EventsAnnouncements() {
     fetchEvents();
   }, []);
 
-  const handleCreateEvent = async (e: React.FormEvent) => {
+  const handleCreateEvent = async (e) => {
     e.preventDefault();
     
     const newEvent = {
