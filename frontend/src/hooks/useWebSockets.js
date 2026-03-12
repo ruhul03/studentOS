@@ -8,7 +8,7 @@ export function useWebSockets() {
   useEffect(() => {
     const client = new Client({
       // brokerURL: 'ws://localhost:8081/ws-studentos',
-      webSocketFactory: () => new SockJS('http://localhost:8081/ws-studentos'),
+      webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL),
       debug: (str) => {
         // console.log(str);
       },

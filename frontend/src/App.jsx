@@ -11,7 +11,9 @@ import { LostFoundBoard } from './components/lostfound/LostFoundBoard';
 import { StudentMarketplace } from './components/marketplace/StudentMarketplace';
 import { CourseReviews } from './components/reviews/CourseReviews';
 import { GlobalSearch } from './components/GlobalSearch';
-import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu } from 'lucide-react';
+import { LandingPage } from './pages/LandingPage';
+import { UserDashboard } from './components/dashboard/UserDashboard';
+import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity } from 'lucide-react';
 import { EventsAnnouncements } from './components/events/EventsAnnouncements';
 import { useWebSockets } from './hooks/useWebSockets';
 import { NotificationToast } from './components/NotificationToast';
@@ -28,12 +30,12 @@ function ProtectedRoute({ children }) {
 
 function Dashboard() {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('resources');
+  const [activeTab, setActiveTab] = useState('home');
   const { notifications, clearNotification } = useWebSockets();
 
   const handleBroadcastTest = async () => {
     try {
-      await fetch('http://localhost:8081/api/notifications/broadcast', {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/broadcast`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify('📢 Attention: New campus resources have been uploaded! Check them out in the Resource Sharing tab.')
@@ -46,9 +48,10 @@ function Dashboard() {
   return (
     <div className="app-container">
       <header className="navbar">
-        <div className="logo" onClick={() => setActiveTab('resources')} style={{cursor: 'pointer'}}>StudentOS</div>
+        <div className="logo" onClick={() => setActiveTab('home')} style={{cursor: 'pointer'}}>StudentOS</div>
         
         <nav className="nav-links desktop-only">
+          <button className={`nav-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>Dashboard</button>
           <button className={`nav-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>Resources</button>
           <button className={`nav-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>Services</button>
           <button className={`nav-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => setActiveTab('planner')}>Planner</button>
@@ -76,6 +79,10 @@ function Dashboard() {
       </div>
 
       <nav className="mobile-nav mobile-only">
+        <button className={`mobile-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
+          <Activity size={20} />
+          <span>Home</span>
+        </button>
         <button className={`mobile-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>
           <BookOpen size={20} />
           <span>Study</span>
@@ -92,13 +99,10 @@ function Dashboard() {
           <ShoppingBag size={20} />
           <span>Shop</span>
         </button>
-        <button className={`mobile-tab ${activeTab === 'more' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
-          <Menu size={20} />
-          <span>More</span>
-        </button>
       </nav>
       
       <main className="main-content">
+        {activeTab === 'home' && <UserDashboard onTabChange={setActiveTab} />}
         {activeTab === 'resources' && <ResourceFeed />}
         {activeTab === 'services' && <CampusServicesDirectory />}
         {activeTab === 'planner' && <StudyPlanner />}
@@ -121,10 +125,11 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route 
-            path="/" 
+            path="/dashboard" 
             element={
               <ProtectedRoute>
                 <Dashboard />

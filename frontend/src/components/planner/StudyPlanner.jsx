@@ -18,7 +18,7 @@ export function StudyPlanner() {
   const fetchTasks = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`http://localhost:8081/api/planner/user/${user.id}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/planner/user/${user.id}`);
       if (response.ok) {
         setTasks(await response.json());
       }
@@ -35,7 +35,7 @@ export function StudyPlanner() {
     e.preventDefault();
     if (!user) return;
     try {
-      const response = await fetch('http://localhost:8081/api/planner', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/planner`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -54,7 +54,7 @@ export function StudyPlanner() {
 
   const toggleTask = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/planner/${id}/toggle`, { method: 'PUT' });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/planner/${id}/toggle`, { method: 'PUT' });
       fetchTasks();
     } catch (err) {
       console.error('Failed to toggle task', err);
@@ -63,7 +63,7 @@ export function StudyPlanner() {
 
   const deleteTask = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/planner/${id}`, { method: 'DELETE' });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/planner/${id}`, { method: 'DELETE' });
       fetchTasks();
     } catch (err) {
       console.error('Failed to delete task', err);

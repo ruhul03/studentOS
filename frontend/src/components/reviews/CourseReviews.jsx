@@ -20,8 +20,8 @@ export function CourseReviews() {
   const fetchReviews = async () => {
     try {
       const url = search 
-        ? `http://localhost:8081/api/reviews?courseCode=${search}` 
-        : 'http://localhost:8081/api/reviews';
+        ? `${import.meta.env.VITE_API_URL}/api/reviews?courseCode=${search}` 
+        : `${import.meta.env.VITE_API_URL}/api/reviews`;
         
       const response = await fetch(url);
       if (response.ok) {
@@ -44,7 +44,7 @@ export function CourseReviews() {
     if (!user) return;
     
     try {
-      const response = await fetch('http://localhost:8081/api/reviews', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -63,7 +63,7 @@ export function CourseReviews() {
 
   const handleHelpful = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/reviews/${id}/helpful`, { method: 'PUT' });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, { method: 'PUT' });
       fetchReviews(); // Re-fetch to update vote count
     } catch (err) {
       console.error('Failed to mark review helpful', err);

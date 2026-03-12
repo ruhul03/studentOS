@@ -51,6 +51,8 @@
   border-radius: 1.25rem !important;
   padding: 0.4rem !important;
   backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
 }
 
 .search-icon {

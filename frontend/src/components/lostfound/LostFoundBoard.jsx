@@ -22,7 +22,7 @@ export function LostFoundBoard() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const url = filter === 'ALL' ? 'http://localhost:8081/api/lostfound' : `http://localhost:8081/api/lostfound?type=${filter}`;
+      const url = filter === 'ALL' ? `${import.meta.env.VITE_API_URL}/api/lostfound` : `${import.meta.env.VITE_API_URL}/api/lostfound?type=${filter}`;
       const response = await fetch(url);
       if (response.ok) {
         setItems(await response.json());
@@ -52,7 +52,7 @@ export function LostFoundBoard() {
         title, description, type, location, contactInfo, reporterId: user.id
       };
 
-      const response = await fetch('http://localhost:8081/api/lostfound', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -75,7 +75,7 @@ export function LostFoundBoard() {
 
   const handleResolve = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/lostfound/${id}/resolve`, { method: 'PUT' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound/${id}/resolve`, { method: 'PUT' });
       if (response.ok) {
         fetchItems();
       }

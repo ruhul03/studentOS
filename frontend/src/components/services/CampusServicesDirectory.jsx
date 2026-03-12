@@ -10,8 +10,8 @@ export function CampusServicesDirectory() {
   const fetchServices = async () => {
     try {
       const url = activeCategory === 'All' 
-        ? 'http://localhost:8081/api/services' 
-        : `http://localhost:8081/api/services?category=${activeCategory}`;
+        ? `${import.meta.env.VITE_API_URL}/api/services` 
+        : `${import.meta.env.VITE_API_URL}/api/services?category=${activeCategory}`;
         
       const response = await fetch(url);
       if (response.ok) {

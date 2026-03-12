@@ -35,10 +35,10 @@ export function GlobalSearch({ onNavigate }) {
     setIsLoading(true);
     try {
       const [resourcesRes, servicesRes, marketRes, reviewsRes] = await Promise.all([
-        fetch(`http://localhost:8081/api/resources?search=${encodeURIComponent(searchQuery)}`),
-        fetch(`http://localhost:8081/api/services?category=${encodeURIComponent(searchQuery)}`),
-        fetch(`http://localhost:8081/api/marketplace?category=${encodeURIComponent(searchQuery)}`),
-        fetch(`http://localhost:8081/api/reviews?courseCode=${encodeURIComponent(searchQuery)}`)
+        fetch(`${import.meta.env.VITE_API_URL}/api/resources?search=${encodeURIComponent(searchQuery)}`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/services?category=${encodeURIComponent(searchQuery)}`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/marketplace?category=${encodeURIComponent(searchQuery)}`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/reviews?courseCode=${encodeURIComponent(searchQuery)}`)
       ]);
 
       const formattedResults = [];

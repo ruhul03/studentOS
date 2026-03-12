@@ -15,7 +15,7 @@ export function EventsAnnouncements() {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/events');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
       if (response.ok) {
         const data = await response.json();
         setEvents(data);
@@ -43,7 +43,7 @@ export function EventsAnnouncements() {
     };
 
     try {
-      const response = await fetch('http://localhost:8081/api/events', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEvent)

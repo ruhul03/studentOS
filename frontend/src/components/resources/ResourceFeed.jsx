@@ -23,7 +23,7 @@ export function ResourceFeed() {
   const fetchResources = async () => {
     try {
       setLoading(true);
-      const url = search ? `http://localhost:8081/api/resources?query=${search}` : 'http://localhost:8081/api/resources';
+      const url = search ? `${import.meta.env.VITE_API_URL}/api/resources?query=${search}` : `${import.meta.env.VITE_API_URL}/api/resources`;
       const response = await fetch(url);
       if (response.ok) {
         setResources(await response.json());
@@ -56,7 +56,7 @@ export function ResourceFeed() {
         title, description, courseCode, fileUrl, type, uploaderId: user.id
       };
       
-      const response = await fetch('http://localhost:8081/api/resources', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -79,7 +79,7 @@ export function ResourceFeed() {
 
   const handleUpvote = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/resources/${id}/upvote`, { method: 'POST' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { method: 'POST' });
       if (response.ok) {
         fetchResources();
       }

@@ -21,8 +21,8 @@ export function StudentMarketplace() {
   const fetchItems = async () => {
     try {
       const url = activeCategory === 'All' 
-        ? 'http://localhost:8081/api/marketplace' 
-        : `http://localhost:8081/api/marketplace?category=${activeCategory}`;
+        ? `${import.meta.env.VITE_API_URL}/api/marketplace` 
+        : `${import.meta.env.VITE_API_URL}/api/marketplace?category=${activeCategory}`;
         
       const response = await fetch(url);
       if (response.ok) {
@@ -49,7 +49,7 @@ export function StudentMarketplace() {
     if (!user) return;
     
     try {
-      const response = await fetch('http://localhost:8081/api/marketplace', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +68,7 @@ export function StudentMarketplace() {
 
   const markAsSold = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/marketplace/${id}/sold`, { method: 'PUT' });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/${id}/sold`, { method: 'PUT' });
       fetchItems();
     } catch (err) {
       console.error('Failed to mark item as sold', err);
