@@ -11,7 +11,7 @@ import { LostFoundBoard } from './components/lostfound/LostFoundBoard';
 import { StudentMarketplace } from './components/marketplace/StudentMarketplace';
 import { CourseReviews } from './components/reviews/CourseReviews';
 import { GlobalSearch } from './components/GlobalSearch';
-import { Bell } from 'lucide-react';
+import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu } from 'lucide-react';
 import { EventsAnnouncements } from './components/events/EventsAnnouncements';
 import { useWebSockets } from './hooks/useWebSockets';
 import { NotificationToast } from './components/NotificationToast';
@@ -48,7 +48,7 @@ function Dashboard() {
       <header className="navbar">
         <div className="logo" onClick={() => setActiveTab('resources')} style={{cursor: 'pointer'}}>StudentOS</div>
         
-        <nav className="nav-links">
+        <nav className="nav-links desktop-only">
           <button className={`nav-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>Resources</button>
           <button className={`nav-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>Services</button>
           <button className={`nav-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => setActiveTab('planner')}>Planner</button>
@@ -58,16 +58,45 @@ function Dashboard() {
           <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
         </nav>
 
-        <GlobalSearch onNavigate={setActiveTab} />
+        <div className="search-container desktop-only">
+          <GlobalSearch onNavigate={setActiveTab} />
+        </div>
         
         <div className="user-menu">
           <button className="broadcast-btn" onClick={handleBroadcastTest} title="Test Broadcast">
             <Bell size={20} />
           </button>
-          <span className="welcome-text">Hi, {user?.name?.split(' ')[0] || 'User'}</span>
+          <span className="welcome-text desktop-only">Hi, {user?.name?.split(' ')[0] || 'User'}</span>
           <button onClick={logout} className="logout-btn">Logout</button>
         </div>
       </header>
+
+      <div className="mobile-header mobile-only">
+         <GlobalSearch onNavigate={setActiveTab} />
+      </div>
+
+      <nav className="mobile-nav mobile-only">
+        <button className={`mobile-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>
+          <BookOpen size={20} />
+          <span>Study</span>
+        </button>
+        <button className={`mobile-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>
+          <Map size={20} />
+          <span>Services</span>
+        </button>
+        <button className={`mobile-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => setActiveTab('planner')}>
+          <ClipboardList size={20} />
+          <span>Plan</span>
+        </button>
+        <button className={`mobile-tab ${activeTab === 'market' ? 'active' : ''}`} onClick={() => setActiveTab('market')}>
+          <ShoppingBag size={20} />
+          <span>Shop</span>
+        </button>
+        <button className={`mobile-tab ${activeTab === 'more' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
+          <Menu size={20} />
+          <span>More</span>
+        </button>
+      </nav>
       
       <main className="main-content">
         {activeTab === 'resources' && <ResourceFeed />}

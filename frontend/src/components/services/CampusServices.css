@@ -179,3 +179,36 @@
 .detail-icon {
   color: #c084fc;
 }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .services-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .services-header h2 {
+    font-size: 2rem;
+  }
+
+  .services-header p {
+    font-size: 1rem;
+  }
+
+  .services-search {
+    width: 100%;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .service-card {
+    padding: 1.25rem;
+  }
+}

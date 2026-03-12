@@ -10,6 +10,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;
+  gap: 1.5rem;
 }
 
 .resources-header h2 {
@@ -290,4 +291,47 @@
   border: 2px dashed var(--glass-border);
   border-radius: 2rem;
   font-size: 1.1rem;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .resources-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .resources-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .resources-header h2 {
+    font-size: 2rem;
+  }
+
+  .upload-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .resources-search {
+    margin-bottom: 2rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .resources-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .resource-card {
+    padding: 1.5rem;
+  }
+
+  .resource-title {
+    font-size: 1.25rem;
+  }
 }

@@ -274,3 +274,45 @@
 .mark-sold-btn:hover {
   background: rgba(239, 68, 68, 0.1);
 }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .marketplace-container {
+    padding: 1rem;
+  }
+
+  .market-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .market-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .sell-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .market-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seller-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .contact-action {
+    width: 100%;
+  }
+
+  .contact-badge {
+    width: 100%;
+    justify-content: center;
+  }
+}
