@@ -1,0 +1,248 @@
+.reviews-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.reviews-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.reviews-header p {
+  color: var(--text-secondary);
+}
+
+.write-review-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.write-review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.reviews-controls {
+  margin-bottom: 2.5rem;
+}
+
+.reviews-search {
+  background: rgba(15, 23, 42, 0.6);
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.review-form {
+  padding: 2rem;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: slideDown 0.3s ease-out;
+  border-top: 4px solid #8b5cf6;
+}
+
+.review-form h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+  border-color: #8b5cf6;
+}
+
+.rating-inputs {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.rating-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rating-group label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.star-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.cursor-pointer:hover {
+  transform: scale(1.1);
+}
+
+.submit-review-btn {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.review-card {
+  padding: 1.75rem;
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.course-identifier {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.course-icon {
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 40px;
+  height: 40px;
+}
+
+.course-identifier h3 {
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.professor-name {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.review-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.ratings-display {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.rating-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.stars {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.text-yellow-400 { color: #facc15; }
+.text-red-400 { color: #f87171; }
+.text-gray-500 { color: #64748b; }
+.star-empty { color: rgba(255, 255, 255, 0.1); }
+
+.review-text {
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  border-left: 3px solid #8b5cf6;
+}
+
+.review-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.reviewer-name {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.helpful-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.helpful-btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: #a78bfa;
+  border-color: rgba(139, 92, 246, 0.3);
+}
