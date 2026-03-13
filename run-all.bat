@@ -1,0 +1,6 @@
+@echo off
+echo Starting StudentOS Backend...
+start cmd /k "cd backend && .\mvnw.cmd spring-boot:run"
+echo Starting StudentOS Frontend...
+start cmd /k "cd frontend && npm run dev"
+echo Both services are launching in new windows.

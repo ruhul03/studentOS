@@ -94,7 +94,7 @@ export function StudentMarketplace() {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search for books, laptops, bikes..." 
+            placeholder="Search for books, laptops, UIU bus passes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -185,7 +185,20 @@ export function StudentMarketplace() {
           </div>
         ))}
         {items.length === 0 && (
-          <div className="empty-state">No items listed in this category right now.</div>
+          <div className="empty-state-market">
+            <Tag size={48} className="text-dim" />
+            <h3>{search || activeCategory !== 'All' ? 'No items found' : 'Market is empty'}</h3>
+            <p className="text-dim">
+              {search || activeCategory !== 'All' 
+                ? "Try adjusting your filters or search terms." 
+                : "Got something to sell? List it here and reach fellow students!"}
+            </p>
+            {!search && activeCategory === 'All' && (
+              <button className="sell-btn-secondary" onClick={() => setShowForm(true)}>
+                List an Item
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

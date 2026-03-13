@@ -4,6 +4,7 @@ import com.studentos.backend.model.Resource;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.ResourceRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.AsyncService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,6 +28,9 @@ public class ResourceControllerTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private AsyncService asyncService;
 
     @InjectMocks
     private ResourceController resourceController;

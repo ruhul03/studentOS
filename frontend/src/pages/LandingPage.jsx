@@ -36,9 +36,9 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">New: Fall 2026 Academic Season is Live!</div>
-          <h1>The Operating System for <span>University Life</span></h1>
-          <p>Everything you need to survive and thrive on campus. Resources, services, planning, and marketplace—all in one premium platform.</p>
+          <div className="hero-badge">The Quest for Excellence at United City</div>
+          <h1>Your Gateway to <span>UIU Success</span></h1>
+          <p>The ultimate digital companion for UIU students. Resources, services, and campus life—tailored for the United International University community.</p>
           <div className="hero-btns">
             <button className="btn-main primary-gradient" onClick={handleStart}>
               Get Started for Free
@@ -63,18 +63,18 @@ export function LandingPage() {
         </div>
         <div className="hero-visual">
           <div className="glass-orbit">
-             <div className="feature-card-floating res">
-               <BookOpen color="#6366f1" />
-               <span>CSE 101 Notes</span>
-             </div>
-             <div className="feature-card-floating srv">
-               <Map color="#10b981" />
-               <span>Medical Center</span>
-             </div>
-             <div className="feature-card-floating mkt">
-               <ShoppingBag color="#f59e0b" />
-               <span>Scientific Calculator</span>
-             </div>
+              <div className="feature-card-floating res">
+                <BookOpen color="#F68B1E" />
+                <span>CSE 4165 Notes</span>
+              </div>
+              <div className="feature-card-floating srv">
+                <Map color="#10b981" />
+                <span>UIU Medical Center</span>
+              </div>
+              <div className="feature-card-floating mkt">
+                <ShoppingBag color="#f59e0b" />
+                <span>UIU Bus Pass</span>
+              </div>
           </div>
         </div>
       </section>
@@ -123,8 +123,8 @@ export function LandingPage() {
       <section className="social-proof">
         <div className="proof-content glass-card">
           <Users size={48} className="proof-icon" />
-          <blockquote>"StudentOS completely changed how I manage my university life. From finding notes to checking cafe hours, it's my go-to app."</blockquote>
-          <cite>— Alex Johnson, Computer Science Major</cite>
+          <blockquote>"StudentOS is a lifesaver at United City! From finding CSE 1110 notes to checking UIU bus schedules, it's the only app I need for campus life."</blockquote>
+          <cite>— UIU CSE Student, Class of 2026</cite>
         </div>
       </section>
 
@@ -132,8 +132,9 @@ export function LandingPage() {
       <footer className="landing-footer">
         <div className="footer-top">
           <div className="footer-brand">
-            <div className="logo">StudentOS</div>
-            <p>Empowering students with better tools.</p>
+            <div className="logo">UIU StudentOS</div>
+            <p>Empowering UIU Students with modern tools.</p>
+            <p className="footer-address">United City, Madani Avenue, Badda, Dhaka</p>
           </div>
           <div className="footer-links">
             <div className="link-group">

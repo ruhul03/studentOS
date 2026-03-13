@@ -1,22 +1,22 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { ResourceFeed } from './components/resources/ResourceFeed';
-import { CampusServicesDirectory } from './components/services/CampusServicesDirectory';
-import { StudyPlanner } from './components/planner/StudyPlanner';
-import { LostFoundBoard } from './components/lostfound/LostFoundBoard';
-import { StudentMarketplace } from './components/marketplace/StudentMarketplace';
-import { CourseReviews } from './components/reviews/CourseReviews';
-import { GlobalSearch } from './components/GlobalSearch';
-import { LandingPage } from './pages/LandingPage';
-import { UserDashboard } from './components/dashboard/UserDashboard';
+import { AuthProvider, useAuth } from '../../context/AuthContext';
+import { Login } from '../../pages/Login';
+import { Register } from '../../pages/Register';
+import { ResourceFeed } from '../resources/ResourceFeed';
+import { CampusServicesDirectory } from '../services/CampusServicesDirectory';
+import { StudyPlanner } from '../planner/StudyPlanner';
+import { LostFoundBoard } from '../lostfound/LostFoundBoard';
+import { StudentMarketplace } from '../marketplace/StudentMarketplace';
+import { CourseReviews } from '../reviews/CourseReviews';
+import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
+import { LandingPage } from '../../pages/LandingPage';
+import { UserDashboard } from '../dashboard/UserDashboard';
 import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity } from 'lucide-react';
-import { EventsAnnouncements } from './components/events/EventsAnnouncements';
-import { useWebSockets } from './hooks/useWebSockets';
-import { NotificationToast } from './components/NotificationToast';
+import { EventsAnnouncements } from '../events/EventsAnnouncements';
+import { useWebSockets } from '../../hooks/useWebSockets';
+import { NotificationToast } from '../NotificationToast/NotificationToast';
 import './App.css';
 
 // A simple protected route wrapper
@@ -48,7 +48,7 @@ function Dashboard() {
   return (
     <div className="app-container">
       <header className="navbar">
-        <div className="logo" onClick={() => setActiveTab('home')} style={{cursor: 'pointer'}}>StudentOS</div>
+        <div className="logo" onClick={() => setActiveTab('home')} style={{cursor: 'pointer'}}>UIU StudentOS</div>
         
         <nav className="nav-links desktop-only">
           <button className={`nav-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>Dashboard</button>

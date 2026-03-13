@@ -109,7 +109,7 @@ export function ResourceFeed() {
         <Search size={22} className="search-icon" />
         <input 
           type="text" 
-          placeholder="Search by course code, title, or type..." 
+          placeholder="Search UIU courses (e.g. CSE 1110, PHY 105)..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -209,8 +209,21 @@ export function ResourceFeed() {
             ))}
           </AnimatePresence>
           {resources.length === 0 && !loading && (
-            <div className="empty-state">
-              No resources match your search. Be the first to upload!
+            <div className="empty-state-container">
+              <div className="empty-state-icon">
+                <Search size={48} className="text-dim" />
+              </div>
+              <h3>{search ? 'No matches found' : 'No resources yet'}</h3>
+              <p className="text-dim">
+                {search 
+                  ? `We couldn't find anything for "${search}". Try another keyword.` 
+                  : "Be the first to share study materials with your peers!"}
+              </p>
+              {!search && (
+                <button className="upload-btn-secondary" onClick={() => setShowUpload(true)}>
+                   <Plus size={18} /> Share Resource
+                </button>
+              )}
             </div>
           )}
         </motion.div>

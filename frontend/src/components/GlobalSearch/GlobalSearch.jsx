@@ -100,7 +100,7 @@ export function GlobalSearch({ onNavigate }) {
         <Search size={18} className="search-icon" />
         <input
           type="text"
-          placeholder="Search StudentOS..."
+          placeholder="Search UIU StudentOS..." 
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -143,7 +143,7 @@ export function GlobalSearch({ onNavigate }) {
           ) : (
             <div className="search-empty">
               <p>No results found for "{query}"</p>
-              <span className="search-hint">Try searching for a course code like CSE 101, a building, or a service.</span>
+              <span className="search-hint">Try searching for a UIU course like CSE 1110, a building, or a service.</span>
             </div>
           )}
         </div>

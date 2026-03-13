@@ -153,7 +153,11 @@ export function StudyPlanner() {
               );
             })}
             {tasks.filter(t => !t.completed).length === 0 && (
-              <div className="empty-state">All caught up! No active tasks.</div>
+              <div className="empty-state-tasks">
+                <CheckCircle2 size={40} className="text-dim" />
+                <p>All caught up! No active tasks.</p>
+                <button className="add-task-link" onClick={() => setShowAdd(true)}>Create a new task</button>
+              </div>
             )}
           </div>
         </div>

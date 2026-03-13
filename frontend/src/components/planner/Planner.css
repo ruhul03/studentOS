@@ -234,12 +234,32 @@
   color: var(--text-secondary);
 }
 
-.empty-state-small {
+.empty-state-tasks {
   text-align: center;
-  padding: 2rem;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 1rem;
+  border: 1px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-state-tasks p {
+  font-size: 1.1rem;
   color: var(--text-secondary);
-  font-style: italic;
-  font-size: 0.9rem;
+  margin: 0;
+}
+
+.add-task-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 /* Responsiveness */
