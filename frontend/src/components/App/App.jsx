@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
 import { Login } from '../../pages/Login';
 import { Register } from '../../pages/Register';
@@ -13,6 +13,7 @@ import { CourseReviews } from '../reviews/CourseReviews';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { LandingPage } from '../../pages/LandingPage';
 import { UserDashboard } from '../dashboard/UserDashboard';
+import { ActivityHistory } from '../dashboard/ActivityHistory';
 import { About } from '../../pages/About';
 import { Privacy } from '../../pages/Privacy';
 import { Terms } from '../../pages/Terms';
@@ -38,16 +39,12 @@ function ProtectedRoute({ children }) {
 function Dashboard() {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [activeTab, setActiveTab] = React.useState('home');
+  const navigate = useNavigate();
   const { notifications, clearNotification } = useWebSockets();
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tab = params.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-    }
-  }, [location]);
+  // Derive activeTab solely from URL
+  const queryParams = new URLSearchParams(location.search);
+  const activeTab = queryParams.get('tab') || 'home';
 
   const handleBroadcastTest = async () => {
     try {
@@ -62,7 +59,7 @@ function Dashboard() {
   };
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
+    window.scrollTo(0, 0);
     navigate(`/dashboard?tab=${tab}`);
   };
 
@@ -154,6 +151,12 @@ function Dashboard() {
           {activeTab === 'events' && <EventsAnnouncements />}
           {activeTab === 'reviews' && <CourseReviews />}
           {activeTab === 'profile' && <Profile />}
+          {activeTab === 'activity' && (
+            <ActivityHistory 
+              onBack={() => handleTabChange('home')} 
+              onNavigate={handleTabChange}
+            />
+          )}
         </div>
       </main>
 

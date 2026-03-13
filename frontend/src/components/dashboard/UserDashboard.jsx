@@ -92,17 +92,14 @@ export function UserDashboard({ onTabChange }) {
             <button className="action-btn glass-card" onClick={() => onTabChange('resources')}>
               <div className="action-circle"><BookOpen /></div>
               <span>Upload Notes</span>
-              <Plus size={16} className="plus-icon" />
             </button>
             <button className="action-btn glass-card" onClick={() => onTabChange('planner')}>
               <div className="action-circle"><Clock /></div>
               <span>Add Task</span>
-              <Plus size={16} className="plus-icon" />
             </button>
             <button className="action-btn glass-card" onClick={() => onTabChange('market')}>
               <div className="action-circle"><ShoppingBag /></div>
               <span>Sell Item</span>
-              <Plus size={16} className="plus-icon" />
             </button>
           </div>
         </section>
@@ -111,7 +108,7 @@ export function UserDashboard({ onTabChange }) {
         <section className="recent-activity-section">
           <div className="section-header">
             <h3>Recent Activity</h3>
-            <button className="view-all-btn" onClick={() => onTabChange('events')}>View All <ArrowRight size={14} /></button>
+            <button className="view-all-btn" onClick={() => onTabChange('activity')}>View All <ArrowRight size={14} /></button>
           </div>
           <div className="activity-list glass-card">
             {recentActivities.map((activity, idx) => (
