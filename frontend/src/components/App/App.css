@@ -26,14 +26,14 @@
   justify-content: space-between;
   width: 100%;
   max-width: 1400px;
-  height: 64px;
-  padding: 0 1.5rem;
-  background: hsla(222, 47%, 4%, 0.8);
+  height: 60px;
+  padding: 0 1.25rem;
+  background: hsla(222, 47%, 4%, 0.85);
   backdrop-filter: blur(24px);
   border: 1px solid hsla(0, 0%, 100%, 0.1);
-  border-radius: 1.25rem;
+  border-radius: 1rem;
   pointer-events: auto;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s;
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
@@ -42,13 +42,13 @@
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
   background: linear-gradient(135deg, #F68B1E, #fb923c, #fbbf24);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  width: 200px;
+  width: 160px;
   letter-spacing: -0.04em;
   cursor: pointer;
   flex-shrink: 0;
@@ -56,24 +56,24 @@
 
 .nav-links {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  gap: 0.15rem;
+  padding: 0.2rem;
   background: hsla(0, 0%, 100%, 0.03);
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   border: 1px solid hsla(0, 0%, 100%, 0.05);
   flex: 1;
   justify-content: center;
-  margin: 0 1rem;
+  margin: 0 0.75rem;
 }
 
 .nav-tab {
-  padding: 0.4rem 0.85rem;
-  border-radius: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.65rem;
   border: none;
   background: transparent;
   color: hsla(0, 0%, 100%, 0.5);
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -97,20 +97,18 @@
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
-  width: 480px; /* Allocated space for search + profile */
-  justify-content: flex-end;
 }
 
 .user-controls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 0.75rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 0.85rem;
   background: hsla(0, 0%, 100%, 0.05);
   border: 1px solid hsla(0, 0%, 100%, 0.08);
   color: white;
@@ -122,28 +120,30 @@
 }
 
 .icon-btn:hover {
-  background: #F68B1E;
+  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.2);
+  border-color: #F68B1E;
   transform: translateY(-2px);
 }
 
 .profile-pill {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.8rem 0.3rem 0.4rem;
-  background: hsla(246, 139, 30, 0.08);
-  border: 1px solid hsla(246, 139, 30, 0.15);
-  border-radius: 0.75rem;
+  gap: 0.6rem;
+  height: 38px;
+  padding: 0 1rem 0 0.4rem;
+  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
+  border: 1px solid hsla(var(--uiu-orange-hue), 93%, 54%, 0.2);
+  border-radius: 0.85rem;
   color: white;
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .avatar-mini {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #F68B1E;
   display: flex;
@@ -152,19 +152,36 @@
 }
 
 .profile-pill:hover, .profile-pill.active {
-  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.15);
+  background: #F68B1E;
   border-color: #F68B1E;
 }
 
 .exit-btn {
-  color: #ef4444;
-  background: transparent;
-  border: none;
+  height: 36px;
+  padding: 0 0.8rem;
+  background: hsla(0, 91%, 71%, 0.05);
+  border: 1px solid hsla(0, 91%, 71%, 0.15);
+  border-radius: 0.75rem;
+  color: #fca5a5;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.3s;
-  padding: 0.4rem;
+}
+
+.exit-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* Search width override for Navbar */
+.navbar-actions .global-search-wrapper {
+  width: 240px;
+  transition: width 0.3s;
+}
+
+.navbar-actions .global-search-wrapper:focus-within {
+  width: 300px;
 }
 
 /* Main Viewport */
