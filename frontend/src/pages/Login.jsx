@@ -28,7 +28,7 @@ export function Login() {
       if (response.ok) {
         const data = await response.json();
         login(data);
-        navigate('/');
+        navigate('/dashboard');
       } else {
         const errorText = await response.text();
         setError(errorText || 'Login failed. Please check your credentials.');

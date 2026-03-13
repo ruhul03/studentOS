@@ -29,7 +29,7 @@ export function Register() {
       if (response.ok) {
         const data = await response.json();
         login(data);
-        navigate('/');
+        navigate('/dashboard');
       } else {
         const errorText = await response.text();
         setError(errorText || 'Registration failed.');

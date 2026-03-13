@@ -13,10 +13,15 @@ import { CourseReviews } from '../reviews/CourseReviews';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { LandingPage } from '../../pages/LandingPage';
 import { UserDashboard } from '../dashboard/UserDashboard';
+import { About } from '../../pages/About';
+import { Privacy } from '../../pages/Privacy';
+import { Terms } from '../../pages/Terms';
+import ScrollToTop from './ScrollToTop';
 import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
 import { useWebSockets } from '../../hooks/useWebSockets';
 import { NotificationToast } from '../NotificationToast/NotificationToast';
+import { useLocation } from 'react-router-dom';
 import './App.css';
 
 // A simple protected route wrapper
@@ -30,8 +35,17 @@ function ProtectedRoute({ children }) {
 
 function Dashboard() {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('home');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState('home');
   const { notifications, clearNotification } = useWebSockets();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location]);
 
   const handleBroadcastTest = async () => {
     try {
@@ -124,6 +138,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
@@ -136,6 +151,9 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
