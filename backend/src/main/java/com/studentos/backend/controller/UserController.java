@@ -1,12 +1,20 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.UserStatsDTO;
+import com.studentos.backend.model.Activity;
 import com.studentos.backend.model.User;
+import com.studentos.backend.repository.ActivityRepository;
+import com.studentos.backend.repository.MarketplaceItemRepository;
+import com.studentos.backend.repository.ResourceRepository;
+import com.studentos.backend.repository.StudyTaskRepository;
 import com.studentos.backend.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -15,9 +23,21 @@ import java.util.Optional;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final ResourceRepository resourceRepository;
+    private final StudyTaskRepository studyTaskRepository;
+    private final MarketplaceItemRepository marketplaceItemRepository;
+    private final ActivityRepository activityRepository;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, 
+                          ResourceRepository resourceRepository,
+                          StudyTaskRepository studyTaskRepository,
+                          MarketplaceItemRepository marketplaceItemRepository,
+                          ActivityRepository activityRepository) {
         this.userRepository = userRepository;
+        this.resourceRepository = resourceRepository;
+        this.studyTaskRepository = studyTaskRepository;
+        this.marketplaceItemRepository = marketplaceItemRepository;
+        this.activityRepository = activityRepository;
     }
 
     @GetMapping("/{id}")
@@ -74,8 +94,46 @@ public class UserController {
 
         user.setUpdateCount(user.getUpdateCount() + 1);
         user.setLastUpdateAt(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
 
-        return ResponseEntity.ok(userRepository.save(user));
+        // Log Activity
+        Activity activity = Activity.builder()
+                .userId(id)
+                .title("Profile Updated")
+                .description("You updated your profile information.")
+                .type("profile")
+                .status("success")
+                .build();
+        activityRepository.save(activity);
+
+        return ResponseEntity.ok(savedUser);
+    }
+
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<?> getDashboardStats(@PathVariable Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        User user = userOptional.get();
+
+        UserStatsDTO stats = UserStatsDTO.builder()
+                .totalCourses(resourceRepository.countUniqueCoursesByUploader(user))
+                .pendingTasks(studyTaskRepository.countByUserIdAndCompletedFalse(id))
+                .sharedResources(resourceRepository.countByUploader(user))
+                .soldItems(marketplaceItemRepository.countBySellerAndSoldTrue(user))
+                .build();
+
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<Activity>> getActivities(@PathVariable Long id, @RequestParam(required = false) Integer limit) {
+        if (limit != null) {
+            return ResponseEntity.ok(activityRepository.findByUserIdOrderByTimestampDesc(id, PageRequest.of(0, limit)));
+        }
+        return ResponseEntity.ok(activityRepository.findByUserIdOrderByTimestampDesc(id));
     }
 
     @DeleteMapping("/{id}")

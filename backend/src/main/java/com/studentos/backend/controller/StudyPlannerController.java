@@ -4,6 +4,7 @@ import com.studentos.backend.model.StudyTask;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.StudyTaskRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,14 @@ public class StudyPlannerController {
 
     private final StudyTaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
-    public StudyPlannerController(StudyTaskRepository taskRepository, UserRepository userRepository) {
+    public StudyPlannerController(StudyTaskRepository taskRepository, 
+                                  UserRepository userRepository,
+                                  ActivityService activityService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.activityService = activityService;
     }
 
     @GetMapping("/user/{userId}")
@@ -50,7 +55,18 @@ public class StudyPlannerController {
                 .user(userOpt.get())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskRepository.save(task));
+        StudyTask savedTask = taskRepository.save(task);
+
+        // Log Activity
+        activityService.logActivity(
+            request.getUserId(),
+            "New Task: " + savedTask.getTitle(),
+            "You added a new " + savedTask.getType() + " task for " + savedTask.getCourseCode() + ".",
+            "planner",
+            "info"
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
     @PutMapping("/{taskId}/toggle")
@@ -59,7 +75,19 @@ public class StudyPlannerController {
         if (taskOpt.isPresent()) {
             StudyTask task = taskOpt.get();
             task.setCompleted(!task.isCompleted());
-            return ResponseEntity.ok(taskRepository.save(task));
+            StudyTask updatedTask = taskRepository.save(task);
+
+            if (updatedTask.isCompleted()) {
+                activityService.logActivity(
+                    updatedTask.getUser().getId(),
+                    "Task Completed!",
+                    "You finished the \"" + updatedTask.getTitle() + "\" task.",
+                    "planner",
+                    "success"
+                );
+            }
+
+            return ResponseEntity.ok(updatedTask);
         }
         return ResponseEntity.notFound().build();
     }

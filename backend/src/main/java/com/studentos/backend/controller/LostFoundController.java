@@ -4,6 +4,7 @@ import com.studentos.backend.model.LostFoundItem;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.LostFoundItemRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,14 @@ public class LostFoundController {
 
     private final LostFoundItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
-    public LostFoundController(LostFoundItemRepository itemRepository, UserRepository userRepository) {
+    public LostFoundController(LostFoundItemRepository itemRepository, 
+                               UserRepository userRepository,
+                               ActivityService activityService) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -49,7 +54,18 @@ public class LostFoundController {
                 .resolved(false)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(itemRepository.save(item));
+        LostFoundItem savedItem = itemRepository.save(item);
+
+        // Log Activity
+        activityService.logActivity(
+            request.getReporterId(),
+            "Item Reported: " + savedItem.getType(),
+            "You reported a " + savedItem.getType().toLowerCase() + " item: \"" + savedItem.getTitle() + "\".",
+            "lostfound",
+            "info"
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }
 
     @PutMapping("/{id}/resolve")

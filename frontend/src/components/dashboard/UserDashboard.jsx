@@ -14,20 +14,58 @@ import './UserDashboard.css';
 
 export function UserDashboard({ onTabChange }) {
   const { user } = useAuth();
+  const [statsData, setStatsData] = React.useState({
+    totalCourses: 0,
+    pendingTasks: 0,
+    sharedResources: 0,
+    soldItems: 0
+  });
+  const [recentActivities, setRecentActivities] = React.useState([]);
 
-  // Mock stats - in a real app, these would come from the backend
-  const stats = [
-    { label: 'Courses', value: '6', icon: <BookOpen />, color: '#F68B1E' },
-    { label: 'Pending Tasks', value: '4', icon: <Clock />, color: '#fb923c' },
-    { label: 'Shared Resources', value: '12', icon: <Activity />, color: '#10b981' },
-    { label: 'Sold Items', value: '3', icon: <ShoppingBag />, color: '#f59e0b' },
-  ];
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/stats`);
+        if (response.ok) {
+          const data = await response.json();
+          setStatsData(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch stats', err);
+      }
+    };
 
-  const recentActivities = [
-    { title: 'CSE 101 Notes uploaded', time: '2h ago', status: 'success' },
-    { title: 'Assignment Due: Database Systems', time: 'Tomorrow', status: 'warning' },
-    { title: 'New buyer for Scientific Calculator', time: '5h ago', status: 'info' },
-  ];
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/activities?limit=3`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecentActivities(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch activities', err);
+      }
+    };
+
+    if (user?.id) {
+      fetchStats();
+      fetchActivities();
+    }
+  }, [user?.id]);
+
+  const formatActivityTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHr / 24);
+
+    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffHr < 24) return `${diffHr}h ago`;
+    return `${diffDay}d ago`;
+  };
 
   return (
     <div className="user-dashboard-container">
@@ -47,7 +85,7 @@ export function UserDashboard({ onTabChange }) {
             <BookOpen />
           </div>
           <div className="stat-info">
-            <span className="stat-value">6</span>
+            <span className="stat-value">{statsData.totalCourses}</span>
             <span className="stat-label">Courses</span>
           </div>
           <TrendingUp size={16} className="trend-icon" />
@@ -57,7 +95,7 @@ export function UserDashboard({ onTabChange }) {
             <Clock />
           </div>
           <div className="stat-info">
-            <span className="stat-value">4</span>
+            <span className="stat-value">{statsData.pendingTasks}</span>
             <span className="stat-label">Pending Tasks</span>
           </div>
           <TrendingUp size={16} className="trend-icon" />
@@ -67,7 +105,7 @@ export function UserDashboard({ onTabChange }) {
             <Activity />
           </div>
           <div className="stat-info">
-            <span className="stat-value">12</span>
+            <span className="stat-value">{statsData.sharedResources}</span>
             <span className="stat-label">Shared Resources</span>
           </div>
           <TrendingUp size={16} className="trend-icon" />
@@ -77,7 +115,7 @@ export function UserDashboard({ onTabChange }) {
             <ShoppingBag />
           </div>
           <div className="stat-info">
-            <span className="stat-value">3</span>
+            <span className="stat-value">{statsData.soldItems}</span>
             <span className="stat-label">Sold Items</span>
           </div>
           <TrendingUp size={16} className="trend-icon" />
@@ -111,16 +149,22 @@ export function UserDashboard({ onTabChange }) {
             <button className="view-all-btn" onClick={() => onTabChange('activity')}>View All <ArrowRight size={14} /></button>
           </div>
           <div className="activity-list glass-card">
-            {recentActivities.map((activity, idx) => (
-              <div key={idx} className="activity-item">
-                <div className={`status-dot ${activity.status}`}></div>
-                <div className="activity-details">
-                  <p>{activity.title}</p>
-                  <span>{activity.time}</span>
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity, idx) => (
+                <div key={idx} className="activity-item" onClick={() => onTabChange(activity.type)} style={{cursor: 'pointer'}}>
+                  <div className={`status-dot ${activity.status}`}></div>
+                  <div className="activity-details">
+                    <p>{activity.title}</p>
+                    <span>{formatActivityTime(activity.timestamp)}</span>
+                  </div>
+                  <CheckCircle2 size={16} className="check-icon" />
                 </div>
-                <CheckCircle2 size={16} className="check-icon" />
+              ))
+            ) : (
+              <div className="empty-activity">
+                <p>No recent activity yet. Start exploring!</p>
               </div>
-            ))}
+            )}
           </div>
         </section>
       </div>

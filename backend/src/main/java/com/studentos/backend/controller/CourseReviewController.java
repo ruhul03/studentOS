@@ -4,6 +4,7 @@ import com.studentos.backend.model.CourseReview;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.CourseReviewRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,14 @@ public class CourseReviewController {
 
     private final CourseReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
-    public CourseReviewController(CourseReviewRepository reviewRepository, UserRepository userRepository) {
+    public CourseReviewController(CourseReviewRepository reviewRepository, 
+                                  UserRepository userRepository,
+                                  ActivityService activityService) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -50,7 +55,18 @@ public class CourseReviewController {
                 .helpfulVotes(0)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(reviewRepository.save(review));
+        CourseReview savedReview = reviewRepository.save(review);
+
+        // Log Activity
+        activityService.logActivity(
+            request.getReviewerId(),
+            "Course Review Posted",
+            "You shared a review for " + savedReview.getCourseCode() + ".",
+            "reviews",
+            "success"
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
     }
 
     @PutMapping("/{id}/helpful")

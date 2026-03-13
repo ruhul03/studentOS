@@ -4,6 +4,7 @@ import com.studentos.backend.model.Resource;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.ResourceRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,16 @@ public class ResourceController {
     private final ResourceRepository resourceRepository;
     private final UserRepository userRepository;
     private final AsyncService asyncService;
+    private final ActivityService activityService;
 
-    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, AsyncService asyncService) {
+    public ResourceController(ResourceRepository resourceRepository, 
+                              UserRepository userRepository, 
+                              AsyncService asyncService,
+                              ActivityService activityService) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
         this.asyncService = asyncService;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -57,6 +63,15 @@ public class ResourceController {
         
         // Trigger background processing (Multithreading)
         asyncService.processResourceBackground(savedResource.getTitle());
+
+        // Log Activity
+        activityService.logActivity(
+            request.getUploaderId(),
+            savedResource.getTitle() + " uploaded",
+            "You shared \"" + savedResource.getTitle() + "\" in Resource Sharing.",
+            "resources",
+            "success"
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
     }

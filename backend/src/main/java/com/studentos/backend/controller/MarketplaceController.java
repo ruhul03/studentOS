@@ -4,6 +4,7 @@ import com.studentos.backend.model.MarketplaceItem;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.MarketplaceItemRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,14 @@ public class MarketplaceController {
 
     private final MarketplaceItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
-    public MarketplaceController(MarketplaceItemRepository itemRepository, UserRepository userRepository) {
+    public MarketplaceController(MarketplaceItemRepository itemRepository, 
+                                 UserRepository userRepository,
+                                 ActivityService activityService) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -51,7 +56,18 @@ public class MarketplaceController {
                 .sold(false)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(itemRepository.save(item));
+        MarketplaceItem savedItem = itemRepository.save(item);
+
+        // Log Activity
+        activityService.logActivity(
+            request.getSellerId(),
+            "Item Listed",
+            "You listed \"" + savedItem.getTitle() + "\" for sale in Marketplace.",
+            "market",
+            "success"
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }
 
     @PutMapping("/{id}/sold")
@@ -60,7 +76,17 @@ public class MarketplaceController {
         if (itemOpt.isPresent()) {
             MarketplaceItem item = itemOpt.get();
             item.setSold(true);
-            return ResponseEntity.ok(itemRepository.save(item));
+            MarketplaceItem soldItem = itemRepository.save(item);
+
+            activityService.logActivity(
+                soldItem.getSeller().getId(),
+                "Item Sold!",
+                "Great news! Your \"" + soldItem.getTitle() + "\" has been sold.",
+                "market",
+                "info"
+            );
+
+            return ResponseEntity.ok(soldItem);
         }
         return ResponseEntity.notFound().build();
     }

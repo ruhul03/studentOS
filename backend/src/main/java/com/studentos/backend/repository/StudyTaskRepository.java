@@ -10,4 +10,5 @@ import java.util.List;
 public interface StudyTaskRepository extends JpaRepository<StudyTask, Long> {
     List<StudyTask> findByUserIdOrderByDueDateAsc(Long userId);
     List<StudyTask> findByUserIdAndCompletedOrderByDueDateAsc(Long userId, boolean completed);
+    long countByUserIdAndCompletedFalse(Long userId);
 }
