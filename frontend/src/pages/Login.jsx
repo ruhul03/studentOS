@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
@@ -10,8 +9,14 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,13 +60,13 @@ export function Login() {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>Email or Username</label>
             <input 
-              type="email" 
+              type="text" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              placeholder="student@university.edu"
+              placeholder="student@university.edu or username"
             />
           </div>
           <div className="form-group">

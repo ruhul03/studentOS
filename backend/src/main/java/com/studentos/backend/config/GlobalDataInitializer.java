@@ -31,14 +31,14 @@ public class GlobalDataInitializer {
             // 1. Users
             if (userRepository.count() == 0) {
                 User student = userRepository.save(User.builder()
-                        .name("Test User")
+                        .username("test_user")
                         .email("test@test.com")
                         .password(passwordEncoder.encode("password123"))
                         .role("STUDENT")
                         .build());
                 
                 userRepository.save(User.builder()
-                        .name("Admin User")
+                        .username("admin")
                         .email("admin@studentos.com")
                         .password(passwordEncoder.encode("admin123"))
                         .role("ADMIN")

@@ -44,7 +44,7 @@ public class ResourceControllerTest {
     public void testGetAllResources() {
         User uploader = new User();
         uploader.setId(1L);
-        uploader.setName("Test Student");
+        uploader.setUsername("test_uploader");
 
         Resource r1 = Resource.builder()
                 .id(1L)

@@ -194,7 +194,7 @@
 /* Features */
 .features-section {
   padding: 2rem 5% 8rem;
-  scroll-margin-top: 4x;
+  scroll-margin-top: 4px;
 }
 
 .section-header {

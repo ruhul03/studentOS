@@ -28,6 +28,14 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
         
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required.");
+        }
+
+        if (userRepository.existsByUsername(user.getUsername())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
+        }
+        
         // Default role is Student
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("STUDENT");
@@ -41,14 +49,25 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        String identifier = loginRequest.getEmail();
+        Optional<User> userOptional;
+        
+        if (identifier.contains("@")) {
+            userOptional = userRepository.findByEmail(identifier);
+        } else {
+            // Find by username logic
+            userOptional = userRepository.findAll().stream()
+                .filter(u -> identifier.equals(u.getUsername()))
+                .findFirst();
+        }
+
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 return ResponseEntity.ok(user);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email/username or password.");
     }
 }
 

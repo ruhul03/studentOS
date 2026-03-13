@@ -37,7 +37,7 @@ public class AuthControllerTest {
     public void testLoginSuccess() {
         User mockUser = new User();
         mockUser.setId(1L);
-        mockUser.setName("Test Student");
+        mockUser.setUsername("test_user");
         mockUser.setEmail("test@student.com");
         mockUser.setPassword("password123");
         mockUser.setRole("STUDENT");

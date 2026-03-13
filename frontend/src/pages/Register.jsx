@@ -1,18 +1,23 @@
-import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { motion } from 'framer-motion';
 
 export function Register() {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +28,7 @@ export function Register() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (response.ok) {
@@ -56,13 +61,13 @@ export function Register() {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Full Name</label>
+            <label>Username</label>
             <input 
               type="text" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
               required 
-              placeholder="John Doe"
+              placeholder="johndoe123"
             />
           </div>
           <div className="form-group">

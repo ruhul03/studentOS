@@ -21,17 +21,35 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String password; // In a real app, this should be hashed.
+    private String password;
 
     @Column(nullable = false)
     private String role; // STUDENT, ADMIN
+
+    private String bio;
+
+    private String profilePicture;
+
+    private String department;
+
+    private String batch;
+
+    private String studentId;
+
+    private String dateOfBirth;
+
+    @Builder.Default
+    @Column(columnDefinition = "integer default 0")
+    private int updateCount = 0;
+
+    private LocalDateTime lastUpdateAt;
 
     @CreationTimestamp
     @Column(updatable = false)

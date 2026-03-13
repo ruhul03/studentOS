@@ -16,13 +16,15 @@ import { UserDashboard } from '../dashboard/UserDashboard';
 import { About } from '../../pages/About';
 import { Privacy } from '../../pages/Privacy';
 import { Terms } from '../../pages/Terms';
+import { Profile } from '../../pages/Profile';
 import ScrollToTop from './ScrollToTop';
-import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity } from 'lucide-react';
+import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
 import { useWebSockets } from '../../hooks/useWebSockets';
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import { useLocation } from 'react-router-dom';
 import './App.css';
+import './BackgroundEffects.css';
 
 // A simple protected route wrapper
 function ProtectedRoute({ children }) {
@@ -59,71 +61,100 @@ function Dashboard() {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    navigate(`/dashboard?tab=${tab}`);
+  };
+
   return (
-    <div className="app-container">
-      <header className="navbar">
-        <div className="logo" onClick={() => setActiveTab('home')} style={{cursor: 'pointer'}}>UIU StudentOS</div>
-        
-        <nav className="nav-links desktop-only">
-          <button className={`nav-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>Dashboard</button>
-          <button className={`nav-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>Resources</button>
-          <button className={`nav-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>Services</button>
-          <button className={`nav-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => setActiveTab('planner')}>Planner</button>
-          <button className={`nav-tab ${activeTab === 'lostfound' ? 'active' : ''}`} onClick={() => setActiveTab('lostfound')}>Lost&Found</button>
-          <button className={`nav-tab ${activeTab === 'market' ? 'active' : ''}`} onClick={() => setActiveTab('market')}>Market</button>
-          <button className={`nav-tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>Events</button>
-          <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
-        </nav>
+    <div className="premium-layout">
+      {/* Background Animated Elements */}
+      <div className="background-glows">
+        <div className="glow glow-1"></div>
+        <div className="glow glow-2"></div>
+        <div className="glow glow-3"></div>
+      </div>
 
-        <div className="search-container desktop-only">
-          <GlobalSearch onNavigate={setActiveTab} />
-        </div>
-        
-        <div className="user-menu">
-          <button className="broadcast-btn" onClick={handleBroadcastTest} title="Test Broadcast">
-            <Bell size={20} />
-          </button>
-          <span className="welcome-text desktop-only">Hi, {user?.name?.split(' ')[0] || 'User'}</span>
-          <button onClick={logout} className="logout-btn">Logout</button>
-        </div>
-      </header>
+      <div className="navbar-wrapper animate-in">
+        <header className="navbar glass-card">
+          <div className="logo" onClick={() => handleTabChange('home')}>
+            UIU StudentOS
+          </div>
+          
+          <nav className="nav-links desktop-only">
+            <button className={`nav-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => handleTabChange('home')}>Dashboard</button>
+            <button className={`nav-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => handleTabChange('resources')}>Resources</button>
+            <button className={`nav-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => handleTabChange('services')}>Services</button>
+            <button className={`nav-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => handleTabChange('planner')}>Planner</button>
+            <button className={`nav-tab ${activeTab === 'lostfound' ? 'active' : ''}`} onClick={() => handleTabChange('lostfound')}>Lost & Found</button>
+            <button className={`nav-tab ${activeTab === 'market' ? 'active' : ''}`} onClick={() => handleTabChange('market')}>Market</button>
+            <button className={`nav-tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => handleTabChange('events')}>Events</button>
+            <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => handleTabChange('reviews')}>Reviews</button>
+          </nav>
 
-      <div className="mobile-header mobile-only">
-         <GlobalSearch onNavigate={setActiveTab} />
+          <div className="navbar-actions desktop-only">
+            <GlobalSearch onNavigate={handleTabChange} />
+            
+            <div className="user-controls">
+              <button className="icon-btn" onClick={handleBroadcastTest} title="Test Broadcast">
+                <Bell size={18} />
+              </button>
+              
+              <button 
+                className={`profile-pill ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => handleTabChange('profile')}
+              >
+                <div className="avatar-mini">
+                  <User size={14} />
+                </div>
+                <span>{user?.username || 'User'}</span>
+              </button>
+
+              <button onClick={logout} className="exit-btn">Logout</button>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div className="mobile-header mobile-only animate-in">
+         <GlobalSearch onNavigate={handleTabChange} />
       </div>
 
       <nav className="mobile-nav mobile-only">
-        <button className={`mobile-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
+        <button className={`mobile-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => handleTabChange('home')}>
           <Activity size={20} />
           <span>Home</span>
         </button>
-        <button className={`mobile-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>
+        <button className={`mobile-tab ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => handleTabChange('resources')}>
           <BookOpen size={20} />
           <span>Study</span>
         </button>
-        <button className={`mobile-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>
+        <button className={`mobile-tab ${activeTab === 'services' ? 'active' : ''}`} onClick={() => handleTabChange('services')}>
           <Map size={20} />
           <span>Services</span>
         </button>
-        <button className={`mobile-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => setActiveTab('planner')}>
+        <button className={`mobile-tab ${activeTab === 'planner' ? 'active' : ''}`} onClick={() => handleTabChange('planner')}>
           <ClipboardList size={20} />
           <span>Plan</span>
         </button>
-        <button className={`mobile-tab ${activeTab === 'market' ? 'active' : ''}`} onClick={() => setActiveTab('market')}>
-          <ShoppingBag size={20} />
-          <span>Shop</span>
+        <button className={`mobile-tab ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => handleTabChange('profile')}>
+          <User size={20} />
+          <span>Profile</span>
         </button>
       </nav>
       
-      <main className="main-content">
-        {activeTab === 'home' && <UserDashboard onTabChange={setActiveTab} />}
-        {activeTab === 'resources' && <ResourceFeed />}
-        {activeTab === 'services' && <CampusServicesDirectory />}
-        {activeTab === 'planner' && <StudyPlanner />}
-        {activeTab === 'lostfound' && <LostFoundBoard />}
-        {activeTab === 'market' && <StudentMarketplace />}
-        {activeTab === 'events' && <EventsAnnouncements />}
-        {activeTab === 'reviews' && <CourseReviews />}
+      <main className="main-viewport animate-in">
+        <div className="content-container">
+          {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
+          {activeTab === 'resources' && <ResourceFeed />}
+          {activeTab === 'services' && <CampusServicesDirectory />}
+          {activeTab === 'planner' && <StudyPlanner />}
+          {activeTab === 'lostfound' && <LostFoundBoard />}
+          {activeTab === 'market' && <StudentMarketplace />}
+          {activeTab === 'events' && <EventsAnnouncements />}
+          {activeTab === 'reviews' && <CourseReviews />}
+          {activeTab === 'profile' && <Profile />}
+        </div>
       </main>
 
       <NotificationToast 
