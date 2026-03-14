@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import './CourseReviews.css';
 import { Star, MessageSquare, ThumbsUp, Search, GraduationCap } from 'lucide-react';
 
-export function CourseReviews() {
+export function CourseReviews({ onProfileView }) {
   const [reviews, setReviews] = useState([]);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -16,6 +16,7 @@ export function CourseReviews() {
   const [difficultyRating, setDifficultyRating] = useState(3);
   const [qualityRating, setQualityRating] = useState(3);
   const [reviewText, setReviewText] = useState('');
+  const [editingReview, setEditingReview] = useState(null);
 
   const fetchReviews = async () => {
     try {
@@ -44,21 +45,52 @@ export function CourseReviews() {
     if (!user) return;
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
-        method: 'POST',
+      const isEdit = !!editingReview;
+      const url = isEdit 
+        ? `${import.meta.env.VITE_API_URL}/api/reviews/${editingReview.id}` 
+        : `${import.meta.env.VITE_API_URL}/api/reviews`;
+
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           courseCode, courseName, professor, difficultyRating, qualityRating, reviewText, reviewerId: user.id
         })
       });
+
       if (response.ok) {
         setShowForm(false);
+        setEditingReview(null);
         setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText('');
         fetchReviews();
       }
     } catch (err) {
-      console.error('Failed to submit review', err);
+      console.error('Failed to save review', err);
     }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this review?")) return;
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}?userId=${user.id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) fetchReviews();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
+  const startEdit = (review) => {
+    setEditingReview(review);
+    setCourseCode(review.courseCode);
+    setCourseName(review.courseName);
+    setProfessor(review.professor);
+    setDifficultyRating(review.difficultyRating);
+    setQualityRating(review.qualityRating);
+    setReviewText(review.reviewText);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHelpful = async (id) => {
@@ -88,7 +120,15 @@ export function CourseReviews() {
           <h2>Course Reviews</h2>
           <p>Read what other students think before registering for classes.</p>
         </div>
-        <button className="write-review-btn" onClick={() => setShowForm(!showForm)}>
+        <button className="write-review-btn" onClick={() => {
+          if (showForm) {
+            setShowForm(false);
+            setEditingReview(null);
+            setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText('');
+          } else {
+            setShowForm(true);
+          }
+        }}>
           <MessageSquare size={18} /> {showForm ? 'Cancel' : 'Write a Review'}
         </button>
       </div>
@@ -107,7 +147,7 @@ export function CourseReviews() {
 
       {showForm && (
         <form className="review-form glass-card" onSubmit={handleSubmit}>
-          <h3>Write a Course Review</h3>
+          <h3>{editingReview ? 'Edit Course Review' : 'Write a Course Review'}</h3>
           <div className="form-row">
             <input type="text" placeholder="Course Code (e.g. MATH 201)" value={courseCode} onChange={e => setCourseCode(e.target.value)} required />
             <input type="text" placeholder="Course Name (e.g. Calculus II)" value={courseName} onChange={e => setCourseName(e.target.value)} required />
@@ -152,7 +192,9 @@ export function CourseReviews() {
             rows={4}
             required 
           />
-          <button type="submit" className="submit-review-btn">Post Review</button>
+          <button type="submit" className="submit-review-btn">
+            {editingReview ? 'Update Review' : 'Post Review'}
+          </button>
         </form>
       )}
 
@@ -186,11 +228,22 @@ export function CourseReviews() {
             <p className="review-text">{review.reviewText}</p>
             
             <div className="review-footer">
-              <span className="reviewer-name">Reviewed by {review.reviewer.name}</span>
-              <button className="helpful-btn" onClick={() => handleHelpful(review.id)}>
-                <ThumbsUp size={16} /> 
-                Helpful ({review.helpfulVotes})
-              </button>
+              <span className="reviewer-name" onClick={() => onProfileView(review.reviewer.id)} style={{ cursor: 'pointer' }}>
+                Reviewed by {review.reviewer.name}
+              </span>
+              <div className="review-actions">
+                {user?.id === review.reviewer.id && (
+                  <div className="owner-actions">
+                    <button className="edit-action-btn" onClick={() => startEdit(review)}>Edit</button>
+                    <button className="delete-action-btn" onClick={() => handleDelete(review.id)}>Delete</button>
+                  </div>
+                )}
+                
+                <button className="helpful-btn" onClick={() => handleHelpful(review.id)}>
+                  <ThumbsUp size={16} /> 
+                  Helpful ({review.helpfulVotes})
+                </button>
+              </div>
             </div>
           </div>
         ))}

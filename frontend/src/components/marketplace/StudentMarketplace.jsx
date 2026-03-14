@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import './Marketplace.css';
 import { Tag, Phone, Search, Image as ImageIcon } from 'lucide-react';
 
-export function StudentMarketplace() {
+export function StudentMarketplace({ onProfileView }) {
   const [items, setItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
@@ -17,6 +17,7 @@ export function StudentMarketplace() {
   const [condition, setCondition] = useState('Good');
   const [category, setCategory] = useState('Books');
   const [contactInfo, setContactInfo] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -49,21 +50,52 @@ export function StudentMarketplace() {
     if (!user) return;
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace`, {
-        method: 'POST',
+      const isEdit = !!editingItem;
+      const url = isEdit 
+        ? `${import.meta.env.VITE_API_URL}/api/marketplace/${editingItem.id}` 
+        : `${import.meta.env.VITE_API_URL}/api/marketplace`;
+
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title, description, price: parseFloat(price), condition, category, contactInfo, sellerId: user.id
         })
       });
+
       if (response.ok) {
         setShowForm(false);
+        setEditingItem(null);
         setTitle(''); setDescription(''); setPrice(''); setCondition('Good'); setCategory('Books'); setContactInfo('');
         fetchItems();
       }
     } catch (err) {
-      console.error('Failed to list item', err);
+      console.error('Failed to save listing', err);
     }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/${id}?userId=${user.id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) fetchItems();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
+  const startEdit = (item) => {
+    setEditingItem(item);
+    setTitle(item.title);
+    setDescription(item.description);
+    setPrice(item.price);
+    setCondition(item.condition);
+    setCategory(item.category);
+    setContactInfo(item.contactInfo);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const markAsSold = async (id) => {
@@ -84,7 +116,15 @@ export function StudentMarketplace() {
           <h2>Campus Marketplace</h2>
           <p>Buy and sell items within the student community.</p>
         </div>
-        <button className="sell-btn" onClick={() => setShowForm(!showForm)}>
+        <button className="sell-btn" onClick={() => {
+          if (showForm) {
+            setShowForm(false);
+            setEditingItem(null);
+            setTitle(''); setDescription(''); setPrice(''); setCondition('Good'); setCategory('Books'); setContactInfo('');
+          } else {
+            setShowForm(true);
+          }
+        }}>
           <Tag size={18} /> {showForm ? 'Cancel' : 'Sell an Item'}
         </button>
       </div>
@@ -115,7 +155,7 @@ export function StudentMarketplace() {
 
       {showForm && (
         <form className="sell-form glass-card" onSubmit={handleSubmit}>
-          <h3>List an Item for Sale</h3>
+          <h3>{editingItem ? 'Edit Listing' : 'List an Item for Sale'}</h3>
           <div className="form-row">
             <input type="text" placeholder="Item Name (e.g. Intro to Algorithms Book)" value={title} onChange={e => setTitle(e.target.value)} required />
             <div className="price-input">
@@ -139,7 +179,9 @@ export function StudentMarketplace() {
             </select>
           </div>
           <input type="text" placeholder="Contact Info (Email or Phone)" value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
-          <button type="submit" className="submit-listing-btn">Publish Listing</button>
+          <button type="submit" className="submit-listing-btn">
+            {editingItem ? 'Update Listing' : 'Publish Listing'}
+          </button>
         </form>
       )}
 
@@ -165,15 +207,26 @@ export function StudentMarketplace() {
               
               <div className="seller-info">
                 <div className="seller-details">
-                  <span className="seller-name">Sold by {item.seller.name}</span>
+                  <span className="seller-name" onClick={() => onProfileView(item.seller.id)} style={{ cursor: 'pointer' }}>
+                    Sold by {item.seller.name}
+                  </span>
                   <span className="posted-time">Listed {new Date(item.listedAt).toLocaleDateString()}</span>
                 </div>
                 
                 <div className="contact-action">
-                  {user?.name === item.seller.name ? (
-                    <button className="mark-sold-btn" onClick={() => markAsSold(item.id)}>
-                      Mark as Sold
-                    </button>
+                  {user?.id === item.seller.id && (
+                    <div className="owner-actions">
+                      <button className="edit-action-btn" onClick={() => startEdit(item)}>Edit</button>
+                      <button className="delete-action-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                    </div>
+                  )}
+
+                  {user?.id === item.seller.id ? (
+                    !item.sold && (
+                      <button className="mark-sold-btn" onClick={() => markAsSold(item.id)}>
+                        Mark as Sold
+                      </button>
+                    )
                   ) : (
                     <div className="contact-badge">
                       <Phone size={14} /> {item.contactInfo}

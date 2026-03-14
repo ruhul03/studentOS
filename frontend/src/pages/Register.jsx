@@ -5,9 +5,9 @@ import './Auth.css';
 import { motion } from 'framer-motion';
 
 export function Register() {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { user, login } = useAuth();
@@ -28,7 +28,7 @@ export function Register() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ name, username, email, password }),
       });
 
       if (response.ok) {
@@ -60,6 +60,16 @@ export function Register() {
         {error && <div className="auth-error">{error}</div>}
         
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Full Name</label>
+            <input 
+              type="text" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              required 
+              placeholder="John Doe"
+            />
+          </div>
           <div className="form-group">
             <label>Username</label>
             <input 

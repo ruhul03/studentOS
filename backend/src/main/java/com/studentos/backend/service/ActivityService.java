@@ -14,13 +14,17 @@ public class ActivityService {
     }
 
     public void logActivity(Long userId, String title, String description, String type, String status) {
-        Activity activity = Activity.builder()
-                .userId(userId)
-                .title(title)
-                .description(description)
-                .type(type)
-                .status(status)
-                .build();
-        activityRepository.save(activity);
+        try {
+            Activity activity = Activity.builder()
+                    .userId(userId)
+                    .title(title)
+                    .description(description)
+                    .type(type)
+                    .status(status)
+                    .build();
+            activityRepository.save(activity);
+        } catch (Exception e) {
+            System.err.println("Failed to log activity: " + e.getMessage());
+        }
     }
 }

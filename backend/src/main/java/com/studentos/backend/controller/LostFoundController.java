@@ -1,5 +1,6 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.LostFoundRequest;
 import com.studentos.backend.model.LostFoundItem;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.LostFoundItemRepository;
@@ -68,6 +69,39 @@ public class LostFoundController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @RequestBody LostFoundRequest request) {
+        Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
+        if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        LostFoundItem item = itemOpt.get();
+        // Simple ownership check (in real app, use SecurityContext)
+        if (!item.getReporter().getId().equals(request.getReporterId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        item.setTitle(request.getTitle());
+        item.setDescription(request.getDescription());
+        item.setType(request.getType());
+        item.setLocation(request.getLocation());
+        item.setContactInfo(request.getContactInfo());
+
+        return ResponseEntity.ok(itemRepository.save(item));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
+        Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
+        if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        if (!itemOpt.get().getReporter().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        itemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}/resolve")
     public ResponseEntity<LostFoundItem> resolveItem(@PathVariable Long id) {
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
@@ -78,26 +112,4 @@ public class LostFoundController {
         }
         return ResponseEntity.notFound().build();
     }
-}
-
-class LostFoundRequest {
-    private String title;
-    private String description;
-    private String type; // "Lost" or "Found"
-    private String location;
-    private String contactInfo;
-    private Long reporterId;
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    public String getContactInfo() { return contactInfo; }
-    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
-    public Long getReporterId() { return reporterId; }
-    public void setReporterId(Long reporterId) { this.reporterId = reporterId; }
 }

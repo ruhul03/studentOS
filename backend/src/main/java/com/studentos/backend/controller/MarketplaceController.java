@@ -70,6 +70,39 @@ public class MarketplaceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MarketplaceItem> updateItem(@PathVariable Long id, @RequestBody MarketplaceRequest request) {
+        Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
+        if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        MarketplaceItem item = itemOpt.get();
+        if (!item.getSeller().getId().equals(request.getSellerId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        item.setTitle(request.getTitle());
+        item.setDescription(request.getDescription());
+        item.setPrice(request.getPrice());
+        item.setCondition(request.getCondition());
+        item.setCategory(request.getCategory());
+        item.setContactInfo(request.getContactInfo());
+
+        return ResponseEntity.ok(itemRepository.save(item));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
+        Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
+        if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        if (!itemOpt.get().getSeller().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        itemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}/sold")
     public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable Long id) {
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);

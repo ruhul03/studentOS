@@ -1,5 +1,6 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.LoginRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

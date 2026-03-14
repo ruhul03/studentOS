@@ -18,9 +18,12 @@ import { About } from '../../pages/About';
 import { Privacy } from '../../pages/Privacy';
 import { Terms } from '../../pages/Terms';
 import { Profile } from '../../pages/Profile';
+import { PublicProfile } from '../social/PublicProfile';
+import { ChatModal } from '../social/ChatModal';
 import ScrollToTop from './ScrollToTop';
 import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSockets } from '../../hooks/useWebSockets';
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import { useLocation } from 'react-router-dom';
@@ -40,7 +43,39 @@ function Dashboard() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { notifications, clearNotification } = useWebSockets();
+  const { notifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
+  const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  const [activeChatUser, setActiveChatUser] = useState(null);
+
+  // Handle incoming message events
+  React.useEffect(() => {
+    if (messageEvent) {
+      // If chat is already open with this user, don't necessarily need a toast?
+      // But user wanted notification OR chat panel opening.
+      // Let's show a toast and offer to open chat if not already open.
+      
+      const fetchSender = async () => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${messageEvent.senderId}`);
+          if (res.ok) {
+            const senderData = await res.json();
+            // Show notification toast logic could be here, or we use the notifications array
+            // Let's add it to notifications for now so it shows in Toast
+            // But we actually want to pop up the ChatModal if not active
+            
+            if (!activeChatUser || activeChatUser.id !== messageEvent.senderId) {
+              setActiveChatUser(senderData);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      
+      fetchSender();
+      setMessageEvent(null); // Clear handled event
+    }
+  }, [messageEvent, activeChatUser]);
 
   // Derive activeTab solely from URL
   const queryParams = new URLSearchParams(location.search);
@@ -146,10 +181,10 @@ function Dashboard() {
           {activeTab === 'resources' && <ResourceFeed />}
           {activeTab === 'services' && <CampusServicesDirectory />}
           {activeTab === 'planner' && <StudyPlanner />}
-          {activeTab === 'lostfound' && <LostFoundBoard />}
-          {activeTab === 'market' && <StudentMarketplace />}
+          {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}
+          {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
           {activeTab === 'events' && <EventsAnnouncements />}
-          {activeTab === 'reviews' && <CourseReviews />}
+          {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
           {activeTab === 'profile' && <Profile />}
           {activeTab === 'activity' && (
             <ActivityHistory 
@@ -164,6 +199,28 @@ function Dashboard() {
         notifications={notifications} 
         onClear={clearNotification} 
       />
+
+      <AnimatePresence>
+        {selectedUserProfile && (
+          <PublicProfile 
+            userId={selectedUserProfile} 
+            onClose={() => setSelectedUserProfile(null)} 
+            onStartChat={(profile) => {
+              setSelectedUserProfile(null);
+              setActiveChatUser(profile);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeChatUser && (
+          <ChatModal 
+            otherUser={activeChatUser} 
+            onClose={() => setActiveChatUser(null)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

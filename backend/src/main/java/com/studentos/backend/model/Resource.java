@@ -40,6 +40,7 @@ public class Resource {
     @JoinColumn(name = "uploader_id", nullable = false)
     private User uploader;
 
+    @Builder.Default
     private int upvotes = 0;
 
     @CreationTimestamp

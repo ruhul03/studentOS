@@ -69,6 +69,39 @@ public class CourseReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseReview> updateReview(@PathVariable Long id, @RequestBody CourseReviewRequest request) {
+        Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        CourseReview review = reviewOpt.get();
+        if (!review.getReviewer().getId().equals(request.getReviewerId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        review.setCourseCode(request.getCourseCode());
+        review.setCourseName(request.getCourseName());
+        review.setProfessor(request.getProfessor());
+        review.setDifficultyRating(request.getDifficultyRating());
+        review.setQualityRating(request.getQualityRating());
+        review.setReviewText(request.getReviewText());
+
+        return ResponseEntity.ok(reviewRepository.save(review));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id, @RequestParam Long userId) {
+        Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        if (!reviewOpt.get().getReviewer().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        reviewRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}/helpful")
     public ResponseEntity<CourseReview> markHelpful(@PathVariable Long id) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);

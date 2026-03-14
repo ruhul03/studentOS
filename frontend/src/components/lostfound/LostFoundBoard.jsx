@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './LostFound.css';
-import { MapPin, Phone, Plus, X, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import { MapPin, Phone, Plus, X, AlertTriangle, CheckCircle2, Info, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function LostFoundBoard() {
+export function LostFoundBoard({ onProfileView }) {
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState('ALL');
   const [showReportForm, setShowReportForm] = useState(false);
@@ -18,6 +18,7 @@ export function LostFoundBoard() {
   const [type, setType] = useState('LOST');
   const [location, setLocation] = useState('');
   const [contactInfo, setContactInfo] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -47,30 +48,55 @@ export function LostFoundBoard() {
 
     setPostError(null);
     try {
-      console.log("Reporting item with reporterId:", user.id);
-      const payload = {
-        title, description, type, location, contactInfo, reporterId: user.id
-      };
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound`, {
-        method: 'POST',
+      const isEdit = !!editingItem;
+      const url = isEdit 
+        ? `${import.meta.env.VITE_API_URL}/api/lostfound/${editingItem.id}` 
+        : `${import.meta.env.VITE_API_URL}/api/lostfound`;
+      
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          title, description, type, location, contactInfo, reporterId: user.id
+        })
       });
 
       if (response.ok) {
         setShowReportForm(false);
+        setEditingItem(null);
         setTitle(''); setDescription(''); setLocation(''); setContactInfo('');
         fetchItems();
       } else {
         const errorData = await response.text();
-        console.error("LostFound POST Error:", errorData);
         setPostError(`Server Error: ${errorData || response.statusText}`);
       }
     } catch (err) {
       console.error('Report failed', err);
       setPostError("Network error: Could not reach the server.");
     }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this report?")) return;
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound/${id}?userId=${user.id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) fetchItems();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
+  const startEdit = (item) => {
+    setEditingItem(item);
+    setTitle(item.title);
+    setDescription(item.description);
+    setType(item.type);
+    setLocation(item.location);
+    setContactInfo(item.contactInfo);
+    setShowReportForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleResolve = async (id) => {
@@ -95,7 +121,15 @@ export function LostFoundBoard() {
           <h2>Lost & Found</h2>
           <p>Help your fellow students find their belongings</p>
         </div>
-        <button className="report-btn" onClick={() => setShowReportForm(!showReportForm)}>
+        <button className="report-btn" onClick={() => {
+          if (showReportForm) {
+            setShowReportForm(false);
+            setEditingItem(null);
+            setTitle(''); setDescription(''); setLocation(''); setContactInfo('');
+          } else {
+            setShowReportForm(true);
+          }
+        }}>
           {showReportForm ? <X size={20} /> : <Plus size={20} />}
           {showReportForm ? 'Cancel' : 'Report Item'}
         </button>
@@ -125,7 +159,7 @@ export function LostFoundBoard() {
             className="report-form" 
             onSubmit={handleSubmit}
           >
-            <h3>Report New Item</h3>
+            <h3>{editingItem ? 'Edit Report' : 'Report New Item'}</h3>
 
             {postError && (
               <div className="error-alert">
@@ -135,42 +169,53 @@ export function LostFoundBoard() {
             )}
 
             <div className="form-row">
-              <div className="form-group" style={{ flex: 1 }}>
+              <div className="form-group flex-1">
                 <label>Item Name</label>
-                <input type="text" placeholder="What did you lose/find?" value={title} onChange={e => setTitle(e.target.value)} required />
+                <div className="input-with-icon">
+                  <Info size={18} className="field-icon" />
+                  <input type="text" placeholder="What did you lose/find?" value={title} onChange={e => setTitle(e.target.value)} required />
+                </div>
               </div>
-              <div className="form-group" style={{ width: '200px' }}>
+              <div className="form-group select-group">
                 <label>Type</label>
-                <select value={type} onChange={e => setType(e.target.value)}>
-                  <option value="LOST">Lost</option>
-                  <option value="FOUND">Found</option>
-                </select>
+                <div className="input-with-icon">
+                  <AlertTriangle size={18} className="field-icon" />
+                  <select value={type} onChange={e => setType(e.target.value)}>
+                    <option value="LOST">Lost</option>
+                    <option value="FOUND">Found</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             <div className="form-group">
               <label>Description</label>
-              <textarea placeholder="Describe the item (color, brand, etc.)" value={description} onChange={e => setDescription(e.target.value)} required />
+              <div className="input-with-icon align-top">
+                <FileText size={18} className="field-icon" />
+                <textarea placeholder="Describe the item (color, brand, etc.)" value={description} onChange={e => setDescription(e.target.value)} required />
+              </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label>Location</label>
-                <div style={{ position: 'relative' }}>
-                   <MapPin size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }} />
-                   <input style={{ paddingLeft: '3rem' }} type="text" placeholder="Where? (e.g. Library 3rd Floor)" value={location} onChange={e => setLocation(e.target.value)} required />
+                <div className="input-with-icon">
+                   <MapPin size={18} className="field-icon" />
+                   <input type="text" placeholder="Where? (e.g. Library 3rd Floor)" value={location} onChange={e => setLocation(e.target.value)} required />
                 </div>
               </div>
               <div className="form-group">
                 <label>Contact Info</label>
-                <div style={{ position: 'relative' }}>
-                   <Phone size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }} />
-                   <input style={{ paddingLeft: '3rem' }} type="text" placeholder="Phone or Email" value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
+                <div className="input-with-icon">
+                   <Phone size={18} className="field-icon" />
+                   <input type="text" placeholder="Phone or Email" value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
                 </div>
               </div>
             </div>
 
-            <button type="submit" className="submit-report-btn">Submit Report</button>
+            <button type="submit" className="submit-report-btn">
+              {editingItem ? 'Update Report' : 'Submit Report'}
+            </button>
           </motion.form>
         )}
       </AnimatePresence>
@@ -209,15 +254,27 @@ export function LostFoundBoard() {
               </div>
 
               <div className="lf-card-footer">
-                <span className="reporter-name">Reported by {item.reporter.name}</span>
-                {!item.resolved && user?.id === 1 && ( // Only admin for demo, or logic based on reporter
-                   <button className="resolve-btn" onClick={() => handleResolve(item.id)}>
-                     Mark as Resolved
-                   </button>
-                )}
-                {item.resolved && (
-                   <span className="resolved-badge">Resolved</span>
-                )}
+                <span className="reporter-name" onClick={() => onProfileView(item.reporter.id)} style={{ cursor: 'pointer', color: 'var(--text-dim)', hover: { color: '#f59e0b' } }}>
+                  Reported by {item.reporter.name}
+                </span>
+                
+                <div className="card-actions">
+                  {user?.id === item.reporter.id && (
+                    <div className="owner-actions">
+                      <button className="edit-action-btn" onClick={() => startEdit(item)}>Edit</button>
+                      <button className="delete-action-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                    </div>
+                  )}
+                  
+                  {!item.resolved && user?.id === item.reporter.id && ( 
+                    <button className="resolve-btn" onClick={() => handleResolve(item.id)}>
+                      Mark as Resolved
+                    </button>
+                  )}
+                  {item.resolved && (
+                    <span className="resolved-badge">Resolved</span>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}

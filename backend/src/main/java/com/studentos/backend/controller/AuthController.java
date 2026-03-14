@@ -1,5 +1,7 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.LoginRequest;
+import com.studentos.backend.dto.RegisterRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,26 +25,28 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registration) {
+        if (userRepository.existsByEmail(registration.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
         
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+        if (registration.getUsername() == null || registration.getUsername().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required.");
         }
 
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(registration.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
         }
         
-        // Default role is Student
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("STUDENT");
-        }
+        User user = User.builder()
+                .name(registration.getName() != null ? registration.getName() : registration.getUsername())
+                .username(registration.getUsername())
+                .email(registration.getEmail())
+                .password(passwordEncoder.encode(registration.getPassword()))
+                .role("STUDENT")
+                .updateCount(0)
+                .build();
         
-        // Note: Using BCrypt for password hashing.
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
@@ -52,6 +56,10 @@ public class AuthController {
         String identifier = loginRequest.getEmail();
         Optional<User> userOptional;
         
+        if (identifier == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username/Email is required.");
+        }
+
         if (identifier.contains("@")) {
             userOptional = userRepository.findByEmail(identifier);
         } else {
@@ -69,15 +77,4 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email/username or password.");
     }
-}
-
-class LoginRequest {
-    private String email;
-    private String password;
-
-    // Getters and Setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 }

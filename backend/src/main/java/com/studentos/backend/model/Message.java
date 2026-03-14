@@ -5,38 +5,35 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "study_tasks")
+@Table(name = "messages")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyTask {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String title;
-
-    private String description;
-    
-    @Column(nullable = false)
-    private String courseCode;
+    private Long senderId;
 
     @Column(nullable = false)
-    private String type; // Assignment, Exam, Project, Reading
+    private Long receiverId;
 
-    private LocalDateTime dueDate;
+    @Column(nullable = false, length = 1000)
+    private String content;
 
     @Builder.Default
-    private boolean completed = false;
+    private boolean isRead = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime timestamp;
 }
