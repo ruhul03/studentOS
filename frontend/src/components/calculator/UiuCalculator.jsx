@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './Calculator.css';
 import { Calculator, Plus, Trash2, RotateCcw, GraduationCap, Info, ClipboardList, Wallet, X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -142,6 +143,15 @@ export function UiuCalculator() {
     setShowModal(false);
   };
 
+  useEffect(() => {
+    if (!showModal) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [showModal]);
+
   return (
     <div className="calculator-container aura-theme">
       <div className="aura-bg-blobs">
@@ -149,6 +159,7 @@ export function UiuCalculator() {
         <div className="blob blob-secondary"></div>
       </div>
 
+      <div className="calculator-shell">
       <div className="calc-header-v2">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -371,94 +382,98 @@ export function UiuCalculator() {
       </div>
 
       {/* Result Modals */}
-      <AnimatePresence>
-        {showModal && (
-          <div className="aura-modal-overlay">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="aura-modal-content glass-card"
-            >
-              <button className="close-modal" onClick={() => setShowModal(false)}><X size={20} /></button>
-              
-              {activeTab === 'gpa' && gpaResults && (
-                <div className="modal-result-view">
-                   <div className="modal-header-aura">
-                     <GraduationCap size={40} className="text-primary" />
-                     <h2>Prediction Results</h2>
-                   </div>
-                   <div className="main-stat-badge">
-                     <span className="label">Projected CGPA</span>
-                     <span className="value highlight">{gpaResults.predictedCgpa}</span>
-                   </div>
-                   <div className="sub-stat-row">
-                     <div className="sub-stat-box">
-                       <span className="label">Semester GPA</span>
-                       <span className="value">{gpaResults.semesterGpa}</span>
-                     </div>
-                     <div className="sub-stat-box">
-                       <span className="label">Total Credits</span>
-                       <span className="value">{gpaResults.totalCredits}</span>
-                     </div>
-                   </div>
-                   <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Got it!</button>
-                </div>
-              )}
+      {createPortal(
+        <AnimatePresence>
+          {showModal && (
+            <div className="aura-modal-overlay" role="dialog" aria-modal="true">
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="aura-modal-content glass-card"
+              >
+                <button className="close-modal" onClick={() => setShowModal(false)}><X size={20} /></button>
+                
+                {activeTab === 'gpa' && gpaResults && (
+                  <div className="modal-result-view">
+                    <div className="modal-header-aura">
+                      <GraduationCap size={40} className="text-primary" />
+                      <h2>Prediction Results</h2>
+                    </div>
+                    <div className="main-stat-badge">
+                      <span className="label">Projected CGPA</span>
+                      <span className="value highlight">{gpaResults.predictedCgpa}</span>
+                    </div>
+                    <div className="sub-stat-row">
+                      <div className="sub-stat-box">
+                        <span className="label">Semester GPA</span>
+                        <span className="value">{gpaResults.semesterGpa}</span>
+                      </div>
+                      <div className="sub-stat-box">
+                        <span className="label">Total Credits</span>
+                        <span className="value">{gpaResults.totalCredits}</span>
+                      </div>
+                    </div>
+                    <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Got it!</button>
+                  </div>
+                )}
 
-              {activeTab === 'tuition' && tuitionResults && (
-                <div className="modal-result-view">
-                   <div className="modal-header-aura">
-                     <Wallet size={40} className="text-accent" />
-                     <h2>Tuition Breakdown</h2>
-                   </div>
-                   <div className="fee-list">
-                     <div className="fee-item">
-                       <span>Fresh Credits Fee</span>
-                       <span>৳{tuitionResults.regularTotal.toLocaleString()}</span>
-                     </div>
-                     <div className="fee-item waiver">
-                       <span>Scholarship Discount</span>
-                       <span>-৳{tuitionResults.waiverAmount.toLocaleString()}</span>
-                     </div>
-                     <div className="fee-item">
-                       <span>Retake Fee (50% Off)</span>
-                       <span>৳{tuitionResults.retakePayable.toLocaleString()}</span>
-                     </div>
-                     <div className="fee-item">
-                       <span>Trimester Fee (Fixed)</span>
-                       <span>৳{tuitionResults.trimesterFee.toLocaleString()}</span>
-                     </div>
-                     <div className="fee-total-row">
-                       <span>Total Payable</span>
-                       <span>৳{tuitionResults.totalPayable.toLocaleString()}</span>
-                     </div>
-                   </div>
+                {activeTab === 'tuition' && tuitionResults && (
+                  <div className="modal-result-view">
+                    <div className="modal-header-aura">
+                      <Wallet size={40} className="text-accent" />
+                      <h2>Tuition Breakdown</h2>
+                    </div>
+                    <div className="fee-list">
+                      <div className="fee-item">
+                        <span>Fresh Credits Fee</span>
+                        <span>৳{tuitionResults.regularTotal.toLocaleString()}</span>
+                      </div>
+                      <div className="fee-item waiver">
+                        <span>Scholarship Discount</span>
+                        <span>-৳{tuitionResults.waiverAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="fee-item">
+                        <span>Retake Fee (50% Off)</span>
+                        <span>৳{tuitionResults.retakePayable.toLocaleString()}</span>
+                      </div>
+                      <div className="fee-item">
+                        <span>Trimester Fee (Fixed)</span>
+                        <span>৳{tuitionResults.trimesterFee.toLocaleString()}</span>
+                      </div>
+                      <div className="fee-total-row">
+                        <span>Total Payable</span>
+                        <span>৳{tuitionResults.totalPayable.toLocaleString()}</span>
+                      </div>
+                    </div>
 
-                   <div className="installment-section">
-                     <h3>Installment Plan</h3>
-                     <div className="installment-grid">
-                       <div className="inst-box">
-                        <span className="label">1st (40%)</span>
-                        <span className="value">৳{tuitionResults.installments[0].toLocaleString()}</span>
-                       </div>
-                       <div className="inst-box">
-                        <span className="label">2nd (30%)</span>
-                        <span className="value">৳{tuitionResults.installments[1].toLocaleString()}</span>
-                       </div>
-                       <div className="inst-box">
-                        <span className="label">3rd (30%)</span>
-                        <span className="value">৳{tuitionResults.installments[2].toLocaleString()}</span>
-                       </div>
-                     </div>
-                   </div>
-                   <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Close Breakdown</button>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                    <div className="installment-section">
+                      <h3>Installment Plan</h3>
+                      <div className="installment-grid">
+                        <div className="inst-box">
+                          <span className="label">1st (40%)</span>
+                          <span className="value">৳{tuitionResults.installments[0].toLocaleString()}</span>
+                        </div>
+                        <div className="inst-box">
+                          <span className="label">2nd (30%)</span>
+                          <span className="value">৳{tuitionResults.installments[1].toLocaleString()}</span>
+                        </div>
+                        <div className="inst-box">
+                          <span className="label">3rd (30%)</span>
+                          <span className="value">৳{tuitionResults.installments[2].toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Close Breakdown</button>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+      </div>
     </div>
   );
 }
