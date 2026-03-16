@@ -11,7 +11,6 @@ const UIU_GRADES = {
 };
 
 const WAIVERS = [0, 25, 50, 100];
-const FIXED_TRIMESTER_FEE = 6500;
 
 export function UiuCalculator() {
   const [activeTab, setActiveTab] = useState('gpa'); // 'gpa' or 'tuition'
@@ -29,12 +28,15 @@ export function UiuCalculator() {
 
   // Tuition States
   const [tuitionData, setTuitionData] = useState({
+    programType: 'TRIMESTER_BSBGE', // TRIMESTER_BSBGE, TRIMESTER_OTHER, SEMESTER_BPHARM
     regularCredits: '',
     retakeCredits: '',
-    feePerCredit: '',
-    waiver: 0
+    perCreditFee: '',
+    waiver: 0,
+    isAfterBatch251: true
   });
   const [tuitionResults, setTuitionResults] = useState(null);
+  const [feeHistory, setFeeHistory] = useState([]);
 
   // Handlers for GPA
   const addCourse = () => {
@@ -106,38 +108,144 @@ export function UiuCalculator() {
   };
 
   // Handlers for Tuition
-  const calculateTuition = () => {
-    const feePerCredit = parseFloat(tuitionData.feePerCredit) || 0;
-    const regCredits = parseFloat(tuitionData.regularCredits) || 0;
-    const retCredits = parseFloat(tuitionData.retakeCredits) || 0;
-    
-    const regularTotal = regCredits * feePerCredit;
-    const waiverAmount = regularTotal * (tuitionData.waiver / 100);
-    const regularPayable = regularTotal - waiverAmount;
-    
-    const retakePayable = retCredits * (feePerCredit * 0.5); // 50% discount on retakes, no waiver
-    const totalPayable = regularPayable + retakePayable + FIXED_TRIMESTER_FEE;
+  const calculateTuition = async () => {
+    try {
+      // First try to save to backend if authenticated
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Convert frontend data to backend format
+        const totalCredits = (parseFloat(tuitionData.regularCredits) || 0) + (parseFloat(tuitionData.retakeCredits) || 0);
+        const backendRequest = {
+          ...tuitionData,
+          creditsTaken: totalCredits
+        };
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tuition-fees/calculate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(backendRequest)
+        });
 
-    setTuitionResults({
-      regularTotal,
-      waiverAmount,
-      regularPayable,
-      retakePayable,
-      trimesterFee: FIXED_TRIMESTER_FEE,
-      totalPayable,
-      installments: [
-        Math.round(totalPayable * 0.4),
-        Math.round(totalPayable * 0.3),
-        Math.round(totalPayable * 0.3)
-      ]
-    });
-    setShowModal(true);
+        if (response.ok) {
+          const result = await response.json();
+          setTuitionResults(result);
+          setShowModal(true);
+          return;
+        }
+      }
+      
+      // Fallback to client-side calculation
+      const regularCredits = parseFloat(tuitionData.regularCredits) || 0;
+      const retakeCredits = parseFloat(tuitionData.retakeCredits) || 0;
+      const perCreditFee = parseFloat(tuitionData.perCreditFee) || 0;
+      const totalCredits = regularCredits + retakeCredits;
+      
+      const regularTuitionFee = regularCredits * perCreditFee;
+      const waiverAmount = regularTuitionFee * (tuitionData.waiver / 100);
+      const regularPayable = regularTuitionFee - waiverAmount;
+      
+      const retakeTuitionFee = retakeCredits * (perCreditFee * 0.5); // 50% discount for retakes
+      const tuitionFeeAmount = regularPayable + retakeTuitionFee;
+      
+      let baseFee = 0;
+      let labFee = 0;
+      
+      if (tuitionData.programType.includes('TRIMESTER')) {
+        baseFee = 6500;
+        if (tuitionData.programType === 'TRIMESTER_BSBGE') {
+          labFee = 2000;
+        }
+      } else {
+        baseFee = 9750;
+        labFee = 5000;
+      }
+      
+      const totalFee = tuitionFeeAmount + baseFee + labFee;
+      
+      const paymentSchedule = {
+        paymentType: tuitionData.isAfterBatch251 ? 'INSTALLMENTS' : 'FULL_PAYMENT',
+        preRegistrationPayment: tuitionData.isAfterBatch251 ? 20000 : 0,
+        totalInstallments: tuitionData.isAfterBatch251 ? Math.max(0, totalFee - 20000) : 0,
+        installment1: 0,
+        installment2: 0,
+        installment3: 0,
+        installment4: 0
+      };
+      
+      if (tuitionData.isAfterBatch251) {
+        const remaining = totalFee - 20000;
+        if (tuitionData.programType.includes('TRIMESTER')) {
+          paymentSchedule.installment1 = remaining * 0.40;
+          paymentSchedule.installment2 = remaining * 0.30;
+          paymentSchedule.installment3 = remaining * 0.30;
+        } else {
+          const installment = remaining * 0.25;
+          paymentSchedule.installment1 = installment;
+          paymentSchedule.installment2 = installment;
+          paymentSchedule.installment3 = installment;
+          paymentSchedule.installment4 = installment;
+        }
+      }
+      
+      const result = {
+        programType: tuitionData.programType,
+        regularCredits: regularCredits,
+        retakeCredits: retakeCredits,
+        creditsTaken: totalCredits,
+        perCreditFee: perCreditFee,
+        waiver: tuitionData.waiver,
+        regularTuitionFee: regularTuitionFee,
+        waiverAmount: waiverAmount,
+        regularPayable: regularPayable,
+        retakeTuitionFee: retakeTuitionFee,
+        tuitionFee: tuitionFeeAmount,
+        baseFee: baseFee,
+        labFee: labFee,
+        totalFee: totalFee,
+        isAfterBatch251: tuitionData.isAfterBatch251,
+        paymentSchedule: paymentSchedule
+      };
+      
+      setTuitionResults(result);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error calculating tuition:', error);
+    }
   };
+
+  const loadFeeHistory = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tuition-fees/history`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const history = await response.json();
+        setFeeHistory(history);
+      }
+    } catch (error) {
+      console.error('Error loading fee history:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'tuition') {
+      loadFeeHistory();
+    }
+  }, [activeTab]);
 
   const resetAll = () => {
     setCourses([{ id: 1, name: '', credits: 3.0, grade: 'A', isRetake: false, previousGrade: 'F' }]);
     setCurrentStanding({ completedCredits: '', currentCgpa: '' });
-    setTuitionData({ regularCredits: '', retakeCredits: '', feePerCredit: '', waiver: 0 });
+    setTuitionData({ programType: 'TRIMESTER_BSBGE', regularCredits: '', retakeCredits: '', perCreditFee: '', waiver: 0, isAfterBatch251: true });
     setGpaResults(null);
     setTuitionResults(null);
     setShowModal(false);
@@ -303,15 +411,38 @@ export function UiuCalculator() {
                 <div className="icon-box"><Calculator size={22} className="text-accent" /></div>
                 <div className="text">
                   <h3>Fee Parameters</h3>
-                  <span className="subtitle">Enter credits for automated estimation</span>
+                  <span className="subtitle">Select your program and enter credit details</span>
                 </div>
               </div>
               <div className="tuition-form-grid">
+                <div className="input-field full-width">
+                  <label>Program Type</label>
+                  <div className="program-type-buttons">
+                    <button 
+                      className={`program-btn ${tuitionData.programType === 'TRIMESTER_BSBGE' ? 'active' : ''}`}
+                      onClick={() => setTuitionData({...tuitionData, programType: 'TRIMESTER_BSBGE'})}
+                    >
+                      BSBGE (Trimester)
+                    </button>
+                    <button 
+                      className={`program-btn ${tuitionData.programType === 'TRIMESTER_OTHER' ? 'active' : ''}`}
+                      onClick={() => setTuitionData({...tuitionData, programType: 'TRIMESTER_OTHER'})}
+                    >
+                      Other Program (Trimester)
+                    </button>
+                    <button 
+                      className={`program-btn ${tuitionData.programType === 'SEMESTER_BPHARM' ? 'active' : ''}`}
+                      onClick={() => setTuitionData({...tuitionData, programType: 'SEMESTER_BPHARM'})}
+                    >
+                      B.Pharm (Semester)
+                    </button>
+                  </div>
+                </div>
                 <div className="input-field">
-                  <label>Fresh Credits</label>
+                  <label>Regular Credits</label>
                   <input 
                     type="number" 
-                    placeholder="e.g. 9"
+                    placeholder="e.g. 12"
                     className="no-spinner"
                     value={tuitionData.regularCredits}
                     onChange={(e) => setTuitionData({...tuitionData, regularCredits: e.target.value})}
@@ -331,10 +462,10 @@ export function UiuCalculator() {
                   <label>Fee Per Credit (৳)</label>
                   <input 
                     type="number" 
-                    placeholder="e.g. 6500"
+                    placeholder="e.g. 4000"
                     className="no-spinner"
-                    value={tuitionData.feePerCredit}
-                    onChange={(e) => setTuitionData({...tuitionData, feePerCredit: e.target.value})}
+                    value={tuitionData.perCreditFee}
+                    onChange={(e) => setTuitionData({...tuitionData, perCreditFee: e.target.value})}
                   />
                 </div>
                 <div className="input-field">
@@ -345,6 +476,67 @@ export function UiuCalculator() {
                   >
                     {WAIVERS.map(w => <option key={w} value={w}>{w}%</option>)}
                   </select>
+                </div>
+                <div className="input-field full-width">
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={tuitionData.isAfterBatch251}
+                      onChange={(e) => setTuitionData({...tuitionData, isAfterBatch251: e.target.checked})}
+                    />
+                    <span className="checkmark"></span>
+                    Batch after 251 (requires Tk. 20,000 pre-registration payment)
+                  </label>
+                </div>
+              </div>
+
+              {/* Fee Information Display */}
+              <div className="fee-info-section">
+                <h4>Fee Structure Information</h4>
+                <div className="fee-info-grid">
+                  {tuitionData.programType.includes('TRIMESTER') ? (
+                    <>
+                      <div className="info-item">
+                        <span className="label">Base Trimester Fee:</span>
+                        <span className="value">৳6,500</span>
+                      </div>
+                      {tuitionData.programType === 'TRIMESTER_BSBGE' && (
+                        <div className="info-item">
+                          <span className="label">Lab Fee (BSBGE):</span>
+                          <span className="value">৳2,000</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="info-item">
+                        <span className="label">Base Semester Fee:</span>
+                        <span className="value">৳9,750</span>
+                      </div>
+                      <div className="info-item">
+                        <span className="label">Lab Fee (B.Pharm):</span>
+                        <span className="value">৳5,000</span>
+                      </div>
+                    </>
+                  )}
+                  {tuitionData.waiver > 0 && (
+                    <div className="info-item highlight">
+                      <span className="label">Scholarship Discount:</span>
+                      <span className="value">{tuitionData.waiver}% off</span>
+                    </div>
+                  )}
+                  {tuitionData.isAfterBatch251 && (
+                    <div className="info-item highlight">
+                      <span className="label">Pre-registration Payment:</span>
+                      <span className="value">৳20,000</span>
+                    </div>
+                  )}
+                  {(parseFloat(tuitionData.retakeCredits) || 0) > 0 && (
+                    <div className="info-item">
+                      <span className="label">Retake Discount:</span>
+                      <span className="value">50% off</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
@@ -425,45 +617,79 @@ export function UiuCalculator() {
                       <h2>Tuition Breakdown</h2>
                     </div>
                     <div className="fee-list">
+                      {tuitionResults.regularTuitionFee !== undefined && (
+                        <>
+                          <div className="fee-item">
+                            <span>Regular Credits ({tuitionResults.regularCredits} × ৳{tuitionResults.perCreditFee})</span>
+                            <span>৳{tuitionResults.regularTuitionFee.toLocaleString()}</span>
+                          </div>
+                          {tuitionResults.waiver > 0 && (
+                            <div className="fee-item waiver">
+                              <span>Scholarship Discount ({tuitionResults.waiver}%)</span>
+                              <span>-৳{tuitionResults.waiverAmount.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {tuitionResults.retakeCredits > 0 && (
+                            <div className="fee-item">
+                              <span>Retake Credits ({tuitionResults.retakeCredits} × ৳{(tuitionResults.perCreditFee * 0.5).toFixed(0)})</span>
+                              <span>৳{tuitionResults.retakeTuitionFee.toLocaleString()}</span>
+                            </div>
+                          )}
+                        </>
+                      )}
                       <div className="fee-item">
-                        <span>Fresh Credits Fee</span>
-                        <span>৳{tuitionResults.regularTotal.toLocaleString()}</span>
+                        <span>{tuitionResults.programType.includes('TRIMESTER') ? 'Trimester Fee' : 'Semester Fee'}</span>
+                        <span>৳{tuitionResults.baseFee.toLocaleString()}</span>
                       </div>
-                      <div className="fee-item waiver">
-                        <span>Scholarship Discount</span>
-                        <span>-৳{tuitionResults.waiverAmount.toLocaleString()}</span>
-                      </div>
-                      <div className="fee-item">
-                        <span>Retake Fee (50% Off)</span>
-                        <span>৳{tuitionResults.retakePayable.toLocaleString()}</span>
-                      </div>
-                      <div className="fee-item">
-                        <span>Trimester Fee (Fixed)</span>
-                        <span>৳{tuitionResults.trimesterFee.toLocaleString()}</span>
-                      </div>
+                      {tuitionResults.labFee > 0 && (
+                        <div className="fee-item">
+                          <span>Laboratory Fee</span>
+                          <span>৳{tuitionResults.labFee.toLocaleString()}</span>
+                        </div>
+                      )}
                       <div className="fee-total-row">
-                        <span>Total Payable</span>
-                        <span>৳{tuitionResults.totalPayable.toLocaleString()}</span>
+                        <span>Total Fee</span>
+                        <span>৳{tuitionResults.totalFee.toLocaleString()}</span>
                       </div>
                     </div>
 
-                    <div className="installment-section">
-                      <h3>Installment Plan</h3>
-                      <div className="installment-grid">
-                        <div className="inst-box">
-                          <span className="label">1st (40%)</span>
-                          <span className="value">৳{tuitionResults.installments[0].toLocaleString()}</span>
-                        </div>
-                        <div className="inst-box">
-                          <span className="label">2nd (30%)</span>
-                          <span className="value">৳{tuitionResults.installments[1].toLocaleString()}</span>
-                        </div>
-                        <div className="inst-box">
-                          <span className="label">3rd (30%)</span>
-                          <span className="value">৳{tuitionResults.installments[2].toLocaleString()}</span>
+                    {tuitionResults.paymentSchedule.paymentType === 'INSTALLMENTS' && (
+                      <div className="installment-section">
+                        <h3>Payment Schedule</h3>
+                        <div className="payment-breakdown">
+                          <div className="payment-item pre-payment">
+                            <span className="label">Pre-registration Payment</span>
+                            <span className="value">৳{tuitionResults.paymentSchedule.preRegistrationPayment.toLocaleString()}</span>
+                          </div>
+                          <div className="installment-grid">
+                            {tuitionResults.paymentSchedule.installment1 > 0 && (
+                              <div className="inst-box">
+                                <span className="label">Installment 1 ({tuitionResults.programType.includes('TRIMESTER') ? '40%' : '25%'})</span>
+                                <span className="value">৳{tuitionResults.paymentSchedule.installment1.toLocaleString()}</span>
+                              </div>
+                            )}
+                            {tuitionResults.paymentSchedule.installment2 > 0 && (
+                              <div className="inst-box">
+                                <span className="label">Installment 2 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
+                                <span className="value">৳{tuitionResults.paymentSchedule.installment2.toLocaleString()}</span>
+                              </div>
+                            )}
+                            {tuitionResults.paymentSchedule.installment3 > 0 && (
+                              <div className="inst-box">
+                                <span className="label">Installment 3 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
+                                <span className="value">৳{tuitionResults.paymentSchedule.installment3.toLocaleString()}</span>
+                              </div>
+                            )}
+                            {tuitionResults.paymentSchedule.installment4 > 0 && (
+                              <div className="inst-box">
+                                <span className="label">Installment 4 (25%)</span>
+                                <span className="value">৳{tuitionResults.paymentSchedule.installment4.toLocaleString()}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                     <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Close Breakdown</button>
                   </div>
                 )}

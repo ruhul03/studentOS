@@ -10,6 +10,136 @@
   --aura-glow: rgba(99, 102, 241, 0.3);
 }
 
+/* Program Type Buttons */
+.program-type-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.program-btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--aura-border);
+  background: var(--aura-card-bg);
+  color: var(--aura-text-dim);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.program-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--aura-primary);
+  color: var(--aura-text);
+}
+
+.program-btn.active {
+  background: var(--aura-primary);
+  border-color: var(--aura-primary);
+  color: white;
+}
+
+/* Fee Information Section */
+.fee-info-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.fee-info-section h4 {
+  margin: 0 0 0.75rem 0;
+  color: var(--aura-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fee-info-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.info-item .label {
+  color: var(--aura-text-dim);
+  font-size: 0.875rem;
+}
+
+.info-item .value {
+  color: var(--aura-text);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.info-item.highlight .value {
+  color: var(--aura-accent);
+}
+
+/* Checkbox Label */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--aura-text);
+  margin: 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--aura-primary);
+}
+
+/* Full width input field */
+.input-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Payment Breakdown Styles */
+.payment-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.payment-item.pre-payment {
+  background: rgba(244, 114, 182, 0.1);
+  border-color: rgba(244, 114, 182, 0.2);
+}
+
+.payment-item .label {
+  font-weight: 600;
+  color: var(--aura-text);
+}
+
+.payment-item .value {
+  font-weight: 700;
+  color: var(--aura-primary);
+}
+
 .calculator-container.aura-theme {
   position: relative;
   min-height: 80vh;
