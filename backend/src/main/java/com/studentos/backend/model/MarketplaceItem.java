@@ -44,6 +44,9 @@ public class MarketplaceItem {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @Column(columnDefinition = "TEXT")
+    private String photosJson;
+
     @Builder.Default
     private boolean sold = false;
 

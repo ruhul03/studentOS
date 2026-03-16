@@ -134,6 +134,9 @@ function Dashboard() {
             <button className={`nav-tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => handleTabChange('events')}>Events</button>
             <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => handleTabChange('reviews')}>Reviews</button>
             <button className={`nav-tab ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => handleTabChange('calculator')}>UIU Calc</button>
+            {user?.role === 'ADMIN' && (
+              <button className="nav-tab admin-nav-tab" onClick={() => navigate('/admin')}>Admin Panel</button>
+            )}
           </nav>
 
           <div className="navbar-actions desktop-only">
@@ -189,6 +192,12 @@ function Dashboard() {
           <Calculator size={20} />
           <span>UIU Calc</span>
         </button>
+        {user?.role === 'ADMIN' && (
+          <button className="mobile-tab" onClick={() => navigate('/admin')}>
+            <Shield size={20} />
+            <span>Admin</span>
+          </button>
+        )}
       </nav>
       
       <main className="main-viewport animate-in">

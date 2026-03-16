@@ -350,8 +350,8 @@
 
 .back-btn-profile {
   position: fixed;
-  top: 2rem;
-  left: 2rem;
+  top: 7rem;
+  left: 3rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -364,7 +364,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .back-btn-profile:hover {

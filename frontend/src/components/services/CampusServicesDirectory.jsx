@@ -47,7 +47,7 @@ export function CampusServicesDirectory() {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search for a building, service, or food..." 
+            placeholder="Search for buildings, cafes, or student services..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

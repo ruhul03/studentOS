@@ -138,7 +138,7 @@ export function CourseReviews({ onProfileView }) {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search by Course Code (e.g. CSE 110)..." 
+            placeholder="Search courses or professors..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

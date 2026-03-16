@@ -100,7 +100,7 @@ export function GlobalSearch({ onNavigate }) {
         <Search size={18} className="search-icon" />
         <input
           type="text"
-          placeholder="Search UIU StudentOS..." 
+          placeholder="Search anything..."
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -125,8 +125,8 @@ export function GlobalSearch({ onNavigate }) {
           ) : results.length > 0 ? (
             <div className="search-results">
               {results.map(result => (
-                <div 
-                  key={result.id} 
+                <div
+                  key={result.id}
                   className={`search-result-item ${result.type}-result`}
                   onClick={() => handleResultClick(result.type)}
                 >

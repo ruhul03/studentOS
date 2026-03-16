@@ -52,6 +52,7 @@ public class MarketplaceController {
                 .condition(request.getCondition())
                 .category(request.getCategory())
                 .contactInfo(request.getContactInfo())
+                .photosJson(request.getPhotosJson())
                 .seller(sellerOpt.get())
                 .sold(false)
                 .build();
@@ -86,6 +87,7 @@ public class MarketplaceController {
         item.setCondition(request.getCondition());
         item.setCategory(request.getCategory());
         item.setContactInfo(request.getContactInfo());
+        item.setPhotosJson(request.getPhotosJson());
 
         return ResponseEntity.ok(itemRepository.save(item));
     }
@@ -132,6 +134,7 @@ class MarketplaceRequest {
     private String condition;
     private String category;
     private String contactInfo;
+    private String photosJson;
     private Long sellerId;
 
     public String getTitle() { return title; }
@@ -146,6 +149,8 @@ class MarketplaceRequest {
     public void setCategory(String category) { this.category = category; }
     public String getContactInfo() { return contactInfo; }
     public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
+    public String getPhotosJson() { return photosJson; }
+    public void setPhotosJson(String photosJson) { this.photosJson = photosJson; }
     public Long getSellerId() { return sellerId; }
     public void setSellerId(Long sellerId) { this.sellerId = sellerId; }
 }

@@ -110,7 +110,7 @@ export function ResourceFeed() {
         <Search size={22} className="search-icon" />
         <input 
           type="text" 
-          placeholder="Search UIU courses (e.g. CSE 1110, PHY 105)..." 
+          placeholder="Find class notes, exam papers, or study guides..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

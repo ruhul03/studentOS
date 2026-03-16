@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './Marketplace.css';
-import { Tag, Phone, Search, Image as ImageIcon } from 'lucide-react';
+import { Tag, Phone, Search, Image as ImageIcon, Plus, X, Camera, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function StudentMarketplace({ onProfileView }) {
   const [items, setItems] = useState([]);
@@ -18,6 +19,39 @@ export function StudentMarketplace({ onProfileView }) {
   const [category, setCategory] = useState('Books');
   const [contactInfo, setContactInfo] = useState('');
   const [editingItem, setEditingItem] = useState(null);
+  const [itemPhotos, setItemPhotos] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [showPhotoViewer, setShowPhotoViewer] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setPhotoPreviews(prev => [...prev, reader.result]);
+          setItemPhotos(prev => [...prev, file]);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const removePhoto = (index) => {
+    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+    setItemPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const openPhotoViewer = (photo) => {
+    setSelectedPhoto(photo);
+    setShowPhotoViewer(true);
+  };
+
+  const closePhotoViewer = () => {
+    setShowPhotoViewer(false);
+    setSelectedPhoto(null);
+  };
 
   const fetchItems = async () => {
     try {
@@ -59,7 +93,14 @@ export function StudentMarketplace({ onProfileView }) {
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, description, price: parseFloat(price), condition, category, contactInfo, sellerId: user.id
+          title, 
+          description, 
+          price: parseFloat(price), 
+          condition, 
+          category, 
+          contactInfo, 
+          sellerId: user.id,
+          photosJson: JSON.stringify(photoPreviews)
         })
       });
 
@@ -67,6 +108,7 @@ export function StudentMarketplace({ onProfileView }) {
         setShowForm(false);
         setEditingItem(null);
         setTitle(''); setDescription(''); setPrice(''); setCondition('Good'); setCategory('Books'); setContactInfo('');
+        setPhotoPreviews([]); setItemPhotos([]);
         fetchItems();
       }
     } catch (err) {
@@ -94,6 +136,11 @@ export function StudentMarketplace({ onProfileView }) {
     setCondition(item.condition);
     setCategory(item.category);
     setContactInfo(item.contactInfo);
+    try {
+      setPhotoPreviews(JSON.parse(item.photosJson || '[]'));
+    } catch (e) {
+      setPhotoPreviews([]);
+    }
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -121,6 +168,7 @@ export function StudentMarketplace({ onProfileView }) {
             setShowForm(false);
             setEditingItem(null);
             setTitle(''); setDescription(''); setPrice(''); setCondition('Good'); setCategory('Books'); setContactInfo('');
+            setPhotoPreviews([]); setItemPhotos([]);
           } else {
             setShowForm(true);
           }
@@ -134,7 +182,7 @@ export function StudentMarketplace({ onProfileView }) {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search for books, laptops, UIU bus passes..."
+            placeholder="Search for books, electronics, or campus essentials..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -178,6 +226,40 @@ export function StudentMarketplace({ onProfileView }) {
               <option value="Fair">Fair / Very Used</option>
             </select>
           </div>
+
+          <div className="form-group photo-upload-section">
+            <label>Item Photos</label>
+            <div className="photo-upload-container">
+              {photoPreviews.length > 0 ? (
+                <div className="photo-preview-grid">
+                  {photoPreviews.map((preview, index) => (
+                    <div key={index} className="photo-preview-item">
+                      <img src={preview} alt={`Preview ${index}`} />
+                      <button type="button" className="remove-photo-btn" onClick={() => removePhoto(index)}>
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                  {photoPreviews.length < 5 && (
+                    <label className="add-photo-btn-inline">
+                      <Plus size={24} />
+                      <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                    </label>
+                  )}
+                </div>
+              ) : (
+                <label className="photo-upload-placeholder-market">
+                  <div className="upload-icons">
+                    <Camera size={32} />
+                    <Upload size={16} className="upload-sub-icon" />
+                  </div>
+                  <span>Add photos of your item (max 5)</span>
+                  <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                </label>
+              )}
+            </div>
+          </div>
+
           <input type="text" placeholder="Contact Info (Email or Phone)" value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
           <button type="submit" className="submit-listing-btn">
             {editingItem ? 'Update Listing' : 'Publish Listing'}
@@ -188,8 +270,20 @@ export function StudentMarketplace({ onProfileView }) {
       <div className="market-grid">
         {items.map(item => (
           <div key={item.id} className="market-card glass-card">
-            <div className="item-image-placeholder">
-              <ImageIcon size={32} className="image-icon" />
+            <div className="item-image-container" onClick={() => {
+              const photos = JSON.parse(item.photosJson || '[]');
+              if (photos.length > 0) openPhotoViewer(photos[0]);
+            }}>
+              {item.photosJson && JSON.parse(item.photosJson).length > 0 ? (
+                <img src={JSON.parse(item.photosJson)[0]} alt={item.title} className="item-main-image" />
+              ) : (
+                <div className="item-image-placeholder">
+                   <ImageIcon size={32} className="image-icon" />
+                </div>
+              )}
+              {item.photosJson && JSON.parse(item.photosJson).length > 1 && (
+                <div className="photo-count-badge">+{JSON.parse(item.photosJson).length - 1}</div>
+              )}
             </div>
             
             <div className="market-card-content">
@@ -214,19 +308,16 @@ export function StudentMarketplace({ onProfileView }) {
                 </div>
                 
                 <div className="contact-action">
-                  {user?.id === item.seller.id && (
+                  {(user?.id == item.seller.id || user?.role === 'ADMIN') ? (
                     <div className="owner-actions">
                       <button className="edit-action-btn" onClick={() => startEdit(item)}>Edit</button>
                       <button className="delete-action-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                      {!item.sold && (
+                        <button className="mark-sold-btn" onClick={() => markAsSold(item.id)}>
+                          Sold
+                        </button>
+                      )}
                     </div>
-                  )}
-
-                  {user?.id === item.seller.id ? (
-                    !item.sold && (
-                      <button className="mark-sold-btn" onClick={() => markAsSold(item.id)}>
-                        Mark as Sold
-                      </button>
-                    )
                   ) : (
                     <div className="contact-badge">
                       <Phone size={14} /> {item.contactInfo}
@@ -239,21 +330,50 @@ export function StudentMarketplace({ onProfileView }) {
         ))}
         {items.length === 0 && (
           <div className="empty-state-market">
-            <Tag size={48} className="text-dim" />
-            <h3>{search || activeCategory !== 'All' ? 'No items found' : 'Market is empty'}</h3>
-            <p className="text-dim">
+            <div className="empty-icon-container">
+              <Tag size={64} className="empty-tag-icon" />
+              <div className="icon-pulse"></div>
+            </div>
+            <h3>{search || activeCategory !== 'All' ? 'No matches found' : 'Marketplace is Open'}</h3>
+            <p>
               {search || activeCategory !== 'All' 
-                ? "Try adjusting your filters or search terms." 
-                : "Got something to sell? List it here and reach fellow students!"}
+                ? "We couldn't find what you're looking for. Try a different search term or category." 
+                : "The student market is currently empty. Be the first to list something!"}
             </p>
             {!search && activeCategory === 'All' && (
-              <button className="sell-btn-secondary" onClick={() => setShowForm(true)}>
-                List an Item
+              <button className="btn-create-listing" onClick={() => setShowForm(true)}>
+                <Plus size={18} />
+                <span>List Your Item</span>
               </button>
             )}
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showPhotoViewer && selectedPhoto && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="photo-viewer-overlay"
+            onClick={closePhotoViewer}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="photo-viewer-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="close-viewer-btn" onClick={closePhotoViewer}>
+                <X size={24} />
+              </button>
+              <img src={selectedPhoto} alt="Item Detail" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
