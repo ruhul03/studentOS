@@ -8,6 +8,7 @@ export function Register() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { user, login } = useAuth();
@@ -67,7 +68,7 @@ export function Register() {
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               required 
-              placeholder="John Doe"
+              placeholder="e.g. Ruhul Amin"
             />
           </div>
           <div className="form-group">
@@ -77,7 +78,7 @@ export function Register() {
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
               required 
-              placeholder="johndoe123"
+              placeholder="e.g. ruhul03"
             />
           </div>
           <div className="form-group">
@@ -87,7 +88,7 @@ export function Register() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              placeholder="student@university.edu"
+              placeholder="e.g. student@bscse.uiu.ac.bd"
             />
           </div>
           <div className="form-group">
