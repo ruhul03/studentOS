@@ -8,7 +8,8 @@ import {
   Plus, 
   ArrowRight,
   TrendingUp,
-  Activity
+  Activity,
+  Shield
 } from 'lucide-react';
 import './UserDashboard.css';
 
@@ -135,12 +136,18 @@ export function UserDashboard({ onTabChange }) {
               <div className="action-circle"><Clock /></div>
               <span>Add Task</span>
             </button>
-            <button className="action-btn glass-card" onClick={() => onTabChange('market')}>
-              <div className="action-circle"><ShoppingBag /></div>
-              <span>Sell Item</span>
-            </button>
-          </div>
-        </section>
+              <button className="action-btn glass-card" onClick={() => onTabChange('market')}>
+                <div className="action-circle"><ShoppingBag /></div>
+                <span>Sell Item</span>
+              </button>
+              {user?.role === 'ADMIN' && (
+                <button className="action-btn glass-card admin-action" onClick={() => window.location.href='/admin'}>
+                  <div className="action-circle"><Shield /></div>
+                  <span>System Control</span>
+                </button>
+              )}
+            </div>
+          </section>
 
         {/* Recent Activity */}
         <section className="recent-activity-section">

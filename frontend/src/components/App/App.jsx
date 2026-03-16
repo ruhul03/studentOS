@@ -24,7 +24,7 @@ import { Profile } from '../../pages/Profile';
 import { PublicProfile } from '../social/PublicProfile';
 import { ChatModal } from '../social/ChatModal';
 import ScrollToTop from './ScrollToTop';
-import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User, Calculator } from 'lucide-react';
+import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User, Calculator, Shield } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSockets } from '../../hooks/useWebSockets';
@@ -134,9 +134,6 @@ function Dashboard() {
             <button className={`nav-tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => handleTabChange('events')}>Events</button>
             <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => handleTabChange('reviews')}>Reviews</button>
             <button className={`nav-tab ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => handleTabChange('calculator')}>UIU Calc</button>
-            {user?.role === 'ADMIN' && (
-              <button className="nav-tab admin-nav-tab" onClick={() => navigate('/admin')}>Admin Panel</button>
-            )}
           </nav>
 
           <div className="navbar-actions desktop-only">
