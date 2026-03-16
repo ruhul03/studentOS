@@ -199,3 +199,27 @@
   color: white;
   transform: translateY(-2px);
 }
+.whatsapp-btn {
+  width: 100%;
+  padding: 1.1rem;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  border: none;
+  border-radius: 1rem;
+  color: white;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-btn:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
+}

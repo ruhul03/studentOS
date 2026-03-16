@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, MessageCircle, Mail, MapPin, GraduationCap, Calendar, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import './PublicProfile.css';
 
 export function PublicProfile({ userId, onClose, onStartChat }) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,16 +71,34 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
               <p>{profile.batch || 'Not specified'}</p>
             </div>
           </div>
+          <div className="detail-item">
+            <MessageCircle size={18} />
+            <div>
+              <span>Phone / WhatsApp</span>
+              <p>{profile.phoneNumber || 'Not specified'}</p>
+            </div>
+          </div>
         </div>
 
         <div className="profile-actions">
+          {profile.phoneNumber && (
+            <a 
+              href={`https://wa.me/${profile.phoneNumber.replace(/\D/g, '')}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="whatsapp-btn"
+            >
+              <MessageCircle size={20} />
+              WhatsApp
+            </a>
+          )}
           <button className="start-chat-btn" onClick={() => onStartChat(profile)}>
             <MessageCircle size={20} />
-            Send Message
+            Message
           </button>
           
           <button className="view-profile-link" onClick={() => {
-            navigate(`/profile/${profile.id}`);
+            navigate(`/dashboard?tab=profile&viewUserId=${profile.id}`);
             onClose(); 
           }}>
             Visit Full Profile

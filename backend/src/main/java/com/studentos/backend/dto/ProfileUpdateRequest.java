@@ -18,4 +18,5 @@ public class ProfileUpdateRequest {
     private String batch;
     private String studentId;
     private String dateOfBirth;
+    private String phoneNumber;
 }

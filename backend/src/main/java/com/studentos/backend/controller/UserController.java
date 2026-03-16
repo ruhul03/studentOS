@@ -107,6 +107,7 @@ public class UserController {
         if (profileUpdate.getBatch() != null) user.setBatch(profileUpdate.getBatch());
         if (profileUpdate.getStudentId() != null) user.setStudentId(profileUpdate.getStudentId());
         if (profileUpdate.getDateOfBirth() != null) user.setDateOfBirth(profileUpdate.getDateOfBirth());
+        if (profileUpdate.getPhoneNumber() != null) user.setPhoneNumber(profileUpdate.getPhoneNumber());
 
         user.setUpdateCount(user.getUpdateCount() + 1);
         user.setLastUpdateAt(LocalDateTime.now());

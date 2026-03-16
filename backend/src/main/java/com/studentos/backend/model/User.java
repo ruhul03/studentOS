@@ -47,6 +47,8 @@ public class User {
     private String studentId;
 
     private String dateOfBirth;
+    
+    private String phoneNumber;
 
     @Builder.Default
     @Column(columnDefinition = "integer default 0")

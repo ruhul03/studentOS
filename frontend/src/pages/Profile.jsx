@@ -1,10 +1,16 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { User, Mail, Camera, Save, X, Edit2, Shield, Trash2, AlertTriangle, GraduationCap, Book, Fingerprint, Calendar, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { User, Mail, Camera, Save, X, Edit2, Shield, Trash2, AlertTriangle, GraduationCap, Book, Fingerprint, Calendar, ArrowLeft, MessageCircle } from 'lucide-react';
 import './Profile.css';
 
 export function Profile() {
   const { user, updateUserData, logout } = useAuth();
   const { userId } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryUserId = searchParams.get('viewUserId');
+  const activeUserId = userId || queryUserId;
+  
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
@@ -13,7 +19,7 @@ export function Profile() {
   const [loading, setLoading] = useState(false);
   const [viewedUser, setViewedUser] = useState(null);
 
-  const isOwnProfile = !userId || userId === user?.id;
+  const isOwnProfile = !activeUserId || activeUserId === user?.id;
 
   const [formData, setFormData] = useState({
     username: '',
@@ -23,7 +29,8 @@ export function Profile() {
     department: '',
     batch: '',
     studentId: '',
-    dateOfBirth: ''
+    dateOfBirth: '',
+    phoneNumber: ''
   });
 
   React.useEffect(() => {
@@ -37,13 +44,14 @@ export function Profile() {
         department: user?.department || '',
         batch: user?.batch || '',
         studentId: user?.studentId || '',
-        dateOfBirth: user?.dateOfBirth || ''
+        dateOfBirth: user?.dateOfBirth || '',
+        phoneNumber: user?.phoneNumber || ''
       });
     } else {
       const fetchViewedUser = async () => {
         setLoading(true);
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${activeUserId}`);
           if (res.ok) {
             const data = await res.json();
             setViewedUser(data);
@@ -58,7 +66,7 @@ export function Profile() {
       };
       fetchViewedUser();
     }
-  }, [userId, user, isOwnProfile]);
+  }, [activeUserId, user, isOwnProfile]);
 
   const fileInputRef = React.useRef(null);
 
@@ -264,6 +272,20 @@ export function Profile() {
                 />
               ) : (
                 <div className="view-value">{viewedUser?.batch || 'Not set'}</div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label><MessageCircle size={16} /> Phone / WhatsApp</label>
+              {isEditing ? (
+                <input 
+                  type="text" 
+                  value={formData.phoneNumber} 
+                  onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                  placeholder="e.g. +88017..."
+                />
+              ) : (
+                <div className="view-value">{viewedUser?.phoneNumber || 'Not set'}</div>
               )}
             </div>
 

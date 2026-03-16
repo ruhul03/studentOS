@@ -202,7 +202,7 @@ function Dashboard() {
           {activeTab === 'events' && <EventsAnnouncements />}
           {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
           {activeTab === 'calculator' && <UiuCalculator />}
-          {activeTab === 'profile' && <Profile />}
+          {(activeTab === 'profile' || queryParams.get('viewUserId')) && <Profile />}
           {activeTab === 'activity' && (
             <ActivityHistory 
               onBack={() => handleTabChange('home')} 
