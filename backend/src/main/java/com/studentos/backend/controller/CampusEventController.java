@@ -33,9 +33,53 @@ public class CampusEventController {
                 .location(request.getLocation())
                 .eventDate(LocalDateTime.parse(request.getEventDate()))
                 .organizer(request.getOrganizer())
+                .uploaderId(request.getUploaderId())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(campusEventRepository.save(event));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CampusEvent> updateEvent(
+            @PathVariable Long id, 
+            @RequestBody CampusEventRequest request,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
+        
+        return campusEventRepository.findById(id)
+                .map(event -> {
+                    // Authorization Check
+                    if (!"ADMIN".equals(role) && (userId == null || !userId.equals(event.getUploaderId()))) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).<CampusEvent>build();
+                    }
+                    
+                    event.setTitle(request.getTitle());
+                    event.setDescription(request.getDescription());
+                    event.setLocation(request.getLocation());
+                    event.setEventDate(LocalDateTime.parse(request.getEventDate()));
+                    event.setOrganizer(request.getOrganizer());
+                    return ResponseEntity.ok(campusEventRepository.save(event));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
+        
+        return campusEventRepository.findById(id)
+                .map(event -> {
+                    // Authorization Check
+                    if (!"ADMIN".equals(role) && (userId == null || !userId.equals(event.getUploaderId()))) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).<Void>build();
+                    }
+                    
+                    campusEventRepository.delete(event);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
 
@@ -45,6 +89,7 @@ class CampusEventRequest {
     private String location;
     private String eventDate;
     private String organizer;
+    private Long uploaderId;
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -60,4 +105,7 @@ class CampusEventRequest {
     
     public String getOrganizer() { return organizer; }
     public void setOrganizer(String organizer) { this.organizer = organizer; }
+
+    public Long getUploaderId() { return uploaderId; }
+    public void setUploaderId(Long uploaderId) { this.uploaderId = uploaderId; }
 }

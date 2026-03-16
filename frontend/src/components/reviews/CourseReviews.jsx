@@ -5,18 +5,27 @@ import { Star, MessageSquare, ThumbsUp, Search, GraduationCap } from 'lucide-rea
 
 export function CourseReviews({ onProfileView }) {
   const [reviews, setReviews] = useState([]);
+  const [reviewRequests, setReviewRequests] = useState([]);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [likedReviews, setLikedReviews] = useState(new Set());
   const { user } = useAuth();
 
-  // Form State
+  // Form State - Review
   const [courseCode, setCourseCode] = useState('');
   const [courseName, setCourseName] = useState('');
   const [professor, setProfessor] = useState('');
   const [difficultyRating, setDifficultyRating] = useState(3);
   const [qualityRating, setQualityRating] = useState(3);
   const [reviewText, setReviewText] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
+
+  // Form State - Request
+  const [reqCourseCode, setReqCourseCode] = useState('');
+  const [reqProfessor, setReqProfessor] = useState('');
+  const [isReqAnonymous, setIsReqAnonymous] = useState(false);
 
   const fetchReviews = async () => {
     try {
@@ -33,12 +42,21 @@ export function CourseReviews({ onProfileView }) {
     }
   };
 
+  const fetchRequests = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/review-requests`);
+      if (response.ok) {
+        setReviewRequests(await response.json());
+      }
+    } catch (err) {
+      console.error('Failed to fetch review requests', err);
+    }
+  };
+
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchReviews();
-    }, 500); // 500ms debounce on search
-    return () => clearTimeout(delayDebounceFn);
-  }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchReviews();
+    fetchRequests();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +72,14 @@ export function CourseReviews({ onProfileView }) {
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          courseCode, courseName, professor, difficultyRating, qualityRating, reviewText, reviewerId: user.id
+          courseCode, courseName, professor, difficultyRating, qualityRating, reviewText, reviewerId: user.id, anonymous: isAnonymous
         })
       });
 
       if (response.ok) {
         setShowForm(false);
         setEditingReview(null);
-        setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText('');
+        setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText(''); setIsAnonymous(false);
         fetchReviews();
       }
     } catch (err) {
@@ -89,16 +107,64 @@ export function CourseReviews({ onProfileView }) {
     setDifficultyRating(review.difficultyRating);
     setQualityRating(review.qualityRating);
     setReviewText(review.reviewText);
+    setIsAnonymous(review.anonymous || false);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHelpful = async (id) => {
+    if (likedReviews.has(id)) return;
     try {
+      setLikedReviews(prev => new Set(prev).add(id));
       await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, { method: 'PUT' });
-      fetchReviews(); // Re-fetch to update vote count
+      fetchReviews();
     } catch (err) {
       console.error('Failed to mark review helpful', err);
+      // Rollback if failed
+      setLikedReviews(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const handleRequestSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/review-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseCode: reqCourseCode,
+          professor: reqProfessor,
+          requesterId: user.id,
+          anonymous: isReqAnonymous
+        })
+      });
+
+      if (response.ok) {
+        setReqCourseCode('');
+        setReqProfessor('');
+        setIsReqAnonymous(false);
+        setShowRequestForm(false);
+        fetchRequests();
+      }
+    } catch (err) {
+      console.error('Failed to submit review request', err);
+    }
+  };
+
+  const handleDeleteRequest = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/review-requests/${id}?userId=${user.id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) fetchRequests();
+    } catch (err) {
+      console.error('Delete request failed', err);
     }
   };
 
@@ -120,21 +186,34 @@ export function CourseReviews({ onProfileView }) {
           <h2>Course Reviews</h2>
           <p>Read what other students think before registering for classes.</p>
         </div>
-        <button className="write-review-btn" onClick={() => {
-          if (showForm) {
-            setShowForm(false);
-            setEditingReview(null);
-            setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText('');
-          } else {
-            setShowForm(true);
-          }
-        }}>
-          <MessageSquare size={18} /> {showForm ? 'Cancel' : 'Write a Review'}
-        </button>
+        <div className="header-actions">
+          <button className="write-review-btn" onClick={() => {
+            if (showForm) {
+              setShowForm(false);
+              setEditingReview(null);
+              setCourseCode(''); setCourseName(''); setProfessor(''); setDifficultyRating(3); setQualityRating(3); setReviewText(''); setIsAnonymous(false);
+            } else {
+              setShowForm(true);
+              setShowRequestForm(false);
+            }
+          }}>
+            <MessageSquare size={18} /> {showForm ? 'Cancel' : 'Write a Review'}
+          </button>
+          <button className="request-review-btn" onClick={() => {
+            if (showRequestForm) {
+              setShowRequestForm(false);
+            } else {
+              setShowRequestForm(true);
+              setShowForm(false);
+            }
+          }}>
+            <Search size={18} /> {showRequestForm ? 'Cancel Request' : 'Ask for Review'}
+          </button>
+        </div>
       </div>
 
       <div className="reviews-controls">
-        <div className="search-bar reviews-search">
+        <div className="reviews-search-wrapper">
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
@@ -144,6 +223,54 @@ export function CourseReviews({ onProfileView }) {
           />
         </div>
       </div>
+      {showRequestForm && (
+        <form className="request-form glass-card animate-in" onSubmit={handleRequestSubmit}>
+          <h3>Request a Review</h3>
+          <p>Can't find a review for a course? Ask your fellow students!</p>
+          <div className="form-row">
+            <input type="text" placeholder="Course Code" value={reqCourseCode} onChange={e => setReqCourseCode(e.target.value)} required />
+            <input type="text" placeholder="Professor Name (Optional)" value={reqProfessor} onChange={e => setReqProfessor(e.target.value)} />
+          </div>
+          <div className="anonymous-toggle">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={isReqAnonymous} onChange={e => setIsReqAnonymous(e.target.checked)} />
+              <span>Request Anonymously</span>
+            </label>
+          </div>
+          <button type="submit" className="submit-request-btn">Submit Request</button>
+        </form>
+      )}
+
+      {/* Review Requests Section */}
+      {reviewRequests.length > 0 && (
+        <div className="requests-section animate-in">
+          <h3>Recent Review Requests</h3>
+          <div className="requests-grid">
+            {reviewRequests.map(req => (
+              <div key={req.id} className="request-card glass-card">
+                <div className="request-info">
+                  <span className="req-course">{req.courseCode}</span>
+                  <span className="req-prof">Requested for: {req.professor || 'Any Professor'}</span>
+                </div>
+                <div className="request-footer">
+                  <span className="requester">
+                    By {req.anonymous ? 'Anonymous' : req.requester.name}
+                  </span>
+                  {user?.id === req.requester.id && (
+                    <button className="delete-req-btn" onClick={() => handleDeleteRequest(req.id)}>Remove</button>
+                  )}
+                  <button className="reply-btn" onClick={() => {
+                    setCourseCode(req.courseCode);
+                    setProfessor(req.professor || '');
+                    setShowForm(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}>Write Review</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <form className="review-form glass-card" onSubmit={handleSubmit}>
@@ -192,6 +319,18 @@ export function CourseReviews({ onProfileView }) {
             rows={4}
             required 
           />
+          
+          <div className="anonymous-toggle">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={isAnonymous} 
+                onChange={e => setIsAnonymous(e.target.checked)}
+              />
+              <span>Post Anonymously</span>
+            </label>
+          </div>
+
           <button type="submit" className="submit-review-btn">
             {editingReview ? 'Update Review' : 'Post Review'}
           </button>
@@ -228,8 +367,8 @@ export function CourseReviews({ onProfileView }) {
             <p className="review-text">{review.reviewText}</p>
             
             <div className="review-footer">
-              <span className="reviewer-name" onClick={() => onProfileView(review.reviewer.id)} style={{ cursor: 'pointer' }}>
-                Reviewed by {review.reviewer.name}
+              <span className="reviewer-name" onClick={() => !review.anonymous && onProfileView(review.reviewer.id)} style={{ cursor: review.anonymous ? 'default' : 'pointer' }}>
+                Reviewed by {review.anonymous ? 'Anonymous Student' : review.reviewer.name}
               </span>
               <div className="review-actions">
                 {user?.id === review.reviewer.id && (
@@ -239,9 +378,13 @@ export function CourseReviews({ onProfileView }) {
                   </div>
                 )}
                 
-                <button className="helpful-btn" onClick={() => handleHelpful(review.id)}>
-                  <ThumbsUp size={16} /> 
-                  Helpful ({review.helpfulVotes})
+                <button 
+                  className={`helpful-btn ${likedReviews.has(review.id) ? 'active' : ''}`} 
+                  onClick={() => handleHelpful(review.id)}
+                  disabled={likedReviews.has(review.id)}
+                >
+                  <ThumbsUp size={16} fill={likedReviews.has(review.id) ? 'currentColor' : 'none'} /> 
+                  {likedReviews.has(review.id) ? 'Thank you!' : `Helpful (${review.helpfulVotes})`}
                 </button>
               </div>
             </div>

@@ -53,6 +53,7 @@ public class CourseReviewController {
                 .reviewText(request.getReviewText())
                 .reviewer(reviewerOpt.get())
                 .helpfulVotes(0)
+                .anonymous(request.isAnonymous())
                 .build();
 
         CourseReview savedReview = reviewRepository.save(review);
@@ -85,6 +86,7 @@ public class CourseReviewController {
         review.setDifficultyRating(request.getDifficultyRating());
         review.setQualityRating(request.getQualityRating());
         review.setReviewText(request.getReviewText());
+        review.setAnonymous(request.isAnonymous());
 
         return ResponseEntity.ok(reviewRepository.save(review));
     }
@@ -122,6 +124,7 @@ class CourseReviewRequest {
     private int qualityRating;
     private String reviewText;
     private Long reviewerId;
+    private boolean anonymous;
 
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
@@ -137,4 +140,6 @@ class CourseReviewRequest {
     public void setReviewText(String reviewText) { this.reviewText = reviewText; }
     public Long getReviewerId() { return reviewerId; }
     public void setReviewerId(Long reviewerId) { this.reviewerId = reviewerId; }
+    public boolean isAnonymous() { return anonymous; }
+    public void setAnonymous(boolean anonymous) { this.anonymous = anonymous; }
 }

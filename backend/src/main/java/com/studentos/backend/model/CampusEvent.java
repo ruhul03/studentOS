@@ -33,5 +33,8 @@ public class CampusEvent {
     private LocalDateTime eventDate;
 
     @Column(nullable = false)
+    private Long uploaderId;
+
+    @Column(nullable = false)
     private String organizer;
 }

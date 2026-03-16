@@ -122,76 +122,116 @@
 }
 
 .event-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  padding: 1.5rem;
   display: flex;
   gap: 1.5rem;
-  transition: all 0.3s;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: hsla(0, 0%, 100%, 0.03);
+  border: 1px solid hsla(0, 0%, 100%, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .event-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(192, 132, 252, 0.4);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.event-date-badge {
-  background: rgba(192, 132, 252, 0.1);
-  border: 1px solid rgba(192, 132, 252, 0.2);
-  border-radius: 0.75rem;
-  min-width: 80px;
-  height: 80px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #c084fc;
-  flex-shrink: 0;
-}
-
-.event-date-badge .month {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.event-date-badge .day {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1;
-  margin-top: 0.25rem;
+  transform: translateY(-5px);
+  border-color: #F68B1E50;
+  background: hsla(0, 0%, 100%, 0.05);
 }
 
 .event-details {
   flex: 1;
 }
 
+.event-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
 .event-details h3 {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
   color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.management-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.event-card:hover .delete-btn,
+.event-card:hover .edit-btn {
+  opacity: 1;
+}
+
+/* Ensure visibility by default but with subtle prominence */
+.edit-btn, .delete-btn {
+  opacity: 0.8;
+}
+
+.edit-btn:hover, .delete-btn:hover {
+  opacity: 1;
+}
+
+.edit-btn {
+  color: #60a5fa;
+}
+
+.edit-btn:hover {
+  background: hsla(217, 91%, 60%, 0.15);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  color: #f87171;
+}
+
+.delete-btn:hover {
+  background: hsla(0, 72%, 51%, 0.15);
+  border-color: #ef4444;
+  transform: translateY(-2px);
 }
 
 .event-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .event-meta span {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background: hsla(0, 0%, 100%, 0.03);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid hsla(0, 0%, 100%, 0.05);
 }
 
 .description {
-  color: #94a3b8;
+  color: hsla(0, 0%, 100%, 0.7);
   line-height: 1.6;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.event-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid hsla(0, 0%, 100%, 0.05);
 }
 
 .organizer {
@@ -200,14 +240,62 @@
 }
 
 .organizer strong {
-  color: var(--primary);
+  color: #F68B1E;
+}
+
+.your-post-badge {
+  font-size: 0.65rem;
+  padding: 0.3rem 0.75rem;
+  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
+  color: #F68B1E;
+  border: 1px solid hsla(var(--uiu-orange-hue), 93%, 54%, 0.2);
+  border-radius: 99px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancel-btn {
+  flex: 1;
+  padding: 0.85rem 1.5rem;
+  border-radius: 0.85rem;
+  background: hsla(0, 0%, 100%, 0.03);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: hsla(0, 0%, 100%, 0.08);
+  border-color: hsla(0, 0%, 100%, 0.2);
+}
+
+.submit-btn {
+  flex: 2;
+  margin-top: 0 !important;
+  background: linear-gradient(135deg, #F68B1E, #fb923c) !important;
+}
+
+.add-event-btn.cancel {
+  background: hsla(0, 72%, 51%, 0.1);
+  color: #ef4444;
+  border: 1px solid hsla(0, 72%, 51%, 0.2);
+  box-shadow: none;
 }
 
 .empty-state {
   text-align: center;
-  padding: 4rem;
-  background: var(--card-bg);
-  border: 1px dashed var(--border-color);
-  border-radius: 1rem;
-  color: var(--text-secondary);
+  padding: 5rem 2rem;
+  background: hsla(0, 0%, 100%, 0.02);
+  border: 2px dashed hsla(0, 0%, 100%, 0.05);
+  border-radius: 1.5rem;
+  color: hsla(0, 0%, 100%, 0.4);
 }

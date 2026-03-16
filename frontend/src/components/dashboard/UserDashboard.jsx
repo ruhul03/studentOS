@@ -128,20 +128,24 @@ export function UserDashboard({ onTabChange }) {
         <section className="quick-actions-section">
           <h3>Quick Actions</h3>
           <div className="actions-grid">
-            <button className="action-btn glass-card" onClick={() => onTabChange('resources')}>
+            <button className="action-btn action-upload glass-card" onClick={() => onTabChange('resources')}>
+              <div className="shimmer-overlay"></div>
               <div className="action-circle"><BookOpen /></div>
               <span>Upload Notes</span>
             </button>
-            <button className="action-btn glass-card" onClick={() => onTabChange('planner')}>
+            <button className="action-btn action-task glass-card" onClick={() => onTabChange('planner')}>
+              <div className="shimmer-overlay"></div>
               <div className="action-circle"><Clock /></div>
               <span>Add Task</span>
             </button>
-              <button className="action-btn glass-card" onClick={() => onTabChange('market')}>
+              <button className="action-btn action-sell glass-card" onClick={() => onTabChange('market')}>
+                <div className="shimmer-overlay"></div>
                 <div className="action-circle"><ShoppingBag /></div>
                 <span>Sell Item</span>
               </button>
               {user?.role === 'ADMIN' && (
-                <button className="action-btn glass-card admin-action" onClick={() => window.location.href='/admin'}>
+                <button className="action-btn action-admin glass-card" onClick={() => window.location.href='/admin'}>
+                  <div className="shimmer-overlay"></div>
                   <div className="action-circle"><Shield /></div>
                   <span>System Control</span>
                 </button>

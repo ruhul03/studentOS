@@ -23,12 +23,7 @@ export function LandingPage() {
         <div className="logo">StudentOS</div>
         <div className="landing-nav-actions">
           {user ? (
-            <>
-              {user.role === 'ADMIN' && (
-                <button className="nav-btn secondary" onClick={() => navigate('/admin')}>Admin Panel</button>
-              )}
-              <button className="nav-btn primary" onClick={() => navigate('/dashboard')}>Dashboard</button>
-            </>
+            <button className="nav-btn primary" onClick={() => navigate('/dashboard')}>Dashboard</button>
           ) : (
             <>
               <button className="nav-btn secondary" onClick={() => navigate('/login')}>Login</button>

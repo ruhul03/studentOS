@@ -10,12 +10,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "course_reviews")
+@Table(name = "review_requests")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseReview {
+public class ReviewRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,26 +25,11 @@ public class CourseReview {
     private String courseCode;
 
     @Column(nullable = false)
-    private String courseName;
-
-    @Column(nullable = false)
     private String professor;
 
-    @Column(nullable = false)
-    private int difficultyRating; // 1 to 5
-
-    @Column(nullable = false)
-    private int qualityRating; // 1 to 5
-
-    @Column(length = 1000)
-    private String reviewText;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewer_id", nullable = false)
-    private User reviewer;
-
-    @Builder.Default
-    private int helpfulVotes = 0;
+    @JoinColumn(name = "requester_id", nullable = false)
+    private User requester;
 
     @Builder.Default
     private boolean anonymous = false;

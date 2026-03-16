@@ -189,12 +189,6 @@ function Dashboard() {
           <Calculator size={20} />
           <span>UIU Calc</span>
         </button>
-        {user?.role === 'ADMIN' && (
-          <button className="mobile-tab" onClick={() => navigate('/admin')}>
-            <Shield size={20} />
-            <span>Admin</span>
-          </button>
-        )}
       </nav>
       
       <main className="main-viewport animate-in">
