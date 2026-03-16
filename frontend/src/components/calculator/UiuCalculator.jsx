@@ -147,8 +147,8 @@ export function UiuCalculator() {
       const waiverAmount = regularTuitionFee * (tuitionData.waiver / 100);
       const regularPayable = regularTuitionFee - waiverAmount;
       
-      const retakeTuitionFee = retakeCredits * (perCreditFee * 0.5); // 50% discount for retakes
-      const tuitionFeeAmount = regularPayable + retakeTuitionFee;
+      const retakeDiscountAmount = retakeCredits * (perCreditFee * 0.5); // 50% discount amount
+      const tuitionFeeAmount = regularPayable - retakeDiscountAmount; // Subtract retake discount
       
       let baseFee = 0;
       let labFee = 0;
@@ -163,31 +163,37 @@ export function UiuCalculator() {
         labFee = 5000;
       }
       
+      // Waiver does NOT apply to base fees or lab fees
       const totalFee = tuitionFeeAmount + baseFee + labFee;
       
+      // Calculate installments for all students
       const paymentSchedule = {
-        paymentType: tuitionData.isAfterBatch251 ? 'INSTALLMENTS' : 'FULL_PAYMENT',
+        paymentType: 'INSTALLMENTS', // Always show installments
         preRegistrationPayment: tuitionData.isAfterBatch251 ? 20000 : 0,
-        totalInstallments: tuitionData.isAfterBatch251 ? Math.max(0, totalFee - 20000) : 0,
+        totalInstallments: tuitionData.isAfterBatch251 ? Math.max(0, totalFee - 20000) : totalFee,
         installment1: 0,
         installment2: 0,
         installment3: 0,
         installment4: 0
       };
       
-      if (tuitionData.isAfterBatch251) {
-        const remaining = totalFee - 20000;
-        if (tuitionData.programType.includes('TRIMESTER')) {
-          paymentSchedule.installment1 = remaining * 0.40;
-          paymentSchedule.installment2 = remaining * 0.30;
-          paymentSchedule.installment3 = remaining * 0.30;
-        } else {
-          const installment = remaining * 0.25;
-          paymentSchedule.installment1 = installment;
-          paymentSchedule.installment2 = installment;
-          paymentSchedule.installment3 = installment;
-          paymentSchedule.installment4 = installment;
-        }
+      // Calculate installment amounts
+      const installmentAmount = tuitionData.isAfterBatch251 ? 
+        Math.max(0, totalFee - 20000) : totalFee;
+      
+      if (tuitionData.programType.includes('TRIMESTER')) {
+        // Trimester: 40%, 30%, 30%
+        paymentSchedule.installment1 = installmentAmount * 0.40;
+        paymentSchedule.installment2 = installmentAmount * 0.30;
+        paymentSchedule.installment3 = installmentAmount * 0.30;
+        paymentSchedule.installment4 = 0;
+      } else {
+        // Semester: 25%, 25%, 25%, 25%
+        const installment = installmentAmount * 0.25;
+        paymentSchedule.installment1 = installment;
+        paymentSchedule.installment2 = installment;
+        paymentSchedule.installment3 = installment;
+        paymentSchedule.installment4 = installment;
       }
       
       const result = {
@@ -200,7 +206,7 @@ export function UiuCalculator() {
         regularTuitionFee: regularTuitionFee,
         waiverAmount: waiverAmount,
         regularPayable: regularPayable,
-        retakeTuitionFee: retakeTuitionFee,
+        retakeDiscountAmount: retakeDiscountAmount,
         tuitionFee: tuitionFeeAmount,
         baseFee: baseFee,
         labFee: labFee,
@@ -630,9 +636,9 @@ export function UiuCalculator() {
                             </div>
                           )}
                           {tuitionResults.retakeCredits > 0 && (
-                            <div className="fee-item">
-                              <span>Retake Credits ({tuitionResults.retakeCredits} × ৳{(tuitionResults.perCreditFee * 0.5).toFixed(0)})</span>
-                              <span>৳{tuitionResults.retakeTuitionFee.toLocaleString()}</span>
+                            <div className="fee-item waiver">
+                              <span>Retake Discount ({tuitionResults.retakeCredits} × ৳{(tuitionResults.perCreditFee * 0.5).toFixed(0)})</span>
+                              <span>-৳{tuitionResults.retakeDiscountAmount.toLocaleString()}</span>
                             </div>
                           )}
                         </>
@@ -653,43 +659,44 @@ export function UiuCalculator() {
                       </div>
                     </div>
 
-                    {tuitionResults.paymentSchedule.paymentType === 'INSTALLMENTS' && (
-                      <div className="installment-section">
-                        <h3>Payment Schedule</h3>
-                        <div className="payment-breakdown">
+                    {/* Always show installment breakdown */}
+                    <div className="installment-section">
+                      <h3>Payment Schedule</h3>
+                      <div className="payment-breakdown">
+                        {tuitionResults.isAfterBatch251 && (
                           <div className="payment-item pre-payment">
                             <span className="label">Pre-registration Payment</span>
                             <span className="value">৳{tuitionResults.paymentSchedule.preRegistrationPayment.toLocaleString()}</span>
                           </div>
-                          <div className="installment-grid">
-                            {tuitionResults.paymentSchedule.installment1 > 0 && (
-                              <div className="inst-box">
-                                <span className="label">Installment 1 ({tuitionResults.programType.includes('TRIMESTER') ? '40%' : '25%'})</span>
-                                <span className="value">৳{tuitionResults.paymentSchedule.installment1.toLocaleString()}</span>
-                              </div>
-                            )}
-                            {tuitionResults.paymentSchedule.installment2 > 0 && (
-                              <div className="inst-box">
-                                <span className="label">Installment 2 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
-                                <span className="value">৳{tuitionResults.paymentSchedule.installment2.toLocaleString()}</span>
-                              </div>
-                            )}
-                            {tuitionResults.paymentSchedule.installment3 > 0 && (
-                              <div className="inst-box">
-                                <span className="label">Installment 3 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
-                                <span className="value">৳{tuitionResults.paymentSchedule.installment3.toLocaleString()}</span>
-                              </div>
-                            )}
-                            {tuitionResults.paymentSchedule.installment4 > 0 && (
-                              <div className="inst-box">
-                                <span className="label">Installment 4 (25%)</span>
-                                <span className="value">৳{tuitionResults.paymentSchedule.installment4.toLocaleString()}</span>
-                              </div>
-                            )}
-                          </div>
+                        )}
+                        <div className="installment-grid">
+                          {tuitionResults.paymentSchedule.installment1 > 0 && (
+                            <div className="inst-box">
+                              <span className="label">Installment 1 ({tuitionResults.programType.includes('TRIMESTER') ? '40%' : '25%'})</span>
+                              <span className="value">৳{tuitionResults.paymentSchedule.installment1.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {tuitionResults.paymentSchedule.installment2 > 0 && (
+                            <div className="inst-box">
+                              <span className="label">Installment 2 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
+                              <span className="value">৳{tuitionResults.paymentSchedule.installment2.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {tuitionResults.paymentSchedule.installment3 > 0 && (
+                            <div className="inst-box">
+                              <span className="label">Installment 3 ({tuitionResults.programType.includes('TRIMESTER') ? '30%' : '25%'})</span>
+                              <span className="value">৳{tuitionResults.paymentSchedule.installment3.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {tuitionResults.paymentSchedule.installment4 > 0 && (
+                            <div className="inst-box">
+                              <span className="label">Installment 4 (25%)</span>
+                              <span className="value">৳{tuitionResults.paymentSchedule.installment4.toLocaleString()}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    </div>
                     <button className="aura-btn-primary full-width" onClick={() => setShowModal(false)}>Close Breakdown</button>
                   </div>
                 )}
