@@ -57,6 +57,8 @@ function Dashboard() {
   const { notifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
   const [activeChatUser, setActiveChatUser] = useState(null);
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [appNotifications, setAppNotifications] = useState([]);
 
   // Handle incoming message events
   React.useEffect(() => {
@@ -91,6 +93,66 @@ function Dashboard() {
   // Derive activeTab solely from URL
   const queryParams = new URLSearchParams(location.search);
   const activeTab = queryParams.get('tab') || 'home';
+
+  // Fetch app notifications on component mount and user change
+  React.useEffect(() => {
+    if (user) {
+      fetchAppNotifications();
+    }
+  }, [user]);
+
+  const fetchAppNotifications = async () => {
+    try {
+      // Try API first
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${user.id}`);
+        if (response.ok) {
+          const userNotifications = await response.json();
+          setAppNotifications(userNotifications);
+          return;
+        }
+      } catch (apiErr) {
+        console.log('API not available, using localStorage');
+      }
+      
+      // Fallback to localStorage
+      const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      const userNotifications = savedNotifications.filter(n => n.recipientId === user.id);
+      setAppNotifications(userNotifications);
+    } catch (err) {
+      console.error('Failed to fetch notifications', err);
+    }
+  };
+
+  const markNotificationAsRead = (notificationId) => {
+    try {
+      // Try API first
+      try {
+        fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${notificationId}/read`, {
+          method: 'PUT'
+        });
+      } catch (apiErr) {
+        console.log('API not available, using localStorage');
+      }
+      
+      // Fallback to localStorage
+      const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      const updatedNotifications = savedNotifications.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      );
+      localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+      
+      setAppNotifications(prev => prev.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      ));
+    } catch (err) {
+      console.error('Failed to mark notification as read', err);
+    }
+  };
+
+  const getUnreadCount = () => {
+    return appNotifications.filter(n => !n.read).length;
+  };
 
   const handleBroadcastTest = async () => {
     try {
@@ -140,9 +202,70 @@ function Dashboard() {
             <GlobalSearch onNavigate={handleTabChange} />
             
             <div className="user-controls">
-              <button className="icon-btn" onClick={handleBroadcastTest} title="Test Broadcast">
-                <Bell size={18} />
-              </button>
+              <div className="notification-wrapper">
+                <button 
+                  className="icon-btn notification-btn" 
+                  onClick={() => setShowNotificationPanel(!showNotificationPanel)}
+                  title="Notifications"
+                >
+                  <Bell size={18} />
+                  {getUnreadCount() > 0 && (
+                    <span className="notification-badge">{getUnreadCount()}</span>
+                  )}
+                </button>
+                
+                {/* Notification Panel */}
+                {showNotificationPanel && (
+                  <div className="notification-panel-dropdown">
+                    <div className="notification-panel-header">
+                      <h4>Notifications</h4>
+                      <button 
+                        className="close-panel-btn" 
+                        onClick={() => setShowNotificationPanel(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="notification-panel-list">
+                      {appNotifications.length > 0 ? (
+                        appNotifications.slice(0, 10).map(notification => (
+                          <div 
+                            key={notification.id} 
+                            className={`notification-panel-item ${notification.read ? 'read' : 'unread'}`}
+                            onClick={() => {
+                              markNotificationAsRead(notification.id);
+                              // Navigate to relevant section based on notification type
+                              if (notification.type === 'review_posted' || notification.type === 'comment_posted') {
+                                handleTabChange('reviews');
+                              }
+                              setShowNotificationPanel(false);
+                            }}
+                          >
+                            <div className="notification-panel-icon">
+                              <Bell size={16} />
+                            </div>
+                            <div className="notification-panel-content">
+                              <h5>{notification.title}</h5>
+                              <p>{notification.message}</p>
+                              <span className="notification-panel-time">
+                                {new Date(notification.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            {!notification.read && (
+                              <div className="notification-panel-indicator"></div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="no-notifications">
+                          <Bell size={24} />
+                          <p>No notifications yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
               
               <button 
                 className={`profile-pill ${activeTab === 'profile' ? 'active' : ''}`}

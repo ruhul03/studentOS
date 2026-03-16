@@ -96,7 +96,13 @@ public class CourseReviewController {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        if (!reviewOpt.get().getReviewer().getId().equals(userId)) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        User user = userOpt.get();
+        CourseReview review = reviewOpt.get();
+
+        if (!review.getReviewer().getId().equals(userId) && !"ADMIN".equalsIgnoreCase(user.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

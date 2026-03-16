@@ -61,12 +61,40 @@ public class ReviewRequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRequest);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewRequest> updateRequest(@PathVariable Long id, @RequestBody ReviewRequestSubmit request) {
+        Optional<ReviewRequest> reqOpt = requestRepository.findById(id);
+        if (reqOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        ReviewRequest reviewRequest = reqOpt.get();
+        // Check ownership or admin
+        Optional<User> userOpt = userRepository.findById(request.getRequesterId());
+        if (userOpt.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        User user = userOpt.get();
+
+        if (!reviewRequest.getRequester().getId().equals(request.getRequesterId()) && !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        reviewRequest.setCourseCode(request.getCourseCode());
+        reviewRequest.setProfessor(request.getProfessor());
+        reviewRequest.setAnonymous(request.isAnonymous());
+
+        return ResponseEntity.ok(requestRepository.save(reviewRequest));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRequest(@PathVariable Long id, @RequestParam Long userId) {
         Optional<ReviewRequest> reqOpt = requestRepository.findById(id);
         if (reqOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        if (!reqOpt.get().getRequester().getId().equals(userId)) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        User user = userOpt.get();
+        ReviewRequest req = reqOpt.get();
+
+        if (!req.getRequester().getId().equals(userId) && !"ADMIN".equalsIgnoreCase(user.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

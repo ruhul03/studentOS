@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './Resources.css';
-import { Search, FileText, ArrowUpCircle, X, Plus, Info } from 'lucide-react';
+import { Search, FileText, ArrowUpCircle, X, Plus, Info, Edit2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ResourceFeed() {
@@ -12,6 +12,18 @@ export function ResourceFeed() {
   const [loading, setLoading] = useState(false);
   const [postError, setPostError] = useState(null);
   const { user } = useAuth();
+  
+  // Local upvote tracking
+  const [userUpvotes, setUserUpvotes] = useState(() => {
+    const saved = localStorage.getItem('userUpvotes');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Permission check function
+  const canManageResource = (uploaderId) => {
+    if (!user) return false;
+    return user.id === uploaderId || user.role?.toUpperCase() === 'ADMIN';
+  };
 
   // Form State
   const [title, setTitle] = useState('');
@@ -20,6 +32,10 @@ export function ResourceFeed() {
   const [courseTitle, setCourseTitle] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [type, setType] = useState('Notes');
+  
+  // Edit State
+  const [editingResource, setEditingResource] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const fetchResources = async () => {
     try {
@@ -42,6 +58,59 @@ export function ResourceFeed() {
     }, 300); // Debounce
     return () => clearTimeout(timer);
   }, [search]);
+
+  const handleEditResource = (resource) => {
+    setTitle(resource.title);
+    setDescription(resource.description);
+    setCourseCode(resource.courseCode);
+    setCourseTitle(resource.courseTitle);
+    setFileUrl(resource.fileUrl);
+    setType(resource.type);
+    setEditingResource(resource);
+    setShowEditForm(true);
+    setShowUpload(false);
+  };
+
+  const handleUpdateResource = async (e) => {
+    e.preventDefault();
+    if (!user || !editingResource) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${editingResource.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title, description, courseCode, courseTitle, fileUrl, type, uploaderId: user.id
+        })
+      });
+
+      if (response.ok) {
+        setShowEditForm(false);
+        setEditingResource(null);
+        setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
+        fetchResources();
+      }
+    } catch (err) {
+      console.error('Update failed', err);
+    }
+  };
+
+  const handleDeleteResource = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this resource?')) return;
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}`, {
+        method: 'DELETE',
+        headers: { 'X-User-Id': user.id, 'X-User-Role': user.role }
+      });
+
+      if (response.ok) {
+        fetchResources();
+      }
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -79,14 +148,54 @@ export function ResourceFeed() {
   };
 
   const handleUpvote = async (id) => {
+    if (!user) {
+      alert('You must be logged in to upvote resources.');
+      return;
+    }
+    
+    // Check if already upvoted
+    if (userUpvotes[id]) {
+      return;
+    }
+    
+    console.log('Attempting to upvote resource:', id);
+    
+    // Update local state immediately
+    const newUpvotes = { ...userUpvotes, [id]: true };
+    setUserUpvotes(newUpvotes);
+    localStorage.setItem('userUpvotes', JSON.stringify(newUpvotes));
+    
+    // Show thanks message
+    alert('Thanks for upvoting! 🎉');
+    
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { method: 'POST' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { 
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Id': user.id,
+          'X-User-Role': user.role
+        }
+      });
+      
+      console.log('Upvote response status:', response.status);
+      
       if (response.ok) {
+        console.log('Upvote successful');
         fetchResources();
+      } else {
+        const errorText = await response.text();
+        console.error('Upvote failed:', response.status, errorText);
       }
     } catch (err) {
-      console.error('Upvote failed', err);
+      console.error('Upvote error:', err);
     }
+  };
+
+  const hasUserUpvoted = (resource) => {
+    if (!user) return false;
+    // Check local state first for immediate response
+    return userUpvotes[resource.id] || false;
   };
 
   return (
@@ -117,6 +226,71 @@ export function ResourceFeed() {
       </div>
 
       <AnimatePresence>
+        {showEditForm && (
+          <motion.form 
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: '3rem' }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="upload-form" 
+            onSubmit={handleUpdateResource}
+          >
+            <h3>Edit Resource</h3>
+            
+            {postError && (
+              <div className="error-alert">
+                 <Info size={18} />
+                 <span>{postError}</span>
+              </div>
+            )}
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Course Code</label>
+                <input type="text" placeholder="e.g. CSE 2118" value={courseCode} onChange={e => setCourseCode(e.target.value)} required />
+              </div>
+              <div className="form-group">
+                <label>Course Title</label>
+                <input type="text" placeholder="e.g. Data Communication" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} required />
+              </div>
+              <div className="form-group">
+                <label>Resource Type</label>
+                <select value={type} onChange={e => setType(e.target.value)}>
+                  <option>Notes</option>
+                  <option>Exam Paper</option>
+                  <option>Lab Report</option>
+                  <option>Study Guide</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Title</label>
+              <input type="text" placeholder="Descriptive title" value={title} onChange={e => setTitle(e.target.value)} required />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea placeholder="Briefly explain what's in this file..." value={description} onChange={e => setDescription(e.target.value)} required />
+            </div>
+
+            <div className="form-group">
+              <label>File URL (Google Drive / Link)</label>
+              <input type="url" placeholder="https://drive.google.com/..." value={fileUrl} onChange={e => setFileUrl(e.target.value)} required />
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="submit-upload-btn">
+                <FileText size={20} />
+                Update Resource
+              </button>
+              <button type="button" className="cancel-btn" onClick={() => {
+                setShowEditForm(false);
+                setEditingResource(null);
+                setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
+              }}>Cancel</button>
+            </div>
+          </motion.form>
+        )}
         {showUpload && (
           <motion.form 
             initial={{ opacity: 0, height: 0, marginBottom: 0 }}
@@ -193,28 +367,54 @@ export function ResourceFeed() {
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="resource-card"
               >
-                <div className="resource-type-badge">{res.type}</div>
-                <h3 className="resource-title">{res.title}</h3>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                    <span className="course-tag">{res.courseCode}</span>
-                    <span className="course-title-tag">{res.courseTitle}</span>
+                <div className="resource-header">
+                  <div className="resource-type-badge">{res.type}</div>
+                  {canManageResource(res.uploader.id) && (
+                    <div className="management-actions">
+                      <button className="edit-btn" onClick={() => handleEditResource(res)} title="Edit Resource">
+                        <Edit2 size={14} />
+                      </button>
+                      <button className="delete-btn" onClick={() => handleDeleteResource(res.id)} title="Delete Resource">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <p className="resource-desc">{res.description}</p>
+                
+                <div className="resource-content">
+                  <h3 className="resource-title">{res.title}</h3>
+                  <div className="course-info">
+                    <span className="course-code">{res.courseCode}</span>
+                    <span className="course-title">{res.courseTitle}</span>
+                  </div>
+                  <p className="resource-desc">{res.description}</p>
+                </div>
                 
                 <div className="resource-footer">
-                  <div className="resource-meta">
-                    <span className="uploader-name">Uploaded by {res.uploader.name}</span>
-                    <a href={res.fileUrl} target="_blank" rel="noopener noreferrer" className="download-link">
-                      <FileText size={16} /> Open Resource
-                    </a>
+                  <div className="uploader-info">
+                    <div className="uploader-details">
+                      <span className="uploader-name">{res.uploader.name}</span>
+                      <span className="upload-time">Uploaded recently</span>
+                    </div>
                   </div>
-                  <button 
-                    className={`upvote-btn ${res.upvotes > 0 ? 'active' : ''}`} 
-                    onClick={() => handleUpvote(res.id)}
-                  >
-                    <ArrowUpCircle size={22} /> 
-                    <span className="upvote-count">{res.upvotes}</span>
-                  </button>
+                  
+                  <div className="resource-actions">
+                    <a href={res.fileUrl} target="_blank" rel="noopener noreferrer" className="download-btn">
+                      <FileText size={16} />
+                      <span>View</span>
+                    </a>
+                    <button 
+                      className={`upvote-btn ${res.upvotes > 0 ? 'active' : ''} ${userUpvotes[res.id] ? 'upvoted' : ''}`} 
+                      onClick={() => handleUpvote(res.id)}
+                      title={userUpvotes[res.id] ? 'You have already upvoted' : 'Upvote this resource'}
+                      disabled={userUpvotes[res.id]}
+                    >
+                      <ArrowUpCircle size={20} fill={userUpvotes[res.id] ? 'currentColor' : 'none'} />
+                      <span className="upvote-count">
+                        {userUpvotes[res.id] ? 'Thanks' : res.upvotes}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
