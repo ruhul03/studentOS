@@ -9,7 +9,7 @@ const UIU_GRADES = {
   'D+': 1.33, 'D': 1.00, 'F': 0.00
 };
 
-const WAIVERS = [0, 25, 40, 50, 60, 75, 80, 100];
+const WAIVERS = [0, 25, 50, 100];
 const FIXED_TRIMESTER_FEE = 6500;
 
 export function UiuCalculator() {
@@ -30,7 +30,7 @@ export function UiuCalculator() {
   const [tuitionData, setTuitionData] = useState({
     regularCredits: '',
     retakeCredits: '',
-    feePerCredit: 6600,
+    feePerCredit: '',
     waiver: 0
   });
   const [tuitionResults, setTuitionResults] = useState(null);
@@ -136,7 +136,7 @@ export function UiuCalculator() {
   const resetAll = () => {
     setCourses([{ id: 1, name: '', credits: 3.0, grade: 'A', isRetake: false, previousGrade: 'F' }]);
     setCurrentStanding({ completedCredits: '', currentCgpa: '' });
-    setTuitionData({ regularCredits: '', retakeCredits: '', feePerCredit: 6600, waiver: 0 });
+    setTuitionData({ regularCredits: '', retakeCredits: '', feePerCredit: '', waiver: 0 });
     setGpaResults(null);
     setTuitionResults(null);
     setShowModal(false);
@@ -181,7 +181,7 @@ export function UiuCalculator() {
         </div>
       </div>
 
-      <div className="calc-grid-v2">
+      <div className={`calc-grid-v2 ${activeTab === 'tuition' ? 'single-col' : ''}`}>
         <div className="input-vertical-stack">
           {activeTab === 'gpa' ? (
             <>
@@ -295,48 +295,45 @@ export function UiuCalculator() {
                   <span className="subtitle">Enter credits for automated estimation</span>
                 </div>
               </div>
-              <div className="form-row-v2" style={{ flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="input-field">
-                    <label>Fresh Credits</label>
-                    <input 
-                      type="number" 
-                      placeholder="e.g. 9"
-                      className="no-spinner"
-                      value={tuitionData.regularCredits}
-                      onChange={(e) => setTuitionData({...tuitionData, regularCredits: e.target.value})}
-                    />
-                  </div>
-                  <div className="input-field">
-                    <label>Retake Credits</label>
-                    <input 
-                      type="number" 
-                      placeholder="e.g. 3"
-                      className="no-spinner"
-                      value={tuitionData.retakeCredits}
-                      onChange={(e) => setTuitionData({...tuitionData, retakeCredits: e.target.value})}
-                    />
-                  </div>
+              <div className="tuition-form-grid">
+                <div className="input-field">
+                  <label>Fresh Credits</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 9"
+                    className="no-spinner"
+                    value={tuitionData.regularCredits}
+                    onChange={(e) => setTuitionData({...tuitionData, regularCredits: e.target.value})}
+                  />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '1rem' }}>
-                  <div className="input-field">
-                    <label>Fee Per Credit (৳)</label>
-                    <input 
-                      type="number" 
-                      className="no-spinner"
-                      value={tuitionData.feePerCredit}
-                      onChange={(e) => setTuitionData({...tuitionData, feePerCredit: e.target.value})}
-                    />
-                  </div>
-                  <div className="input-field">
-                    <label>Scholarship Waiver</label>
-                    <select 
-                      value={tuitionData.waiver}
-                      onChange={(e) => setTuitionData({...tuitionData, waiver: parseInt(e.target.value)})}
-                    >
-                      {WAIVERS.map(w => <option key={w} value={w}>{w}%</option>)}
-                    </select>
-                  </div>
+                <div className="input-field">
+                  <label>Retake Credits</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 3"
+                    className="no-spinner"
+                    value={tuitionData.retakeCredits}
+                    onChange={(e) => setTuitionData({...tuitionData, retakeCredits: e.target.value})}
+                  />
+                </div>
+                <div className="input-field">
+                  <label>Fee Per Credit (৳)</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 6500"
+                    className="no-spinner"
+                    value={tuitionData.feePerCredit}
+                    onChange={(e) => setTuitionData({...tuitionData, feePerCredit: e.target.value})}
+                  />
+                </div>
+                <div className="input-field">
+                  <label>Scholarship Waiver</label>
+                  <select 
+                    value={tuitionData.waiver}
+                    onChange={(e) => setTuitionData({...tuitionData, waiver: parseInt(e.target.value)})}
+                  >
+                    {WAIVERS.map(w => <option key={w} value={w}>{w}%</option>)}
+                  </select>
                 </div>
               </div>
             </section>
@@ -353,22 +350,24 @@ export function UiuCalculator() {
           </div>
         </div>
 
-        <div className="results-vertical-stack">
-           <div className="reference-card aura-card">
-            <div className="card-header">
-              <Info size={18} className="text-primary" />
-              <h3>Grading Standards</h3>
-            </div>
-            <div className="aura-table">
-              {Object.entries(UIU_GRADES).map(([g, p]) => (
-                <div key={g} className="table-row-v2">
-                  <span className="grade">{g}</span>
-                  <span className="points">{p.toFixed(2)} Points</span>
-                </div>
-              ))}
+        {activeTab === 'gpa' && (
+          <div className="results-vertical-stack">
+            <div className="reference-card aura-card">
+              <div className="card-header">
+                <Info size={18} className="text-primary" />
+                <h3>Grading Standards</h3>
+              </div>
+              <div className="aura-table">
+                {Object.entries(UIU_GRADES).map(([g, p]) => (
+                  <div key={g} className="table-row-v2">
+                    <span className="grade">{g}</span>
+                    <span className="points">{p.toFixed(2)} Points</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Result Modals */}
