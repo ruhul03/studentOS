@@ -13,6 +13,8 @@ import { CourseReviews } from '../reviews/CourseReviews';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { LandingPage } from '../../pages/LandingPage';
 import { UserDashboard } from '../dashboard/UserDashboard';
+import { AdminDashboard } from '../../pages/AdminDashboard';
+import { ForgotCredentials } from '../../pages/ForgotCredentials';
 import { ActivityHistory } from '../dashboard/ActivityHistory';
 import { About } from '../../pages/About';
 import { Privacy } from '../../pages/Privacy';
@@ -35,6 +37,14 @@ function ProtectedRoute({ children }) {
   const { user } = useAuth();
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }) {
+  const { user } = useAuth();
+  if (!user || user.role !== 'ADMIN') {
+    return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;
 }
@@ -242,6 +252,15 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } 
+          />
+          <Route path="/forgot-credentials" element={<ForgotCredentials />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

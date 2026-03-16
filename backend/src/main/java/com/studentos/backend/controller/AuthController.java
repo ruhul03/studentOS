@@ -1,5 +1,6 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.ForgotRequest;
 import com.studentos.backend.dto.LoginRequest;
 import com.studentos.backend.dto.RegisterRequest;
 import com.studentos.backend.model.User;
@@ -76,5 +77,37 @@ public class AuthController {
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email/username or password.");
+    }
+
+    @PostMapping("/forgot-username")
+    public ResponseEntity<?> forgotUsername(@RequestBody ForgotRequest request) {
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");
+        }
+        
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        if (userOptional.isPresent()) {
+            return ResponseEntity.ok(java.util.Collections.singletonMap("username", userOptional.get().getUsername()));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ForgotRequest request) {
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");
+        }
+        if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password is required.");
+        }
+
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+            return ResponseEntity.ok("Password reset successfully.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email.");
     }
 }

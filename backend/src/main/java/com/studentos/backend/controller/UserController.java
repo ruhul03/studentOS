@@ -1,5 +1,6 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.ProfileUpdateRequest;
 import com.studentos.backend.dto.UserStatsDTO;
 import com.studentos.backend.model.Activity;
 import com.studentos.backend.model.User;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +24,14 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        logger.error("UserController Error: ", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("ERROR: " + e.getClass().getName() + " - " + e.getMessage());
+    }
 
     private final UserRepository userRepository;
     private final ResourceRepository resourceRepository;
@@ -48,7 +59,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody User profileUpdate) {
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody ProfileUpdateRequest profileUpdate) {
+        logger.info("Profile update request received for user ID: {}", id);
+        logger.debug("Request body: {}", profileUpdate);
+
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -58,16 +72,18 @@ public class UserController {
 
         // Enforce 2x update limit logic
         if (user.getUpdateCount() >= 2) {
-            // Check if it's been more than 30 days since last update (placeholder logic)
-            if (user.getLastUpdateAt() != null && user.getLastUpdateAt().isAfter(LocalDateTime.now().minusMonths(1))) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You can only change your profile info twice a month.");
+            if (user.getLastUpdateAt() != null) {
+                LocalDateTime lastMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+                if (user.getLastUpdateAt().isBefore(lastMonth)) {
+                    user.setUpdateCount(0);
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You can only change your profile info twice a month.");
+                }
             }
-            // If it's been a month, reset count? User asked "there would be a time for next change"
-            // Let's assume the limit resets after a cooldown.
         }
 
         // Check username uniqueness if changing
-        if (profileUpdate.getUsername() != null && !profileUpdate.getUsername().equals(user.getUsername())) {
+        if (profileUpdate.getUsername() != null && !profileUpdate.getUsername().isEmpty() && !profileUpdate.getUsername().equals(user.getUsername())) {
             if (userRepository.existsByUsername(profileUpdate.getUsername())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
             }
@@ -75,7 +91,7 @@ public class UserController {
         }
 
         // Check email validity and uniqueness if changing
-        if (profileUpdate.getEmail() != null && !profileUpdate.getEmail().equals(user.getEmail())) {
+        if (profileUpdate.getEmail() != null && !profileUpdate.getEmail().isEmpty() && !profileUpdate.getEmail().equals(user.getEmail())) {
             if (!profileUpdate.getEmail().contains("@") || !profileUpdate.getEmail().contains(".")) {
                  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format.");
             }

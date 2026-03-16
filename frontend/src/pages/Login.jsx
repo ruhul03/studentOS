@@ -87,6 +87,9 @@ export function Login() {
         <div className="auth-links">
           <span>Don't have an account? </span>
           <a href="/register">Register here</a>
+          <div style={{ marginTop: '1rem' }}>
+            <a href="/forgot-credentials" style={{ fontSize: '0.85rem', opacity: 0.8 }}>Forgot Username or Password?</a>
+          </div>
         </div>
       </motion.div>
     </div>
