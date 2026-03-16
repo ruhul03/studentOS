@@ -49,10 +49,10 @@ public class TuitionFeeController {
         try {
             TuitionFeeCalculationResponse response = tuitionFeeService.getFeeCalculation(feeId, user);
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         } catch (SecurityException e) {
             return ResponseEntity.status(403).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -64,10 +64,10 @@ public class TuitionFeeController {
         try {
             TuitionFeeCalculationResponse response = tuitionFeeService.updateFeeCalculation(feeId, request, user);
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         } catch (SecurityException e) {
             return ResponseEntity.status(403).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -78,10 +78,10 @@ public class TuitionFeeController {
         try {
             tuitionFeeService.deleteFeeCalculation(feeId, user);
             return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         } catch (SecurityException e) {
             return ResponseEntity.status(403).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

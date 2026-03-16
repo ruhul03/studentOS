@@ -69,19 +69,21 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
               <p>{profile.batch || 'Not specified'}</p>
             </div>
           </div>
-          <div className="detail-item">
-            <MapPin size={18} />
-            <div>
-              <span>Location</span>
-              <p>United City, Dhaka</p>
-            </div>
-          </div>
         </div>
 
-        <button className="start-chat-btn" onClick={() => onStartChat(profile)}>
-          <MessageCircle size={20} />
-          Send Message
-        </button>
+        <div className="profile-actions">
+          <button className="start-chat-btn" onClick={() => onStartChat(profile)}>
+            <MessageCircle size={20} />
+            Send Message
+          </button>
+          
+          <button className="view-profile-link" onClick={() => {
+            navigate(`/profile/${profile.id}`);
+            onClose(); 
+          }}>
+            Visit Full Profile
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

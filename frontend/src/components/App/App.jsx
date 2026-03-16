@@ -267,6 +267,14 @@ function App() {
               </AdminRoute>
             } 
           />
+          <Route 
+            path="/profile/:userId" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/forgot-credentials" element={<ForgotCredentials />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy" element={<Privacy />} />

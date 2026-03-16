@@ -1,27 +1,64 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { User, Mail, Camera, Save, X, Edit2, Shield, Trash2, AlertTriangle, GraduationCap, Book, Fingerprint, Calendar } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { User, Mail, Camera, Save, X, Edit2, Shield, Trash2, AlertTriangle, GraduationCap, Book, Fingerprint, Calendar, ArrowLeft } from 'lucide-react';
 import './Profile.css';
 
 export function Profile() {
   const { user, updateUserData, logout } = useAuth();
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [viewedUser, setViewedUser] = useState(null);
+
+  const isOwnProfile = !userId || userId === user?.id;
 
   const [formData, setFormData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    bio: user?.bio || '',
-    profilePicture: user?.profilePicture || '',
-    department: user?.department || '',
-    batch: user?.batch || '',
-    studentId: user?.studentId || '',
-    dateOfBirth: user?.dateOfBirth || ''
+    username: '',
+    email: '',
+    bio: '',
+    profilePicture: '',
+    department: '',
+    batch: '',
+    studentId: '',
+    dateOfBirth: ''
   });
+
+  React.useEffect(() => {
+    if (isOwnProfile) {
+      setViewedUser(user);
+      setFormData({
+        username: user?.username || '',
+        email: user?.email || '',
+        bio: user?.bio || '',
+        profilePicture: user?.profilePicture || '',
+        department: user?.department || '',
+        batch: user?.batch || '',
+        studentId: user?.studentId || '',
+        dateOfBirth: user?.dateOfBirth || ''
+      });
+    } else {
+      const fetchViewedUser = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`);
+          if (res.ok) {
+            const data = await res.json();
+            setViewedUser(data);
+          } else {
+            setError('User not found');
+          }
+        } catch (err) {
+          setError('Failed to fetch user');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchViewedUser();
+    }
+  }, [userId, user, isOwnProfile]);
 
   const fileInputRef = React.useRef(null);
 
@@ -82,14 +119,21 @@ export function Profile() {
     }
   };
 
+  if (loading) return <div className="profile-loading">Loading profile...</div>;
+  if (!viewedUser && !loading) return <div className="profile-error">User not found.</div>;
+
   return (
     <div className="profile-page-container">
+      {(!isOwnProfile || userId) && (
+        <button className="back-btn-profile" onClick={() => navigate(-1)}>
+          <ArrowLeft size={20} /> Back
+        </button>
+      )}
       <div className="profile-card glass-card">
         <div className="profile-header">
-          <div className="profile-image-wrapper">
             <div className="profile-image-container">
-              {formData.profilePicture ? (
-                <img src={formData.profilePicture} alt="Profile" className="profile-img" />
+              {viewedUser?.profilePicture ? (
+                <img src={viewedUser.profilePicture} alt="Profile" className="profile-img" />
               ) : (
                 <div className="profile-img-placeholder">
                   <User size={64} />
@@ -127,14 +171,13 @@ export function Profile() {
             )}
           </div>
           <div className="profile-title">
-            <h2>{user?.username}</h2>
+            <h2>{viewedUser?.username}</h2>
           </div>
-          {!isEditing && (
+          {isOwnProfile && !isEditing && (
             <button className="edit-toggle-btn" onClick={() => setIsEditing(true)}>
               <Edit2 size={18} /> Edit Profile
             </button>
           )}
-        </div>
 
         {error && <div className="profile-message error">{error}</div>}
         {success && <div className="profile-message success">{success}</div>}
@@ -151,7 +194,7 @@ export function Profile() {
                   required
                 />
               ) : (
-                <div className="view-value">{user?.username}</div>
+                <div className="view-value">{viewedUser?.username}</div>
               )}
             </div>
 
@@ -165,7 +208,7 @@ export function Profile() {
                   placeholder="e.g. 011 233 123"
                 />
               ) : (
-                <div className="view-value">{user?.studentId || 'Not set'}</div>
+                <div className="view-value">{viewedUser?.studentId || 'Not set'}</div>
               )}
             </div>
 
@@ -178,7 +221,7 @@ export function Profile() {
                   onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
                 />
               ) : (
-                <div className="view-value">{user?.dateOfBirth || 'Not set'}</div>
+                <div className="view-value">{viewedUser?.dateOfBirth || 'Not set'}</div>
               )}
             </div>
 
@@ -192,7 +235,7 @@ export function Profile() {
                   required
                 />
               ) : (
-                <div className="view-value">{user?.email}</div>
+                <div className="view-value">{viewedUser?.email}</div>
               )}
             </div>
 
@@ -206,7 +249,7 @@ export function Profile() {
                   placeholder="e.g. CSE, EEE"
                 />
               ) : (
-                <div className="view-value">{user?.department || 'Not set'}</div>
+                <div className="view-value">{viewedUser?.department || 'Not set'}</div>
               )}
             </div>
 
@@ -220,7 +263,7 @@ export function Profile() {
                   placeholder="e.g. 233, 221"
                 />
               ) : (
-                <div className="view-value">{user?.batch || 'Not set'}</div>
+                <div className="view-value">{viewedUser?.batch || 'Not set'}</div>
               )}
             </div>
 
@@ -233,7 +276,7 @@ export function Profile() {
                   placeholder="Tell fellow students about yourself..."
                 />
               ) : (
-                <div className="view-value bio-view">{user?.bio || 'No bio yet.'}</div>
+                <div className="view-value bio-view">{viewedUser?.bio || 'No bio yet.'}</div>
               )}
             </div>
           </div>
@@ -246,15 +289,17 @@ export function Profile() {
           )}
         </form>
 
-        <div className="profile-footer">
-          <div className="account-info">
-            <Shield size={16} />
-            <span>Changes remaining: {Math.max(0, 2 - (user?.updateCount || 0))}</span>
+        {isOwnProfile && (
+          <div className="profile-footer">
+            <div className="account-info">
+              <Shield size={16} />
+              <span>Changes remaining: {Math.max(0, 2 - (user?.updateCount || 0))}</span>
+            </div>
+            <button className="delete-account-btn" onClick={() => setShowDeleteConfirm(true)}>
+              <Trash2 size={18} /> Delete Account
+            </button>
           </div>
-          <button className="delete-account-btn" onClick={() => setShowDeleteConfirm(true)}>
-            <Trash2 size={18} /> Delete Account
-          </button>
-        </div>
+        )}
       </div>
 
       {showDeleteConfirm && (
