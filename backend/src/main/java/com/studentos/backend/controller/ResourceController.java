@@ -53,6 +53,7 @@ public class ResourceController {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .courseCode(request.getCourseCode())
+                .courseTitle(request.getCourseTitle())
                 .fileUrl(request.getFileUrl())
                 .type(request.getType())
                 .uploader(uploaderOpt.get())
@@ -92,6 +93,7 @@ class ResourceRequest {
     private String title;
     private String description;
     private String courseCode;
+    private String courseTitle;
     private String fileUrl;
     private String type;
     private Long uploaderId;
@@ -103,6 +105,8 @@ class ResourceRequest {
     public void setDescription(String description) { this.description = description; }
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+    public String getCourseTitle() { return courseTitle; }
+    public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
     public String getFileUrl() { return fileUrl; }
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
     public String getType() { return type; }

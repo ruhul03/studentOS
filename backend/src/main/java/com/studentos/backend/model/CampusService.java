@@ -35,4 +35,9 @@ public class CampusService {
 
     private String contactInfo;
     private String status; // Open, Closed
+
+    private String lastModifiedBy;
+    
+    @Column(columnDefinition = "TIMESTAMP")
+    private java.time.LocalDateTime lastModifiedAt;
 }

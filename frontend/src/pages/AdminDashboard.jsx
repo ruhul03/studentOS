@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Users, Activity, Trash2, UserPlus, ArrowLeft } from 'lucide-react';
+import { Shield, Users, Activity, Trash2, UserPlus, ArrowLeft, MapPin, Plus, Edit2, Save, X, Phone, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AdminDashboard.css';
 
@@ -10,9 +10,16 @@ export function AdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('stats'); // 'stats' or 'users'
+  const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'users', or 'services'
   const [message, setMessage] = useState(null);
+  
+  // New/Edit State for Services
+  const [editingService, setEditingService] = useState(null);
+  const [serviceForm, setServiceForm] = useState({
+    name: '', description: '', category: 'Library', location: '', operatingHours: '08:00 AM - 05:00 PM', contactInfo: ''
+  });
 
   useEffect(() => {
     if (!user || user.role !== 'ADMIN') {
@@ -27,9 +34,11 @@ export function AdminDashboard() {
     try {
       const statsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`);
       const usersRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`);
+      const servicesRes = await fetch(`${import.meta.env.VITE_API_URL}/api/services`);
       
       if (statsRes.ok) setStats(await statsRes.json());
       if (usersRes.ok) setUsers(await usersRes.json());
+      if (servicesRes.ok) setServices(await servicesRes.json());
     } catch (err) {
       console.error('Failed to fetch admin data', err);
     } finally {
@@ -65,6 +74,50 @@ export function AdminDashboard() {
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to delete user' });
+    }
+  };
+
+  const handleServiceSubmit = async (e) => {
+    e.preventDefault();
+    const method = editingService ? 'PUT' : 'POST';
+    const url = editingService 
+      ? `${import.meta.env.VITE_API_URL}/api/services/${editingService.id}`
+      : `${import.meta.env.VITE_API_URL}/api/services`;
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...serviceForm, adminName: user.name })
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        if (editingService) {
+          setServices(services.map(s => s.id === saved.id ? saved : s));
+          setMessage({ type: 'success', text: 'Service updated' });
+        } else {
+          setServices([...services, saved]);
+          setMessage({ type: 'success', text: 'Service created' });
+        }
+        setEditingService(null);
+        setServiceForm({ name: '', description: '', category: 'Library', location: '', operatingHours: '08:00 AM - 05:00 PM', contactInfo: '' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to save service' });
+    }
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    if (!window.confirm('Delete this service?')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/services/${serviceId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setServices(services.filter(s => s.id !== serviceId));
+        setMessage({ type: 'success', text: 'Service removed' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to delete service' });
     }
   };
 
@@ -112,6 +165,13 @@ export function AdminDashboard() {
         >
           <Users size={18} />
           User Directory
+        </button>
+        <button 
+          className={`admin-tab ${activeTab === 'services' ? 'active' : ''}`}
+          onClick={() => setActiveTab('services')}
+        >
+          <MapPin size={18} />
+          Campus Services
         </button>
       </div>
 
@@ -216,6 +276,122 @@ export function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          </motion.div>
+        )}
+        {activeTab === 'services' && (
+          <motion.div 
+            key="services"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="service-management-panel"
+          >
+            <div className="management-layout">
+                {/* Service Form */}
+                <div className="glass-card management-form">
+                    <h3>{editingService ? 'Edit Service' : 'Add New Service'}</h3>
+                    <form onSubmit={handleServiceSubmit}>
+                        <div className="form-group-admin">
+                            <label>Service Name</label>
+                            <input 
+                                type="text" 
+                                value={serviceForm.name} 
+                                onChange={e => setServiceForm({...serviceForm, name: e.target.value})} 
+                                required 
+                            />
+                        </div>
+                        <div className="form-group-admin">
+                            <label>Category</label>
+                            <select 
+                                value={serviceForm.category} 
+                                onChange={e => setServiceForm({...serviceForm, category: e.target.value})}
+                            >
+                                <option>Library</option>
+                                <option>Medical</option>
+                                <option>Food</option>
+                                <option>Transport</option>
+                                <option>Cafeteria</option>
+                            </select>
+                        </div>
+                        <div className="form-group-admin">
+                            <label>Location</label>
+                            <input 
+                                type="text" 
+                                value={serviceForm.location} 
+                                onChange={e => setServiceForm({...serviceForm, location: e.target.value})} 
+                                required 
+                            />
+                        </div>
+                        <div className="form-group-admin">
+                            <label>Operating Hours (HH:MM AM - HH:MM PM)</label>
+                            <input 
+                                type="text" 
+                                value={serviceForm.operatingHours} 
+                                onChange={e => setServiceForm({...serviceForm, operatingHours: e.target.value})} 
+                                required 
+                            />
+                        </div>
+                        <div className="form-group-admin">
+                            <label>Description</label>
+                            <textarea 
+                                value={serviceForm.description} 
+                                onChange={e => setServiceForm({...serviceForm, description: e.target.value})} 
+                                required 
+                            />
+                        </div>
+                        <div className="form-group-admin">
+                            <label>Contact (Optional)</label>
+                            <input 
+                                type="text" 
+                                value={serviceForm.contactInfo} 
+                                onChange={e => setServiceForm({...serviceForm, contactInfo: e.target.value})} 
+                            />
+                        </div>
+                        <div className="form-actions-admin">
+                            <button type="submit" className="save-btn">
+                                <Save size={18} /> {editingService ? 'Update' : 'Create'}
+                            </button>
+                            {editingService && (
+                                <button type="button" className="cancel-btn" onClick={() => {
+                                    setEditingService(null);
+                                    setServiceForm({ name: '', description: '', category: 'Library', location: '', operatingHours: '08:00 AM - 05:00 PM', contactInfo: '' });
+                                }}>
+                                    <X size={18} /> Cancel
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </div>
+
+                {/* Service List */}
+                <div className="services-list-admin">
+                    {services.map(s => (
+                        <div key={s.id} className="glass-card service-admin-item">
+                            <div className="service-info">
+                                <h4>{s.name}</h4>
+                                <span className="cat-badge">{s.category}</span>
+                                <div className="audit-info">
+                                    <Clock size={12} />
+                                    <span>Last change by <strong>{s.lastModifiedBy || 'System'}</strong> at {s.lastModifiedAt ? new Date(s.lastModifiedAt).toLocaleString() : 'Initial'}</span>
+                                </div>
+                            </div>
+                            <div className="action-btns">
+                                <button className="action-btn" onClick={() => {
+                                    setEditingService(s);
+                                    setServiceForm({
+                                        name: s.name, description: s.description, category: s.category,
+                                        location: s.location, operatingHours: s.operatingHours, contactInfo: s.contactInfo || ''
+                                    });
+                                }}>
+                                    <Edit2 size={16} />
+                                </button>
+                                <button className="action-btn delete" onClick={() => handleDeleteService(s.id)}>
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

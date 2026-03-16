@@ -43,7 +43,7 @@ export function CampusServicesDirectory() {
       </div>
 
       <div className="services-controls">
-        <div className="search-bar services-search">
+        <div className="services-search">
           <Search size={20} className="search-icon" />
           <input 
             type="text" 

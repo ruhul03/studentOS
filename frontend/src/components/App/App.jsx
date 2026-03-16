@@ -7,6 +7,7 @@ import { Register } from '../../pages/Register';
 import { ResourceFeed } from '../resources/ResourceFeed';
 import { CampusServicesDirectory } from '../services/CampusServicesDirectory';
 import { StudyPlanner } from '../planner/StudyPlanner';
+import { UiuCalculator } from '../calculator/UiuCalculator';
 import { LostFoundBoard } from '../lostfound/LostFoundBoard';
 import { StudentMarketplace } from '../marketplace/StudentMarketplace';
 import { CourseReviews } from '../reviews/CourseReviews';
@@ -23,7 +24,7 @@ import { Profile } from '../../pages/Profile';
 import { PublicProfile } from '../social/PublicProfile';
 import { ChatModal } from '../social/ChatModal';
 import ScrollToTop from './ScrollToTop';
-import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User } from 'lucide-react';
+import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User, Calculator } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSockets } from '../../hooks/useWebSockets';
@@ -132,6 +133,7 @@ function Dashboard() {
             <button className={`nav-tab ${activeTab === 'market' ? 'active' : ''}`} onClick={() => handleTabChange('market')}>Market</button>
             <button className={`nav-tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => handleTabChange('events')}>Events</button>
             <button className={`nav-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => handleTabChange('reviews')}>Reviews</button>
+            <button className={`nav-tab ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => handleTabChange('calculator')}>UIU Calc</button>
           </nav>
 
           <div className="navbar-actions desktop-only">
@@ -183,6 +185,10 @@ function Dashboard() {
           <User size={20} />
           <span>Profile</span>
         </button>
+        <button className={`mobile-tab ${activeTab === 'calculator' ? 'active' : ''}`} onClick={() => handleTabChange('calculator')}>
+          <Calculator size={20} />
+          <span>UIU Calc</span>
+        </button>
       </nav>
       
       <main className="main-viewport animate-in">
@@ -195,6 +201,7 @@ function Dashboard() {
           {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
           {activeTab === 'events' && <EventsAnnouncements />}
           {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
+          {activeTab === 'calculator' && <UiuCalculator />}
           {activeTab === 'profile' && <Profile />}
           {activeTab === 'activity' && (
             <ActivityHistory 

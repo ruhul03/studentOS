@@ -146,3 +146,156 @@
     overflow-x: auto;
   }
 }
+
+/* Service Management Panel */
+.service-management-panel {
+  padding: 1rem 0;
+}
+
+.management-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.management-form {
+  padding: 2rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.management-form h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+}
+
+.form-group-admin {
+  margin-bottom: 1.25rem;
+}
+
+.form-group-admin label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.form-group-admin input,
+.form-group-admin select,
+.form-group-admin textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  padding: 0.8rem 1rem;
+  color: white;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.form-group-admin textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-group-admin input:focus,
+.form-group-admin select:focus,
+.form-group-admin textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-actions-admin {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.save-btn, .cancel-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.cancel-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+  border: 1px solid var(--glass-border);
+}
+
+.save-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.cancel-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+.services-list-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.service-admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.service-admin-item:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.service-info h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.cat-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(251, 146, 60, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  margin-bottom: 0.75rem;
+}
+
+.audit-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.audit-info strong {
+  color: var(--text-dim);
+}
+
+@media (max-width: 1024px) {
+  .management-layout {
+    grid-template-columns: 1fr;
+  }
+}

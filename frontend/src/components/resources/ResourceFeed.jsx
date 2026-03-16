@@ -17,6 +17,7 @@ export function ResourceFeed() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [courseCode, setCourseCode] = useState('');
+  const [courseTitle, setCourseTitle] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [type, setType] = useState('Notes');
 
@@ -53,7 +54,7 @@ export function ResourceFeed() {
     try {
       console.log("Submitting resource with uploaderId:", user.id);
       const payload = {
-        title, description, courseCode, fileUrl, type, uploaderId: user.id
+        title, description, courseCode, courseTitle, fileUrl, type, uploaderId: user.id
       };
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
@@ -64,7 +65,7 @@ export function ResourceFeed() {
       
       if (response.ok) {
         setShowUpload(false);
-        setTitle(''); setDescription(''); setCourseCode(''); setFileUrl(''); setType('Notes');
+        setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
         fetchResources(); // refresh feed
       } else {
         const errorData = await response.text();
@@ -139,6 +140,10 @@ export function ResourceFeed() {
                 <input type="text" placeholder="e.g. CSE 2118" value={courseCode} onChange={e => setCourseCode(e.target.value)} required />
               </div>
               <div className="form-group">
+                <label>Course Title</label>
+                <input type="text" placeholder="e.g. Data Communication" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} required />
+              </div>
+              <div className="form-group">
                 <label>Resource Type</label>
                 <select value={type} onChange={e => setType(e.target.value)}>
                   <option>Notes</option>
@@ -164,7 +169,10 @@ export function ResourceFeed() {
               <input type="url" placeholder="https://drive.google.com/..." value={fileUrl} onChange={e => setFileUrl(e.target.value)} required />
             </div>
 
-            <button type="submit" className="submit-upload-btn">Upload to Repository</button>
+            <button type="submit" className="submit-upload-btn">
+              <FileText size={20} />
+              Upload to Repository
+            </button>
           </motion.form>
         )}
       </AnimatePresence>
@@ -187,7 +195,10 @@ export function ResourceFeed() {
               >
                 <div className="resource-type-badge">{res.type}</div>
                 <h3 className="resource-title">{res.title}</h3>
-                <span className="course-tag">{res.courseCode}</span>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                    <span className="course-tag">{res.courseCode}</span>
+                    <span className="course-title-tag">{res.courseTitle}</span>
+                </div>
                 <p className="resource-desc">{res.description}</p>
                 
                 <div className="resource-footer">

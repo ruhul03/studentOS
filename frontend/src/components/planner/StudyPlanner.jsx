@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './Planner.css';
-import { Plus, Trash2, CheckCircle2, Circle, Clock, AlertTriangle } from 'lucide-react';
+import { Plus, Minus, Trash2, CheckCircle2, Circle, Clock, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function StudyPlanner() {
   const [tasks, setTasks] = useState([]);
@@ -86,8 +87,9 @@ export function StudyPlanner() {
           <h2>Study Planner</h2>
           <p>Track your assignments, reading, and exams.</p>
         </div>
-        <button className="add-task-btn" onClick={() => setShowAdd(!showAdd)}>
-          <Plus size={18} /> {showAdd ? 'Cancel' : 'Add Task'}
+        <button className={`add-task-btn ${showAdd ? 'cancel' : ''}`} onClick={() => setShowAdd(!showAdd)}>
+          {showAdd ? <Minus size={18} /> : <Plus size={18} />}
+          <span>{showAdd ? 'Cancel' : 'Add Task'}</span>
         </button>
       </div>
 
@@ -115,13 +117,20 @@ export function StudyPlanner() {
         <div className="task-section">
           <h3>Upcoming Tasks</h3>
           <div className="task-list">
+            <AnimatePresence>
             {tasks.filter(t => !t.completed).map(task => {
               const daysLeft = calculateDaysLeft(task.dueDate);
               const isUrgent = daysLeft !== null && daysLeft <= 2 && daysLeft >= 0;
               const isOverdue = daysLeft !== null && daysLeft < 0;
 
               return (
-                <div key={task.id} className={`task-card ${isUrgent ? 'urgent' : ''} ${isOverdue ? 'overdue' : ''}`}>
+                <motion.div 
+                  key={task.id} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className={`task-card ${isUrgent ? 'urgent' : ''} ${isOverdue ? 'overdue' : ''}`}
+                >
                   <button className="toggle-btn" onClick={() => toggleTask(task.id)}>
                     <Circle size={24} />
                   </button>
@@ -136,7 +145,7 @@ export function StudyPlanner() {
                       <div className={`due-date ${isUrgent ? 'text-urgent' : ''} ${isOverdue ? 'text-overdue' : ''}`}>
                         {isOverdue ? <AlertTriangle size={14}/> : <Clock size={14} />}
                         <span>
-                          {new Date(task.dueDate).toLocaleDateString()}
+                          {new Date(task.dueDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                           {daysLeft !== null && (
                             <span className="days-left">
                               ({isOverdue ? `${Math.abs(daysLeft)} days ago` : `${daysLeft} days left`})
@@ -149,9 +158,10 @@ export function StudyPlanner() {
                   <button className="delete-btn" onClick={() => deleteTask(task.id)}>
                     <Trash2 size={18} />
                   </button>
-                </div>
+                </motion.div>
               );
             })}
+            </AnimatePresence>
             {tasks.filter(t => !t.completed).length === 0 && (
               <div className="empty-state-tasks">
                 <CheckCircle2 size={40} className="text-dim" />
@@ -165,8 +175,15 @@ export function StudyPlanner() {
         <div className="task-section">
           <h3>Completed</h3>
           <div className="task-list">
+            <AnimatePresence>
             {tasks.filter(t => t.completed).map(task => (
-              <div key={task.id} className="task-card completed">
+              <motion.div 
+                key={task.id} 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="task-card completed"
+              >
                 <button className="toggle-btn" onClick={() => toggleTask(task.id)}>
                   <CheckCircle2 size={24} className="text-success" />
                 </button>
@@ -177,8 +194,9 @@ export function StudyPlanner() {
                 <button className="delete-btn" onClick={() => deleteTask(task.id)}>
                   <Trash2 size={18} />
                 </button>
-              </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
             {tasks.filter(t => t.completed).length === 0 && (
               <div className="empty-state-small">No completed tasks yet.</div>
             )}

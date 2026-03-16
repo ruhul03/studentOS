@@ -31,6 +31,9 @@ public class Resource {
     private String courseCode;
 
     @Column(nullable = false)
+    private String courseTitle;
+
+    @Column(nullable = false)
     private String fileUrl; // URL or File path where the uploaded resource is saved
 
     @Column(nullable = false)
