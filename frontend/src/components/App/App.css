@@ -203,6 +203,37 @@
   background: hsla(0, 0%, 100%, 0.12);
 }
 
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mute-toggle-btn {
+  background: hsla(0, 0%, 100%, 0.05);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  color: hsla(0, 0%, 100%, 0.6);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mute-toggle-btn:hover {
+  background: hsla(0, 0%, 100%, 0.1);
+  color: white;
+}
+
+.mute-toggle-btn.muted {
+  color: #fca5a5;
+  background: hsla(0, 91%, 71%, 0.1);
+  border-color: hsla(0, 91%, 71%, 0.2);
+}
+
 .notification-panel-header h4 {
   font-size: 1rem;
   font-weight: 700;

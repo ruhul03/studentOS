@@ -7,6 +7,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
 import com.studentos.backend.service.FileStorageService;
+import com.studentos.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ class ResourceRequest {
     private String fileUrl;
     private String type;
     private Long uploaderId;
+    private boolean anonymous;
 }
 
 @RestController
@@ -48,17 +50,20 @@ public class ResourceController {
     private final AsyncService asyncService;
     private final ActivityService activityService;
     private final FileStorageService fileStorageService;
+    private final NotificationService notificationService;
 
     public ResourceController(ResourceRepository resourceRepository, 
                               UserRepository userRepository, 
                               AsyncService asyncService,
                               ActivityService activityService,
-                              FileStorageService fileStorageService) {
+                              FileStorageService fileStorageService,
+                              NotificationService notificationService) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
         this.asyncService = asyncService;
         this.activityService = activityService;
         this.fileStorageService = fileStorageService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping
@@ -125,6 +130,7 @@ public class ResourceController {
                     .type(request.getType())
                     .uploader(uploaderOpt.get())
                     .upvotes(0)
+                    .anonymous(request.isAnonymous())
                     .build();
 
             Resource savedResource = resourceRepository.save(resource);
@@ -140,6 +146,17 @@ public class ResourceController {
                 "resources",
                 "success"
             );
+
+            // Global Notification
+            java.util.Map<String, Object> notification = new java.util.HashMap<>();
+            notification.put("type", "resource_uploaded");
+            notification.put("title", "New Resource Uploaded");
+            String senderName = savedResource.isAnonymous() ? "Someone" : uploaderOpt.get().getName();
+            notification.put("message", senderName + " shared a new resource: " + savedResource.getTitle());
+            notification.put("relatedEntityId", savedResource.getId());
+            notification.put("createdAt", java.time.LocalDateTime.now());
+            
+            notificationService.sendGlobalNotification(notification);
 
             logger.info("Successfully uploaded resource: {}", savedResource.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);

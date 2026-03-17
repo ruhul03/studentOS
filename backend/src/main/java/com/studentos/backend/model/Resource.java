@@ -46,6 +46,10 @@ public class Resource {
     @Builder.Default
     private int upvotes = 0;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean anonymous = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime uploadedAt;

@@ -5,6 +5,7 @@ import com.studentos.backend.model.CourseReview;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.CommentRepository;
 import com.studentos.backend.repository.CourseReviewRepository;
+import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.NotificationService;
@@ -26,17 +27,20 @@ public class CourseReviewController {
     private final ActivityService activityService;
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
     public CourseReviewController(CourseReviewRepository reviewRepository,
             UserRepository userRepository,
             ActivityService activityService,
             CommentRepository commentRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            NotificationRepository notificationRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.activityService = activityService;
         this.commentRepository = commentRepository;
         this.notificationService = notificationService;
+        this.notificationRepository = notificationRepository;
     }
 
     @GetMapping
@@ -121,7 +125,14 @@ public class CourseReviewController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        reviewRepository.deleteById(id);
+        // Cleanup for notifications as they aren't linked via JPA
+        notificationRepository.deleteByRelatedEntityId(id);
+
+        // Aggressive clearing of collections to ensure proper orphan removal order
+        review.getComments().clear();
+        reviewRepository.saveAndFlush(review);
+
+        reviewRepository.delete(review);
         return ResponseEntity.noContent().build();
     }
 

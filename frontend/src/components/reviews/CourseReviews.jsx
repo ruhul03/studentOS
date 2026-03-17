@@ -117,6 +117,7 @@ export function CourseReviews({ onProfileView }) {
           setCommentText('');
           setIsCommentAnonymous(false);
           fetchComments(reviewId);
+          fetchReviews(); // Refresh review card to update count from DB
           return;
         }
       } catch (apiErr) {
@@ -143,6 +144,7 @@ export function CourseReviews({ onProfileView }) {
       setCommentText('');
       setIsCommentAnonymous(false);
       setComments(prev => ({ ...prev, [reviewId]: updatedComments }));
+      // fetchReviews(); // REMOVED FROM HERE - it was outside the .ok block
     } catch (err) {
       console.error('Failed to post comment', err);
     }
@@ -192,6 +194,7 @@ export function CourseReviews({ onProfileView }) {
           setIsReplyAnonymous(false);
           setReplyingTo(null);
           fetchComments(reviewId);
+          fetchReviews(); // Refresh review card to update count from DB
           return;
         }
       } catch (apiErr) {
@@ -227,6 +230,7 @@ export function CourseReviews({ onProfileView }) {
       setIsReplyAnonymous(false);
       setReplyingTo(null);
       setComments(prev => ({ ...prev, [reviewId]: updatedComments }));
+      // fetchReviews(); // REMOVED FROM HERE - it was outside the .ok block
     } catch (err) {
       console.error('Failed to post reply', err);
     }
@@ -531,9 +535,15 @@ export function CourseReviews({ onProfileView }) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}?userId=${user.id}`, {
         method: 'DELETE'
       });
-      if (response.ok) fetchReviews();
+      if (response.ok) {
+        fetchReviews();
+      } else {
+        const errorData = await response.text();
+        alert(`Delete failed: ${errorData || 'Unknown server error'}`);
+      }
     } catch (err) {
       console.error('Delete failed', err);
+      alert("An error occurred while trying to delete the post.");
     }
   };
 
@@ -903,7 +913,7 @@ export function CourseReviews({ onProfileView }) {
                   }}
                 >
                   <MessageCircle size={16} /> 
-                  Comments ({comments[review.id]?.length || 0})
+                  Comments ({review.commentCount || 0})
                 </button>
               </div>
             </div>

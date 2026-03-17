@@ -40,8 +40,21 @@ public class MessageController {
                 .build();
         Message saved = messageRepository.save(message);
 
-        // Notify the receiver
+        // Notify the receiver in real-time
         notificationService.sendDirectMessageNotification(request.getReceiverId(), saved);
+
+        // Create a persistent notification for the message
+        User sender = userRepository.findById(request.getSenderId()).orElse(null);
+        String senderName = (sender != null) ? sender.getName() : "Someone";
+        
+        notificationService.createAndSendNotification(
+            request.getReceiverId(),
+            "direct_message",
+            "New Message",
+            "You received a new message from " + senderName,
+            request.getSenderId(),
+            null // Message ID or conversation context could go here
+        );
 
         return ResponseEntity.ok(saved);
     }

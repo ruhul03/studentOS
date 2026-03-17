@@ -23,27 +23,32 @@ export function useWebSockets(userId = null) {
       // Subscribe to global notifications
       client.subscribe('/topic/notifications', (message) => {
         if (message.body) {
-          setNotifications((prev) => [...prev, message.body]);
-        }
-      });
-
-      // Subscribe to private notifications (explicit topic)
-      client.subscribe(`/topic/notifications/${userId}`, (message) => {
-        if (message.body) {
           try {
-            const data = JSON.parse(message.body);
+            const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             setNotifications((prev) => [...prev, data]);
           } catch (e) {
-            setNotifications((prev) => [...prev, message.body]);
+            setNotifications((prev) => [...prev, { message: message.body, type: 'broadcast', title: 'Announcement', id: Date.now() }]);
           }
         }
       });
 
-      // Subscribe to private messages (explicit topic)
+      // Subscribe to private notifications
+      client.subscribe(`/topic/notifications/${userId}`, (message) => {
+        if (message.body) {
+          try {
+            const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
+            setNotifications((prev) => [...prev, data]);
+          } catch (e) {
+            console.error('Failed to parse private notification', e);
+          }
+        }
+      });
+
+      // Subscribe to private messages
       client.subscribe(`/topic/messages/${userId}`, (message) => {
         if (message.body) {
           try {
-            const data = JSON.parse(message.body);
+            const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             setMessageEvent(data);
           } catch (e) {
             console.error('Failed to parse message event', e);
@@ -67,5 +72,9 @@ export function useWebSockets(userId = null) {
     setNotifications((prev) => prev.filter((_, i) => i !== index));
   };
 
-  return { notifications, messageEvent, clearNotification, setMessageEvent };
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  return { notifications, messageEvent, clearNotification, clearAllNotifications, setMessageEvent };
 }

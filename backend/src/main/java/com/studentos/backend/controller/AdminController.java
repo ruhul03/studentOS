@@ -83,11 +83,12 @@ public class AdminController {
                 .map(user -> {
                     // Manual cascade for administrative safety - Purge all user footprints
                     
-                    // 1. Handle indirect dependencies for CourseReviews
-                    List<com.studentos.backend.model.CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
-                    if (!userReviews.isEmpty()) {
-                        commentRepository.deleteByReviewIn(userReviews);
-                    }
+                    // 1. Handle indirect dependencies for CourseReviews (Purge via JPA cascade)
+                    List<CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
+                    userReviews.forEach(review -> {
+                        notificationRepository.deleteByRelatedEntityId(review.getId());
+                        reviewRepository.delete(review);
+                    });
                     
                     // 2. Clear sent notifications (where user is sender)
                     notificationRepository.deleteBySender(user);
@@ -99,7 +100,6 @@ public class AdminController {
                     eventRepository.deleteByUploaderId(id);
                     activityRepository.deleteByUserId(id);
                     commentRepository.deleteByCommenter(user);
-                    reviewRepository.deleteByReviewer(user);
                     notificationRepository.deleteByRecipient(user);
                     messageRepository.deleteBySenderIdOrReceiverId(id, id);
                     taskRepository.deleteByUserId(id);

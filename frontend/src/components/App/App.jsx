@@ -24,7 +24,7 @@ import { Profile } from '../../pages/Profile';
 import { PublicProfile } from '../social/PublicProfile';
 import { ChatModal } from '../social/ChatModal';
 import ScrollToTop from './ScrollToTop';
-import { Bell, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User, Calculator, Shield } from 'lucide-react';
+import { Bell, BellOff, BookOpen, Map, Calendar, ShoppingBag, MessageCircle, ClipboardList, Menu, Activity, User, Calculator, Shield } from 'lucide-react';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSockets } from '../../hooks/useWebSockets';
@@ -59,16 +59,31 @@ function Dashboard() {
   const [activeChatUser, setActiveChatUser] = useState(null);
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [appNotifications, setAppNotifications] = useState([]);
+  const [isMuted, setIsMuted] = useState(() => {
+    return localStorage.getItem('notificationsMuted') === 'true';
+  });
+
+  const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    localStorage.setItem('notificationsMuted', newMuted.toString());
+  };
 
   // Sync WebSocket notifications with App state
   React.useEffect(() => {
     if (wsNotifications.length > 0) {
-      const latest = wsNotifications[wsNotifications.length - 1];
-      // Avoid duplicates if possible, or just append
       setAppNotifications(prev => {
-        // Simple check: if ID exists, don't add
-        if (latest.id && prev.some(n => n.id === latest.id)) return prev;
-        return [latest, ...prev];
+        // Find all notifications in wsNotifications that aren't already in appNotifications
+        const newItems = wsNotifications.filter(wsN => {
+          const isDuplicate = prev.some(p => 
+            (wsN.id && p.id === wsN.id) || 
+            (wsN.createdAt && wsN.message === p.message && wsN.createdAt === p.createdAt)
+          );
+          return !isDuplicate;
+        });
+
+        if (newItems.length === 0) return prev;
+        return [...newItems, ...prev];
       });
     }
   }, [wsNotifications]);
@@ -146,6 +161,7 @@ function Dashboard() {
   };
 
   const getUnreadCount = () => {
+    if (isMuted) return 0;
     return appNotifications.filter(n => !n.read).length;
   };
 
@@ -214,12 +230,21 @@ function Dashboard() {
                   <div className="notification-panel-dropdown">
                     <div className="notification-panel-header">
                       <h4>Notifications</h4>
-                      <button 
-                        className="close-panel-btn" 
-                        onClick={() => setShowNotificationPanel(false)}
-                      >
-                        ×
-                      </button>
+                      <div className="panel-actions">
+                        <button 
+                          className={`mute-toggle-btn ${isMuted ? 'muted' : ''}`}
+                          onClick={toggleMute}
+                          title={isMuted ? "Unmute Notifications" : "Mute Notifications"}
+                        >
+                          {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
+                        </button>
+                        <button 
+                          className="close-panel-btn" 
+                          onClick={() => setShowNotificationPanel(false)}
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                     <div className="notification-panel-list">
                       {appNotifications.length > 0 ? (
@@ -230,8 +255,14 @@ function Dashboard() {
                             onClick={() => {
                               markNotificationAsRead(notification.id);
                               // Navigate to relevant section based on notification type
-                              if (notification.type === 'review_posted' || notification.type === 'comment_posted') {
+                              if (notification.type === 'review_posted' || notification.type === 'comment_posted' || notification.type === 'reply_posted') {
                                 handleTabChange('reviews');
+                              } else if (notification.type === 'resource_uploaded') {
+                                handleTabChange('resources');
+                              } else if (notification.type === 'direct_message') {
+                                // For DMs, we could ideally open the chat modal
+                                // For now, taking to home/profile is a safe fallback
+                                handleTabChange('home');
                               }
                               setShowNotificationPanel(false);
                             }}
@@ -330,10 +361,12 @@ function Dashboard() {
         </div>
       </main>
 
-      <NotificationToast 
-        notifications={wsNotifications} 
-        onClear={clearNotification} 
-      />
+      {!isMuted && (
+        <NotificationToast 
+          notifications={wsNotifications} 
+          onClear={clearNotification} 
+        />
+      )}
 
       <AnimatePresence>
         {selectedUserProfile && (

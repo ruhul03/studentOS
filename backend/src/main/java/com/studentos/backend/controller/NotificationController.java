@@ -32,7 +32,12 @@ public class NotificationController {
     @PostMapping("/broadcast")
     @Transactional
     public void broadcast(@RequestBody String message) {
-        notificationService.sendGlobalNotification(message);
+        java.util.Map<String, Object> payload = new java.util.HashMap<>();
+        payload.put("type", "broadcast");
+        payload.put("title", "Admin Broadcast");
+        payload.put("message", message);
+        payload.put("createdAt", java.time.LocalDateTime.now());
+        notificationService.sendGlobalNotification(payload);
     }
 
     @GetMapping("/{userId}")

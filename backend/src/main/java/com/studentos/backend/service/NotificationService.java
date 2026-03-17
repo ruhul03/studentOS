@@ -22,8 +22,8 @@ public class NotificationService {
         this.userRepository = userRepository;
     }
 
-    public void sendGlobalNotification(String message) {
-        messagingTemplate.convertAndSend("/topic/notifications", message);
+    public void sendGlobalNotification(Object payload) {
+        messagingTemplate.convertAndSend("/topic/notifications", payload);
     }
 
     public void sendPrivateNotification(Long userId, Object payload) {

@@ -16,4 +16,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @org.springframework.transaction.annotation.Transactional
     void deleteBySender(User sender);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByRelatedEntityId(Long relatedEntityId);
 }

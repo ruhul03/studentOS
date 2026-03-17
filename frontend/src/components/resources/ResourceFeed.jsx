@@ -34,6 +34,7 @@ export function ResourceFeed() {
   const [fileUrl, setFileUrl] = useState('');
   const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'link'
   const [type, setType] = useState('Notes');
+  const [anonymous, setAnonymous] = useState(false);
   
   // Edit State
   const [editingResource, setEditingResource] = useState(null);
@@ -70,6 +71,7 @@ export function ResourceFeed() {
     setFileUrl(resource.fileUrl.startsWith('/uploads/') ? '' : resource.fileUrl);
     setUploadMethod(resource.fileUrl.startsWith('/uploads/') ? 'file' : 'link');
     setType(resource.type);
+    setAnonymous(resource.anonymous || false);
     setEditingResource(resource);
     setShowEditForm(true);
     setShowUpload(false);
@@ -82,7 +84,7 @@ export function ResourceFeed() {
     try {
       const formData = new FormData();
       formData.append('resource', JSON.stringify({
-        title, description, courseCode, courseTitle, type, uploaderId: user.id,
+        title, description, courseCode, courseTitle, type, uploaderId: user.id, anonymous,
         fileUrl: uploadMethod === 'link' ? fileUrl : ''
       }));
       if (uploadMethod === 'file' && selectedFile) {
@@ -98,6 +100,7 @@ export function ResourceFeed() {
         setShowEditForm(false);
         setEditingResource(null);
         setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setSelectedFile(null); setType('Notes');
+        setAnonymous(false);
         fetchResources();
       } else {
         const errorText = await response.text();
@@ -146,7 +149,7 @@ export function ResourceFeed() {
       
       const formData = new FormData();
       formData.append('resource', JSON.stringify({
-        title, description, courseCode, courseTitle, type, uploaderId: user.id,
+        title, description, courseCode, courseTitle, type, uploaderId: user.id, anonymous,
         fileUrl: uploadMethod === 'link' ? fileUrl : ''
       }));
       if (uploadMethod === 'file' && selectedFile) {
@@ -167,6 +170,7 @@ export function ResourceFeed() {
       if (response.ok) {
         setShowUpload(false);
         setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
+        setAnonymous(false);
         fetchResources(); // refresh feed
       } else {
         const errorData = await response.text();
@@ -292,6 +296,17 @@ export function ResourceFeed() {
               </div>
             </div>
 
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label" title="Share this resource without revealing your identity">
+                <input 
+                  type="checkbox" 
+                  checked={anonymous} 
+                  onChange={(e) => setAnonymous(e.target.checked)} 
+                />
+                <span>Share Anonymously</span>
+              </label>
+            </div>
+
             <div className="form-group">
               <label>Title</label>
               <input type="text" placeholder="Descriptive title" value={title} onChange={e => setTitle(e.target.value)} required />
@@ -399,6 +414,17 @@ export function ResourceFeed() {
                   <option>Study Guide</option>
                 </select>
               </div>
+            </div>
+
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label" title="Share this resource without revealing your identity">
+                <input 
+                  type="checkbox" 
+                  checked={anonymous} 
+                  onChange={(e) => setAnonymous(e.target.checked)} 
+                />
+                <span>Share Anonymously</span>
+              </label>
             </div>
 
             <div className="form-group">
@@ -511,7 +537,9 @@ export function ResourceFeed() {
                 <div className="resource-footer">
                   <div className="uploader-info">
                     <div className="uploader-details">
-                      <span className="uploader-name">{res.uploader.name}</span>
+                      <span className="uploader-name">
+                        {res.anonymous ? 'Anonymous Student' : res.uploader.name}
+                      </span>
                       <span className="upload-time">Uploaded recently</span>
                     </div>
                   </div>
