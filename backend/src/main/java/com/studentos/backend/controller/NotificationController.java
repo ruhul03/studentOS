@@ -6,6 +6,7 @@ import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.NotificationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class NotificationController {
     }
 
     @PostMapping("/broadcast")
+    @Transactional
     public void broadcast(@RequestBody String message) {
         notificationService.sendGlobalNotification(message);
     }
@@ -43,6 +45,7 @@ public class NotificationController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<Notification> createNotification(@RequestBody NotificationRequest request) {
         Notification notification = notificationService.createAndSendNotification(
                 request.getRecipientId(),
@@ -59,6 +62,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
+    @Transactional
     public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
         Optional<Notification> notifOpt = notificationRepository.findById(id);
         if (notifOpt.isPresent()) {

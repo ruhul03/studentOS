@@ -7,6 +7,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class ReviewRequestController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<ReviewRequest> createRequest(@RequestBody ReviewRequestSubmit request) {
         Optional<User> userOpt = userRepository.findById(request.getRequesterId());
         if (userOpt.isEmpty()) {
@@ -62,6 +64,7 @@ public class ReviewRequestController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<ReviewRequest> updateRequest(@PathVariable Long id, @RequestBody ReviewRequestSubmit request) {
         Optional<ReviewRequest> reqOpt = requestRepository.findById(id);
         if (reqOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -84,6 +87,7 @@ public class ReviewRequestController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteRequest(@PathVariable Long id, @RequestParam Long userId) {
         Optional<ReviewRequest> reqOpt = requestRepository.findById(id);
         if (reqOpt.isEmpty()) return ResponseEntity.notFound().build();

@@ -11,4 +11,7 @@ public interface StudyTaskRepository extends JpaRepository<StudyTask, Long> {
     List<StudyTask> findByUserIdOrderByDueDateAsc(Long userId);
     List<StudyTask> findByUserIdAndCompletedOrderByDueDateAsc(Long userId, boolean completed);
     long countByUserIdAndCompletedFalse(Long userId);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByUserId(Long userId);
 }

@@ -29,4 +29,7 @@ public interface TuitionFeeRepository extends JpaRepository<TuitionFee, Long> {
     List<TuitionFee> findByProgramTypeOrderByCreatedAtDesc(@Param("programType") TuitionFee.ProgramType programType);
 
     boolean existsByUserAndTerm(User user, String term);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByUserId(Long userId);
 }

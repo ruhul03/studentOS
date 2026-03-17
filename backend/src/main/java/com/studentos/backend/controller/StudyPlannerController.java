@@ -7,6 +7,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class StudyPlannerController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<StudyTask> createTask(@RequestBody StudyTaskRequest request) {
         Optional<User> userOpt = userRepository.findById(request.getUserId());
         if (userOpt.isEmpty()) {
@@ -70,6 +72,7 @@ public class StudyPlannerController {
     }
 
     @PutMapping("/{taskId}/toggle")
+    @Transactional
     public ResponseEntity<StudyTask> toggleTaskCompletion(@PathVariable Long taskId) {
         Optional<StudyTask> taskOpt = taskRepository.findById(taskId);
         if (taskOpt.isPresent()) {
@@ -93,6 +96,7 @@ public class StudyPlannerController {
     }
     
     @DeleteMapping("/{taskId}")
+    @Transactional
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         if (taskRepository.existsById(taskId)) {
             taskRepository.deleteById(taskId);

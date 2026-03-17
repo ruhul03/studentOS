@@ -15,4 +15,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findConversation(@Param("user1") Long user1, @Param("user2") Long user2);
 
     List<Message> findByReceiverIdAndIsReadFalse(Long receiverId);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteBySenderIdOrReceiverId(Long senderId, Long receiverId);
 }

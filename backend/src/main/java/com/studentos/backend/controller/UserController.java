@@ -4,11 +4,8 @@ import com.studentos.backend.dto.ProfileUpdateRequest;
 import com.studentos.backend.dto.UserStatsDTO;
 import com.studentos.backend.model.Activity;
 import com.studentos.backend.model.User;
-import com.studentos.backend.repository.ActivityRepository;
-import com.studentos.backend.repository.MarketplaceItemRepository;
-import com.studentos.backend.repository.ResourceRepository;
-import com.studentos.backend.repository.StudyTaskRepository;
-import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,17 +35,41 @@ public class UserController {
     private final StudyTaskRepository studyTaskRepository;
     private final MarketplaceItemRepository marketplaceItemRepository;
     private final ActivityRepository activityRepository;
+    private final CampusEventRepository eventRepository;
+    private final LostFoundItemRepository lostFoundRepository;
+    private final CommentRepository commentRepository;
+    private final CourseReviewRepository reviewRepository;
+    private final NotificationRepository notificationRepository;
+    private final MessageRepository messageRepository;
+    private final ReviewRequestRepository reviewRequestRepository;
+    private final TuitionFeeRepository tuitionFeeRepository;
 
     public UserController(UserRepository userRepository, 
                           ResourceRepository resourceRepository,
                           StudyTaskRepository studyTaskRepository,
                           MarketplaceItemRepository marketplaceItemRepository,
-                          ActivityRepository activityRepository) {
+                          ActivityRepository activityRepository,
+                          CampusEventRepository eventRepository,
+                          LostFoundItemRepository lostFoundRepository,
+                          CommentRepository commentRepository,
+                          CourseReviewRepository reviewRepository,
+                          NotificationRepository notificationRepository,
+                          MessageRepository messageRepository,
+                          ReviewRequestRepository reviewRequestRepository,
+                          TuitionFeeRepository tuitionFeeRepository) {
         this.userRepository = userRepository;
         this.resourceRepository = resourceRepository;
         this.studyTaskRepository = studyTaskRepository;
         this.marketplaceItemRepository = marketplaceItemRepository;
         this.activityRepository = activityRepository;
+        this.eventRepository = eventRepository;
+        this.lostFoundRepository = lostFoundRepository;
+        this.commentRepository = commentRepository;
+        this.reviewRepository = reviewRepository;
+        this.notificationRepository = notificationRepository;
+        this.messageRepository = messageRepository;
+        this.reviewRequestRepository = reviewRequestRepository;
+        this.tuitionFeeRepository = tuitionFeeRepository;
     }
 
     @GetMapping("/{id}")
@@ -59,6 +80,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody ProfileUpdateRequest profileUpdate) {
         logger.info("Profile update request received for user ID: {}", id);
         logger.debug("Request body: {}", profileUpdate);
@@ -154,23 +176,38 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> deleteProfile(@PathVariable Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-
-        User user = userOptional.get();
-        // Soft delete: clear profile info but keep the ID if shared resources are linked by uploader_id
-        // In this simple app, we can just clear personal fields or mark as deleted.
-        // The user said: "option to delete his profile but the resources that he/she shared will remain"
-        // This implies shared resources shouldn't be deleted. JPA CascadeType.ALL would be bad here.
-        
-        // Let's just remove the user account. If resources have uploader_id, they will either become null or stay as is.
-        // Actually, many DBs would throw constraint errors if we delete the user.
-        // A better "Soft Delete" is to just deactivate the account.
-        
-        userRepository.delete(user); 
-        return ResponseEntity.ok("Profile deleted successfully. Shared resources remain.");
+        return userRepository.findById(id)
+                .map(user -> {
+                    // Manual cascade for safety - Purge all user footprints
+                    
+                    // 1. Handle indirect dependencies for CourseReviews
+                    List<com.studentos.backend.model.CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
+                    if (!userReviews.isEmpty()) {
+                        commentRepository.deleteByReviewIn(userReviews);
+                    }
+                    
+                    // 2. Clear sent notifications (where user is sender)
+                    notificationRepository.deleteBySender(user);
+                    
+                    // 3. Normal cascading deletes
+                    resourceRepository.deleteByUploader(user);
+                    marketplaceItemRepository.deleteBySeller(user);
+                    lostFoundRepository.deleteByReporter(user);
+                    eventRepository.deleteByUploaderId(id);
+                    activityRepository.deleteByUserId(id);
+                    commentRepository.deleteByCommenter(user);
+                    reviewRepository.deleteByReviewer(user);
+                    notificationRepository.deleteByRecipient(user);
+                    messageRepository.deleteBySenderIdOrReceiverId(id, id);
+                    studyTaskRepository.deleteByUserId(id);
+                    reviewRequestRepository.deleteByRequester(user);
+                    tuitionFeeRepository.deleteByUserId(id);
+                    
+                    userRepository.delete(user);
+                    return ResponseEntity.ok("Profile and all associated data deleted successfully.");
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."));
     }
 }

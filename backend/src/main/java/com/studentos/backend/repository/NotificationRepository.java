@@ -10,4 +10,10 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByRecipientOrderByCreatedAtDesc(User recipient);
+    
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByRecipient(User recipient);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteBySender(User sender);
 }

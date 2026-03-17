@@ -8,6 +8,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class LostFoundController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<LostFoundItem> reportItem(@RequestBody LostFoundRequest request) {
         Optional<User> reporterOpt = userRepository.findById(request.getReporterId());
         if (reporterOpt.isEmpty()) {
@@ -70,6 +72,7 @@ public class LostFoundController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @RequestBody LostFoundRequest request) {
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -90,6 +93,7 @@ public class LostFoundController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -103,6 +107,7 @@ public class LostFoundController {
     }
 
     @PutMapping("/{id}/resolve")
+    @Transactional
     public ResponseEntity<LostFoundItem> resolveItem(@PathVariable Long id) {
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isPresent()) {

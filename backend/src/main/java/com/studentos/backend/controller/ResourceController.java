@@ -6,39 +6,64 @@ import com.studentos.backend.repository.ResourceRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
+import com.studentos.backend.service.FileStorageService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 import java.util.Optional;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ResourceRequest {
+    private String title;
+    private String description;
+    private String courseCode;
+    private String courseTitle;
+    private String fileUrl;
+    private String type;
+    private Long uploaderId;
+}
 
 @RestController
 @RequestMapping("/api/resources")
 @CrossOrigin(origins = "*")
 public class ResourceController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
+
     private final ResourceRepository resourceRepository;
     private final UserRepository userRepository;
     private final AsyncService asyncService;
     private final ActivityService activityService;
+    private final FileStorageService fileStorageService;
 
     public ResourceController(ResourceRepository resourceRepository, 
                               UserRepository userRepository, 
                               AsyncService asyncService,
-                              ActivityService activityService) {
+                              ActivityService activityService,
+                              FileStorageService fileStorageService) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
         this.asyncService = asyncService;
         this.activityService = activityService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
     public List<Resource> getAllResources(@RequestParam(required = false) String query) {
-        System.out.println("DEBUG: Handled GET /api/resources (List)");
+        logger.debug("Fetching all resources, query: {}", query);
         if (query != null && !query.trim().isEmpty()) {
             return resourceRepository.findByCourseCodeIgnoreCaseContainingOrTitleIgnoreCaseContaining(query, query);
         }
@@ -46,32 +71,35 @@ public class ResourceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getResourceById(@PathVariable String id) {
-        System.out.println("DEBUG: Handled GET /api/resources/" + id);
-        try {
-            Long longId = Long.parseLong(id);
-            Optional<Resource> resourceOpt = resourceRepository.findById(longId);
-            if (resourceOpt.isPresent()) {
-                return ResponseEntity.ok(resourceOpt.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Diagnostic: Resource " + id + " not found in DB.");
-            }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Diagnostic: ID " + id + " is not a valid number.");
+    public ResponseEntity<?> getResourceById(@PathVariable Long id) {
+        logger.debug("Fetching resource by ID: {}", id);
+        Optional<Resource> resourceOpt = resourceRepository.findById(id);
+        if (resourceOpt.isPresent()) {
+            return ResponseEntity.ok(resourceOpt.get());
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
+    @Transactional
     public ResponseEntity<Resource> uploadResource(
-            @RequestPart("resource") String resourceJson,
-            @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file) {
+            @RequestPart("resource") ResourceRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            ResourceRequest request = mapper.readValue(resourceJson, ResourceRequest.class);
-            
+            // Comprehensive Validation
+            if (request.getTitle() == null || request.getTitle().trim().isEmpty() ||
+                request.getCourseCode() == null || request.getCourseCode().trim().isEmpty() ||
+                request.getDescription() == null || request.getDescription().trim().isEmpty() ||
+                request.getCourseTitle() == null || request.getCourseTitle().trim().isEmpty() ||
+                request.getUploaderId() == null) {
+                logger.warn("Invalid upload request: missing mandatory fields");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Optional<User> uploaderOpt = userRepository.findById(request.getUploaderId());
             if (uploaderOpt.isEmpty()) {
+                logger.error("Uploader ID {} not found", request.getUploaderId());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
 
@@ -79,16 +107,13 @@ public class ResourceController {
 
             // Handle file upload if present
             if (file != null && !file.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
-                java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                
-                // Build the URL for the file
-                fileUrl = "/uploads/" + fileName;
+                logger.info("Storing uploaded file for resource: {}", request.getTitle());
+                fileUrl = fileStorageService.storeFile(file);
             }
 
             if (fileUrl == null || fileUrl.trim().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+                logger.warn("No file or URL provided for resource: {}", request.getTitle());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
 
             Resource resource = Resource.builder()
@@ -104,7 +129,7 @@ public class ResourceController {
 
             Resource savedResource = resourceRepository.save(resource);
             
-            // Trigger background processing (Multithreading)
+            // Trigger background processing
             asyncService.processResourceBackground(savedResource.getTitle());
 
             // Log Activity
@@ -116,70 +141,86 @@ public class ResourceController {
                 "success"
             );
 
+            logger.info("Successfully uploaded resource: {}", savedResource.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error uploading resource", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {"multipart/form-data"})
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    @Transactional
     public ResponseEntity<?> updateResource(
-            @PathVariable String id, 
-            @RequestPart("resource") String resourceJson,
-            @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file) {
+            @PathVariable Long id, 
+            @RequestPart("resource") ResourceRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         
-        System.out.println("DEBUG: Handled PUT /api/resources/" + id);
+        logger.info("Updating resource ID: {}", id);
         try {
-            Long longId = Long.parseLong(id);
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            ResourceRequest request = mapper.readValue(resourceJson, ResourceRequest.class);
-            
-            Optional<Resource> resourceOpt = resourceRepository.findById(longId);
+            Optional<Resource> resourceOpt = resourceRepository.findById(id);
             if (resourceOpt.isPresent()) {
                 Resource resource = resourceOpt.get();
+                
+                // Track old file for conditional deletion
+                String oldFileUrl = resource.getFileUrl();
+                
                 resource.setTitle(request.getTitle());
                 resource.setDescription(request.getDescription());
                 resource.setCourseCode(request.getCourseCode());
                 resource.setCourseTitle(request.getCourseTitle());
                 resource.setType(request.getType());
                 
+                // Fix: Allow updating fileUrl (for external links) even if no new file is uploaded
+                if (request.getFileUrl() != null && !request.getFileUrl().isEmpty()) {
+                    resource.setFileUrl(request.getFileUrl());
+                }
+                
                 if (file != null && !file.isEmpty()) {
-                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                    java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
-                    java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    resource.setFileUrl("/uploads/" + fileName);
+                    logger.info("Storing new file for update of resource: {}", id);
+                    String newFileUrl = fileStorageService.storeFile(file);
+                    resource.setFileUrl(newFileUrl);
+                    
+                    // Cleanup old file only if it was a local storage file and is replaced
+                    if (oldFileUrl != null && oldFileUrl.startsWith("/uploads/") && !oldFileUrl.equals(newFileUrl)) {
+                        fileStorageService.deleteFile(oldFileUrl);
+                    }
                 }
                 
                 Resource updated = resourceRepository.save(resource);
+                logger.info("Successfully updated resource: {}", id);
                 return ResponseEntity.ok(updated);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: ResourceID " + id + " not found in DB.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error updating resource ID: " + id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteResource(@PathVariable String id, @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-        System.out.println("DEBUG: Handled DELETE /api/resources/" + id);
-        try {
-            Long longId = Long.parseLong(id);
-            if (resourceRepository.existsById(longId)) {
-                resourceRepository.deleteById(longId);
-                return ResponseEntity.ok("Resource deleted successfully.");
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteResource(@PathVariable Long id) {
+        logger.info("Deleting resource ID: {}", id);
+        Optional<Resource> resourceOpt = resourceRepository.findById(id);
+        if (resourceOpt.isPresent()) {
+            Resource resource = resourceOpt.get();
+            // Delete file from disk if it's a local upload
+            if (resource.getFileUrl() != null && resource.getFileUrl().startsWith("/uploads/")) {
+                fileStorageService.deleteFile(resource.getFileUrl());
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: ResourceID " + id + " not found in DB.");
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Error: ID " + id + " is not a valid number.");
+            resourceRepository.delete(resource);
+            logger.info("Successfully deleted resource: {}", id);
+            return ResponseEntity.ok("Resource deleted successfully.");
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
     }
 
     @PostMapping("/{id}/upvote")
+    @Transactional
     public ResponseEntity<Resource> upvoteResource(@PathVariable Long id) {
-        System.out.println("Upvoting resource ID: " + id);
+        logger.info("Upvoting resource ID: {}", id);
         Optional<Resource> resourceOpt = resourceRepository.findById(id);
         if (resourceOpt.isPresent()) {
             Resource resource = resourceOpt.get();
@@ -189,33 +230,4 @@ public class ResourceController {
         return ResponseEntity.notFound().build();
     }
 
-    public static class ResourceRequest {
-        private String title;
-        private String description;
-        private String courseCode;
-        private String courseTitle;
-        private String fileUrl;
-        private String type;
-        private Long uploaderId;
-
-        public ResourceRequest() {}
-        public ResourceRequest(String title, String description, String courseCode, String courseTitle, String fileUrl, String type, Long uploaderId) {
-            this.title = title; this.description = description; this.courseCode = courseCode; this.courseTitle = courseTitle; this.fileUrl = fileUrl; this.type = type; this.uploaderId = uploaderId;
-        }
-
-        public String getTitle() { return title; }
-        public void setTitle(String title) { this.title = title; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-        public String getCourseCode() { return courseCode; }
-        public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
-        public String getCourseTitle() { return courseTitle; }
-        public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
-        public String getFileUrl() { return fileUrl; }
-        public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
-        public Long getUploaderId() { return uploaderId; }
-        public void setUploaderId(Long uploaderId) { this.uploaderId = uploaderId; }
-    }
 }

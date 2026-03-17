@@ -11,4 +11,7 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     List<Activity> findByUserIdOrderByTimestampDesc(Long userId);
     List<Activity> findByUserIdOrderByTimestampDesc(Long userId, Pageable pageable);
+    
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByUserId(Long userId);
 }

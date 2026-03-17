@@ -13,4 +13,7 @@ public interface MarketplaceItemRepository extends JpaRepository<MarketplaceItem
     List<MarketplaceItem> findByCategoryIgnoreCaseAndSoldFalseOrderByListedAtDesc(String category);
     long countBySellerAndSoldTrue(User seller);
     long countBySeller(User seller);
+    List<MarketplaceItem> findAllBySeller(User seller);
+    @org.springframework.transaction.annotation.Transactional
+    void deleteBySeller(User seller);
 }

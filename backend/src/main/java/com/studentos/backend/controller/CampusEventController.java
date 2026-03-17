@@ -4,6 +4,7 @@ import com.studentos.backend.model.CampusEvent;
 import com.studentos.backend.repository.CampusEventRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class CampusEventController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<CampusEvent> createEvent(@RequestBody CampusEventRequest request) {
         CampusEvent event = CampusEvent.builder()
                 .title(request.getTitle())
@@ -40,6 +42,7 @@ public class CampusEventController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<CampusEvent> updateEvent(
             @PathVariable Long id, 
             @RequestBody CampusEventRequest request,
@@ -64,6 +67,7 @@ public class CampusEventController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
             @RequestHeader(value = "X-User-Id", required = false) Long userId,

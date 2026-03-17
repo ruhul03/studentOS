@@ -7,6 +7,7 @@ import com.studentos.backend.repository.MessageRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.NotificationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class MessageController {
     }
 
     @PostMapping("/send")
+    @Transactional
     public ResponseEntity<Message> sendMessage(@RequestBody MessageRequest request) {
         Message message = Message.builder()
                 .senderId(request.getSenderId())

@@ -10,4 +10,8 @@ import java.util.List;
 public interface CourseReviewRepository extends JpaRepository<CourseReview, Long> {
     List<CourseReview> findByCourseCodeIgnoreCaseOrderByCreatedAtDesc(String courseCode);
     List<CourseReview> findAllByOrderByCreatedAtDesc();
+    List<CourseReview> findAllByReviewer(com.studentos.backend.model.User reviewer);
+    
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByReviewer(com.studentos.backend.model.User reviewer);
 }

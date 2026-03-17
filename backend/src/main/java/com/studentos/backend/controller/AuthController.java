@@ -5,6 +5,7 @@ import com.studentos.backend.dto.LoginRequest;
 import com.studentos.backend.dto.RegisterRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Transactional
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registration) {
         // Enforce UIU email domain extension
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)?uiu\\.ac\\.bd$";
@@ -65,6 +67,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
+    @Transactional
     public ResponseEntity<?> verifyEmail(@RequestBody java.util.Map<String, String> request) {
         String email = request.get("email");
         String code = request.get("code");
@@ -126,6 +129,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Transactional
     public ResponseEntity<?> resetPassword(@RequestBody ForgotRequest request) {
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");

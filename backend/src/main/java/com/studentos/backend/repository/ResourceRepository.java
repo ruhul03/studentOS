@@ -15,6 +15,10 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findAllByOrderByUpvotesDesc();
     
     long countByUploader(User uploader);
+    List<Resource> findAllByUploader(User uploader);
+    
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByUploader(User uploader);
     
     @Query("SELECT COUNT(DISTINCT r.courseCode) FROM Resource r WHERE r.uploader = :uploader")
     long countUniqueCoursesByUploader(@Param("uploader") User uploader);

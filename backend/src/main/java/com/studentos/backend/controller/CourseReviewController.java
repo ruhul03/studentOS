@@ -10,6 +10,7 @@ import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,6 +48,7 @@ public class CourseReviewController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<CourseReview> createReview(@RequestBody CourseReviewRequest request) {
         Optional<User> reviewerOpt = userRepository.findById(request.getReviewerId());
         if (reviewerOpt.isEmpty()) {
@@ -79,6 +81,7 @@ public class CourseReviewController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<CourseReview> updateReview(@PathVariable Long id, @RequestBody CourseReviewRequest request) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isEmpty())
@@ -101,6 +104,7 @@ public class CourseReviewController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteReview(@PathVariable Long id, @RequestParam Long userId) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isEmpty())
@@ -122,6 +126,7 @@ public class CourseReviewController {
     }
 
     @PutMapping("/{id}/helpful")
+    @Transactional
     public ResponseEntity<CourseReview> markHelpful(@PathVariable Long id) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isPresent()) {
@@ -140,6 +145,7 @@ public class CourseReviewController {
     }
 
     @PostMapping("/{id}/comments")
+    @Transactional
     public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentRequest request) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         Optional<User> commenterOpt = userRepository.findById(request.getCommenterId());
@@ -176,6 +182,7 @@ public class CourseReviewController {
     }
 
     @PostMapping("/{reviewId}/comments/{commentId}/replies")
+    @Transactional
     public ResponseEntity<Comment> addReply(@PathVariable Long reviewId, @PathVariable Long commentId,
             @RequestBody CommentRequest request) {
         Optional<Comment> parentOpt = commentRepository.findById(commentId);

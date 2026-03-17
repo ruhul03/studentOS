@@ -4,6 +4,7 @@ import com.studentos.backend.model.CampusService;
 import com.studentos.backend.repository.CampusServiceRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -36,6 +37,7 @@ public class CampusServiceController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<CampusService> createService(@RequestBody CampusServiceRequest request) {
         CampusService service = CampusService.builder()
                 .name(request.getName())
@@ -52,6 +54,7 @@ public class CampusServiceController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<CampusService> updateService(@PathVariable Long id, @RequestBody CampusServiceRequest request) {
         return serviceRepository.findById(id)
                 .map(service -> {
@@ -69,6 +72,7 @@ public class CampusServiceController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         if (serviceRepository.existsById(id)) {
             serviceRepository.deleteById(id);

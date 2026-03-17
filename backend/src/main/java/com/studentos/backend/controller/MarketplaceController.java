@@ -7,6 +7,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -39,6 +40,7 @@ public class MarketplaceController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<MarketplaceItem> createListing(@RequestBody MarketplaceRequest request) {
         Optional<User> sellerOpt = userRepository.findById(request.getSellerId());
         if (sellerOpt.isEmpty()) {
@@ -72,6 +74,7 @@ public class MarketplaceController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<MarketplaceItem> updateItem(@PathVariable Long id, @RequestBody MarketplaceRequest request) {
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -93,6 +96,7 @@ public class MarketplaceController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -106,6 +110,7 @@ public class MarketplaceController {
     }
 
     @PutMapping("/{id}/sold")
+    @Transactional
     public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable Long id) {
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isPresent()) {
