@@ -1,9 +1,9 @@
 .landing-container {
   min-height: 100vh;
-  background-color: var(--bg-dark);
+  background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(246, 139, 30, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(251, 146, 60, 0.15) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, hsla(270, 100%, 65%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(180, 100%, 50%, 0.15) 0px, transparent 50%);
   color: white;
   overflow-x: hidden;
 }
@@ -17,8 +17,8 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  backdrop-filter: blur(12px);
-  background: rgba(2, 6, 23, 0.5);
+  backdrop-filter: blur(24px);
+  background: hsla(240, 30%, 3%, 0.7);
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -28,9 +28,9 @@
 }
 
 .nav-btn {
-  padding: 0.6rem 1.25rem;
+  padding: 0.6rem 2rem;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s;
@@ -38,8 +38,9 @@
 }
 
 .nav-btn.primary {
-  background: white;
-  color: #020617;
+  background: var(--aura-purple);
+  color: white;
+  box-shadow: 0 4px 15px var(--aura-purple-glow);
 }
 
 .nav-btn.secondary {
@@ -50,7 +51,7 @@
 
 .nav-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
 }
 
 /* Hero */
@@ -65,14 +66,16 @@
 
 .hero-badge {
   display: inline-block;
-  background: rgba(246, 139, 30, 0.1);
-  color: #fb923c;
-  padding: 0.5rem 1rem;
+  background: hsla(270, 100%, 65%, 0.1);
+  color: var(--aura-purple);
+  padding: 0.5rem 1.25rem;
   border-radius: 999px;
   font-size: 0.85rem;
-  font-weight: 700;
-  border: 1px solid rgba(246, 139, 30, 0.2);
+  font-weight: 800;
+  border: 1px solid hsla(270, 100%, 65%, 0.2);
   margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .hero h1 {
@@ -84,15 +87,16 @@
 }
 
 .hero h1 span {
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 0 15px var(--aura-purple-glow));
 }
 
 .hero p {
   font-size: 1.25rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   margin-bottom: 3rem;
   max-width: 600px;
   line-height: 1.6;
@@ -106,9 +110,9 @@
 
 .btn-main {
   padding: 1.25rem 2.5rem;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -118,20 +122,22 @@
 }
 
 .primary-gradient {
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   color: white;
-  box-shadow: 0 10px 30px -10px rgba(246, 139, 30, 0.5);
+  box-shadow: 0 10px 30px -10px var(--aura-purple-glow);
 }
 
 .secondary-glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: hsla(0, 0%, 100%, 0.05);
   color: white;
   border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
 }
 
 .btn-main:hover {
   transform: translateY(-4px) scale(1.02);
   filter: brightness(1.1);
+  box-shadow: 0 15px 35px -10px var(--aura-purple-glow);
 }
 
 .hero-stats {
@@ -170,7 +176,7 @@
   position: relative;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(246, 139, 30, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, hsla(270, 100%, 65%, 0.15) 0%, transparent 70%);
 }
 
 .feature-card-floating {
@@ -242,7 +248,7 @@
   margin-bottom: 2rem;
 }
 
-.study-bg { background: rgba(246, 139, 30, 0.1); color: #F68B1E; }
+.study-bg { background: hsla(270, 100%, 65%, 0.1); color: var(--aura-purple); }
 .services-bg { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .planner-bg { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
 .market-bg { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
@@ -318,11 +324,8 @@ cite {
   font-weight: 700;
 }
 
-.link-group span {
-  display: block;
-  color: var(--text-dim);
-  margin-bottom: 0.75rem;
-  cursor: pointer;
+.link-group span:hover {
+  color: var(--aura-purple);
 }
 
 .footer-bottom {

@@ -22,21 +22,21 @@
 }
 
 .add-event-btn {
-  background: var(--primary);
+  background: var(--aura-purple);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 2rem;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px var(--aura-purple-glow);
 }
 
 .add-event-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 25px var(--aura-purple-glow);
 }
 
 /* Form Styles */
@@ -135,8 +135,9 @@
 
 .event-card:hover {
   transform: translateY(-5px);
-  border-color: #F68B1E50;
-  background: hsla(0, 0%, 100%, 0.05);
+  border-color: hsla(270, 100%, 65%, 0.3);
+  background: hsla(240, 30%, 8%, 0.7);
+  box-shadow: 0 15px 35px -15px var(--aura-purple-glow);
 }
 
 .event-details {
@@ -241,17 +242,17 @@
 }
 
 .organizer strong {
-  color: #F68B1E;
+  color: var(--aura-purple);
 }
 
 .your-post-badge {
   font-size: 0.65rem;
-  padding: 0.3rem 0.75rem;
-  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
-  color: #F68B1E;
-  border: 1px solid hsla(var(--uiu-orange-hue), 93%, 54%, 0.2);
+  padding: 0.35rem 1rem;
+  background: hsla(270, 100%, 65%, 0.1);
+  color: var(--aura-purple);
+  border: 1px solid hsla(270, 100%, 65%, 0.3);
   border-radius: 99px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -282,7 +283,9 @@
 .submit-btn {
   flex: 2;
   margin-top: 0 !important;
-  background: linear-gradient(135deg, #F68B1E, #fb923c) !important;
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink)) !important;
+  font-weight: 800;
+  box-shadow: 0 5px 15px var(--aura-purple-glow);
 }
 
 .add-event-btn.cancel {

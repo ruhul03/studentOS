@@ -6,6 +6,9 @@ import com.studentos.backend.repository.ResourceRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +38,27 @@ public class ResourceController {
 
     @GetMapping
     public List<Resource> getAllResources(@RequestParam(required = false) String query) {
+        System.out.println("DEBUG: Handled GET /api/resources (List)");
         if (query != null && !query.trim().isEmpty()) {
             return resourceRepository.findByCourseCodeIgnoreCaseContainingOrTitleIgnoreCaseContaining(query, query);
         }
         return resourceRepository.findAllByOrderByUpvotesDesc();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getResourceById(@PathVariable String id) {
+        System.out.println("DEBUG: Handled GET /api/resources/" + id);
+        try {
+            Long longId = Long.parseLong(id);
+            Optional<Resource> resourceOpt = resourceRepository.findById(longId);
+            if (resourceOpt.isPresent()) {
+                return ResponseEntity.ok(resourceOpt.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Diagnostic: Resource " + id + " not found in DB.");
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Diagnostic: ID " + id + " is not a valid number.");
+        }
     }
 
     @PostMapping
@@ -77,8 +97,48 @@ public class ResourceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateResource(@PathVariable String id, @RequestBody ResourceRequest request) {
+        System.out.println("DEBUG: Handled PUT /api/resources/" + id);
+        try {
+            Long longId = Long.parseLong(id);
+            Optional<Resource> resourceOpt = resourceRepository.findById(longId);
+            if (resourceOpt.isPresent()) {
+                Resource resource = resourceOpt.get();
+                resource.setTitle(request.getTitle());
+                resource.setDescription(request.getDescription());
+                resource.setCourseCode(request.getCourseCode());
+                resource.setCourseTitle(request.getCourseTitle());
+                resource.setFileUrl(request.getFileUrl());
+                resource.setType(request.getType());
+                Resource updated = resourceRepository.save(resource);
+                return ResponseEntity.ok(updated);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: ResourceID " + id + " not found in DB.");
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Error: ID " + id + " is not a valid number.");
+        }
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteResource(@PathVariable String id, @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        System.out.println("DEBUG: Handled DELETE /api/resources/" + id);
+        try {
+            Long longId = Long.parseLong(id);
+            if (resourceRepository.existsById(longId)) {
+                resourceRepository.deleteById(longId);
+                return ResponseEntity.ok("Resource deleted successfully.");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: ResourceID " + id + " not found in DB.");
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Error: ID " + id + " is not a valid number.");
+        }
+    }
+
     @PostMapping("/{id}/upvote")
     public ResponseEntity<Resource> upvoteResource(@PathVariable Long id) {
+        System.out.println("Upvoting resource ID: " + id);
         Optional<Resource> resourceOpt = resourceRepository.findById(id);
         if (resourceOpt.isPresent()) {
             Resource resource = resourceOpt.get();
@@ -87,30 +147,34 @@ public class ResourceController {
         }
         return ResponseEntity.notFound().build();
     }
-}
 
-class ResourceRequest {
-    private String title;
-    private String description;
-    private String courseCode;
-    private String courseTitle;
-    private String fileUrl;
-    private String type;
-    private Long uploaderId;
+    public static class ResourceRequest {
+        private String title;
+        private String description;
+        private String courseCode;
+        private String courseTitle;
+        private String fileUrl;
+        private String type;
+        private Long uploaderId;
 
-    // Getters and Setters
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
-    public String getCourseTitle() { return courseTitle; }
-    public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
-    public String getFileUrl() { return fileUrl; }
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public Long getUploaderId() { return uploaderId; }
-    public void setUploaderId(Long uploaderId) { this.uploaderId = uploaderId; }
+        public ResourceRequest() {}
+        public ResourceRequest(String title, String description, String courseCode, String courseTitle, String fileUrl, String type, Long uploaderId) {
+            this.title = title; this.description = description; this.courseCode = courseCode; this.courseTitle = courseTitle; this.fileUrl = fileUrl; this.type = type; this.uploaderId = uploaderId;
+        }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+        public String getCourseCode() { return courseCode; }
+        public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+        public String getCourseTitle() { return courseTitle; }
+        public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
+        public String getFileUrl() { return fileUrl; }
+        public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+        public String getType() { return type; }
+        public void setType(String type) { this.type = type; }
+        public Long getUploaderId() { return uploaderId; }
+        public void setUploaderId(Long uploaderId) { this.uploaderId = uploaderId; }
+    }
 }

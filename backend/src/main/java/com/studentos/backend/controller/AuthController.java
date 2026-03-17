@@ -27,6 +27,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registration) {
+        // Enforce UIU email domain extension
+        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)?uiu\\.ac\\.bd$";
+        if (registration.getEmail() == null || !registration.getEmail().matches(emailRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please provide a valid UIU email address (e.g., student@bscse.uiu.ac.bd).");
+        }
+
         if (userRepository.existsByEmail(registration.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
@@ -39,17 +45,41 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
         }
         
+        // Generate a 6-digit verification code
+        String verificationCode = String.format("%06d", new java.util.Random().nextInt(1000000));
+        System.out.println("VERIFICATION CODE FOR " + registration.getEmail() + ": " + verificationCode);
+
         User user = User.builder()
                 .name(registration.getName() != null ? registration.getName() : registration.getUsername())
                 .username(registration.getUsername())
                 .email(registration.getEmail())
                 .password(passwordEncoder.encode(registration.getPassword()))
                 .role("STUDENT")
+                .isVerified(false)
+                .verificationCode(verificationCode)
                 .updateCount(0)
                 .build();
         
         User savedUser = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyEmail(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (user.getVerificationCode() != null && user.getVerificationCode().equals(code)) {
+                user.setVerified(true);
+                user.setVerificationCode(null);
+                userRepository.save(user);
+                return ResponseEntity.ok("Email verified successfully.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code.");
     }
 
     @PostMapping("/login")
@@ -73,6 +103,9 @@ public class AuthController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                if (!user.isVerified()) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not verified. Please verify your email.");
+                }
                 return ResponseEntity.ok(user);
             }
         }

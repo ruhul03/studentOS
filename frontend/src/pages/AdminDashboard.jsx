@@ -198,7 +198,7 @@ export function AdminDashboard() {
             <div className="stat-card glass-card">
               <h3>TOTAL CITIZENS</h3>
               <div className="stat-value">{stats.totalUsers}</div>
-              <Users color="#fb923c" size={24} />
+              <Users color="var(--aura-pink)" size={24} />
             </div>
             <div className="stat-card glass-card">
               <h3>KNOWLEDGE ASSETS</h3>

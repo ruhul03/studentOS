@@ -18,7 +18,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 2rem;
-  border-bottom: 1px solid hsla(var(--uiu-orange-hue), 93%, 54%, 0.15);
+  border-bottom: 1px solid hsla(270, 100%, 65%, 0.15);
 }
 
 .header-titles h1 {
@@ -31,7 +31,8 @@
 }
 
 .header-titles h1 span {
-  color: #F68B1E;
+  color: var(--aura-purple);
+  text-shadow: 0 0 15px var(--aura-purple-glow);
 }
 
 .header-titles p {
@@ -57,11 +58,11 @@
 }
 
 .back-dashboard-btn:hover {
-  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.15);
-  border-color: #F68B1E;
-  color: #F68B1E;
+  background: hsla(270, 100%, 65%, 0.15);
+  border-color: var(--aura-purple);
+  color: var(--aura-purple);
   transform: translateX(-8px);
-  box-shadow: 0 10px 30px hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
+  box-shadow: 0 10px 30px var(--aura-purple-glow);
 }
 
 .activity-feed {
@@ -135,7 +136,7 @@
 
 .activity-card:hover .activity-action {
   opacity: 1;
-  color: #F68B1E;
+  color: var(--aura-purple);
   transform: translateX(5px);
 }
 

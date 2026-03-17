@@ -1,20 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Core brand colors using HSL for better manipulation */
-  --uiu-orange-hue: 31;
-  --uiu-orange: hsl(var(--uiu-orange-hue), 93%, 54%);
-  --uiu-orange-glow: hsla(var(--uiu-orange-hue), 93%, 54%, 0.4);
+  /* Aura Theme Palette - Softened & Comfortable */
+  --aura-purple: hsl(270, 70%, 65%);
+  --aura-purple-glow: hsla(270, 70%, 65%, 0.2);
+  --aura-cyan: hsl(180, 70%, 50%);
+  --aura-cyan-glow: hsla(180, 70%, 50%, 0.2);
+  --aura-pink: hsl(320, 70%, 65%);
+  --aura-pink-glow: hsla(320, 70%, 65%, 0.2);
   
-  --primary: var(--uiu-orange);
-  --primary-hover: hsl(var(--uiu-orange-hue), 93%, 45%);
-  --primary-glow: var(--uiu-orange-glow);
+  --primary: var(--aura-purple);
+  --primary-hover: hsl(270, 70%, 55%);
+  --primary-glow: var(--aura-purple-glow);
   
-  /* Modern Dark Palette */
-  --bg-deep: hsl(222, 47%, 4%);
-  --bg-card: hsla(222, 47%, 8%, 0.6);
-  --glass-bg: hsla(222, 47%, 12%, 0.4);
-  --glass-border: hsla(255, 255%, 255%, 0.08);
+  /* Modern Dark Palette - Deepened for Aura */
+  --bg-deep: hsl(240, 30%, 3%);
+  --bg-card: hsla(240, 30%, 6%, 0.6);
+  --glass-bg: hsla(240, 30%, 10%, 0.4);
+  --glass-border: hsla(0, 0%, 100%, 0.08);
   
   /* Text */
   --text-main: hsl(210, 40%, 98%);
@@ -41,12 +44,12 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   
-  /* Advanced Mesh Gradient Background */
+  /* Aura Mesh Gradient Background - Softened */
   background: 
-    radial-gradient(circle at 0% 0%, hsla(var(--uiu-orange-hue), 93%, 54%, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 100% 0%, hsla(220, 80%, 50%, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 100% 100%, hsla(280, 80%, 50%, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 0% 100%, hsla(30, 80%, 50%, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 0% 0%, hsla(270, 70%, 65%, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, hsla(180, 70%, 50%, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, hsla(320, 70%, 65%, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 0% 100%, hsla(270, 70%, 65%, 0.05) 0%, transparent 40%),
     var(--bg-deep);
   background-attachment: fixed;
 }
@@ -63,9 +66,9 @@ body {
   }
 }
 
-@keyframes glassGlow {
-  0%, 100% { border-color: hsla(0, 0%, 100%, 0.08); }
-  50% { border-color: hsla(var(--uiu-orange-hue), 93%, 54%, 0.3); }
+@keyframes auraGlow {
+  0%, 100% { border-color: hsla(0, 0%, 100%, 0.08); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
+  50% { border-color: hsla(270, 70%, 65%, 0.2); box-shadow: 0 10px 35px -15px hsla(270, 70%, 65%, 0.15); }
 }
 
 .animate-in {
@@ -74,9 +77,16 @@ body {
 
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--glass-border);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: hsla(0, 0%, 100%, 0.15);
+  background: hsla(240, 30%, 8%, 0.7);
 }
 
 a {

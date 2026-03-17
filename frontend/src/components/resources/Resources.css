@@ -119,54 +119,55 @@
   outline: none;
 }
 
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
 .submit-upload-btn {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  flex: 2;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
   border: none;
-  padding: 1.25rem;
-  border-radius: 1.25rem;
-  font-weight: 800;
-  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-top: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.submit-upload-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: 0.5s;
+  gap: 0.6rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .submit-upload-btn:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
   filter: brightness(1.1);
 }
 
-.submit-upload-btn:hover::after {
-  left: 100%;
+.cancel-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.submit-upload-btn:active {
-  transform: translateY(-1px) scale(0.99);
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
 }
 
 /* Grid Typography */
@@ -379,62 +380,44 @@
 .upvote-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  background: hsla(0, 0%, 100%, 0.05);
-  border: 1px solid hsla(0, 0%, 100%, 0.1);
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.7);
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 1.25rem;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 600;
-  height: 44px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 700;
+  height: 48px;
   min-width: 100px;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .upvote-btn:hover:not(:disabled) {
-  background: hsla(0, 0%, 100%, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.upvote-btn.upvoted, .upvote-btn.active {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border-color: #10b981;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);
 }
 
 .upvote-btn:disabled {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #059669;
-  color: white;
-  cursor: not-allowed;
-  opacity: 0.8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.upvote-btn.upvoted {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #059669;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.upvote-btn.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #059669;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.upvote-btn.active:hover:not(:disabled) {
-  background: linear-gradient(135deg, #059669, #047857);
-  border-color: #047857;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  cursor: default;
 }
 
 .upvote-count {
   font-weight: 800;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
 }
 
 .empty-state-container {

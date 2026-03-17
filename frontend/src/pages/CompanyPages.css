@@ -101,7 +101,7 @@
 .value-icon {
   width: 32px;
   height: 32px;
-  color: #F68B1E;
+  color: var(--aura-purple);
   margin-bottom: 1.5rem;
 }
 

@@ -22,7 +22,7 @@
   font-size: 3rem;
   font-weight: 800;
   letter-spacing: -0.04em;
-  background: linear-gradient(to right, #fff, hsl(215, 20%, 65%));
+  background: linear-gradient(to right, #fff, var(--aura-purple));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -39,7 +39,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: linear-gradient(135deg, hsl(31, 93%, 54%), hsl(20, 93%, 54%));
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   color: white;
   border: none;
   padding: 0.85rem 1.75rem;
@@ -48,12 +48,12 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 4px 15px hsla(31, 93%, 54%, 0.3);
+  box-shadow: 0 4px 15px var(--aura-purple-glow);
 }
 
 .report-btn:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 8px 25px hsla(31, 93%, 54%, 0.4);
+  box-shadow: 0 8px 25px var(--aura-purple-glow);
   filter: brightness(1.1);
 }
 
@@ -116,10 +116,10 @@
 
 .lf-card:hover {
   transform: translateY(-10px);
-  border-color: hsla(var(--uiu-orange-hue), 93%, 54%, 0.3);
+  border-color: hsla(270, 100%, 65%, 0.3);
   box-shadow: 
     0 30px 60px -15px rgba(0, 0, 0, 0.5),
-    0 0 20px hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
+    0 0 20px var(--aura-purple-glow);
 }
 
 .lf-card.resolved-card {

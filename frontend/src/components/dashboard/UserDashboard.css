@@ -30,16 +30,16 @@
   font-weight: 800;
   margin-bottom: 1rem;
   letter-spacing: -0.06em;
-  background: linear-gradient(135deg, white 60%, hsla(var(--uiu-orange-hue), 93%, 54%, 0.6));
+  background: linear-gradient(135deg, white 60%, var(--aura-purple));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .welcome-section h1 span {
-  color: #F68B1E;
+  color: var(--aura-purple);
   -webkit-text-fill-color: initial;
-  text-shadow: 0 0 30px hsla(var(--uiu-orange-hue), 93%, 54%, 0.3);
+  text-shadow: 0 0 20px var(--aura-purple-glow);
 }
 
 .welcome-section p {
@@ -57,8 +57,9 @@
   border: 1px solid hsla(0, 0%, 100%, 0.08);
   border-radius: 999px;
   font-weight: 700;
-  color: #F68B1E;
+  color: var(--aura-purple);
   font-size: 0.95rem;
+  box-shadow: 0 0 10px var(--aura-purple-glow);
 }
 
 /* Stats Grid - Diamond Cards */
@@ -85,8 +86,8 @@
 
 .stat-card:hover {
   transform: translateY(-8px);
-  border-color: hsla(var(--uiu-orange-hue), 93%, 54%, 0.3);
-  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.05);
+  border-color: hsla(270, 100%, 65%, 0.3);
+  background: hsla(270, 100%, 65%, 0.05);
 }
 
 .stat-icon {
@@ -98,8 +99,8 @@
   justify-content: center;
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  background: hsla(var(--uiu-orange-hue), 93%, 54%, 0.1);
-  color: #F68B1E;
+  background: hsla(270, 100%, 65%, 0.1);
+  color: var(--aura-purple);
 }
 
 .stat-info {
@@ -250,20 +251,20 @@ h3 {
 
 /* Specific Action Accents */
 .action-upload { 
-  --accent-glow: #F68B1E; 
-  --accent-glow-alpha: rgba(246, 139, 30, 0.4);
+  --accent-glow: var(--aura-purple); 
+  --accent-glow-alpha: var(--aura-purple-glow);
 }
 .action-task { 
-  --accent-glow: #3b82f6; 
-  --accent-glow-alpha: rgba(59, 130, 246, 0.4);
+  --accent-glow: var(--aura-cyan); 
+  --accent-glow-alpha: var(--aura-cyan-glow);
 }
 .action-sell { 
-  --accent-glow: #10b981; 
-  --accent-glow-alpha: rgba(16, 185, 129, 0.4);
+  --accent-glow: var(--aura-pink); 
+  --accent-glow-alpha: var(--aura-pink-glow);
 }
 .action-admin { 
-  --accent-glow: #8b5cf6; 
-  --accent-glow-alpha: rgba(139, 92, 246, 0.4);
+  --accent-glow: #ffffff; 
+  --accent-glow-alpha: rgba(255, 255, 255, 0.4);
 }
 
 .shimmer-overlay {
@@ -353,7 +354,7 @@ h3 {
 
 .status-dot.success { background: #10b981; box-shadow: 0 0 15px #10b98180; }
 .status-dot.warning { background: #f59e0b; box-shadow: 0 0 15px #f59e0b80; }
-.status-dot.info { background: #F68B1E; box-shadow: 0 0 15px #F68B1E80; }
+.status-dot.info { background: var(--aura-purple); box-shadow: 0 0 15px var(--aura-purple-glow); }
 
 .activity-details {
   flex: 1;
@@ -379,7 +380,7 @@ h3 {
 
 .activity-item:hover .check-icon {
   opacity: 1;
-  color: #10b981;
+  color: var(--aura-purple);
 }
 
 /* Responsiveness */

@@ -26,19 +26,21 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-cyan));
   color: white;
   border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px var(--aura-purple-glow);
 }
 
 .sell-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 25px var(--aura-purple-glow);
+  filter: brightness(1.1);
 }
 
 .market-controls {
@@ -224,11 +226,12 @@
 
 .item-price {
   font-size: 1.25rem;
-  font-weight: 700;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  font-weight: 800;
+  color: var(--aura-cyan);
+  background: hsla(180, 100%, 50%, 0.1);
   padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
+  border: 1px solid hsla(180, 100%, 50%, 0.2);
 }
 
 .item-badges {
@@ -566,7 +569,7 @@
 }
 
 .empty-tag-icon {
-  color: #F68B1E;
+  color: var(--aura-purple);
   opacity: 0.6;
   z-index: 2;
   position: relative;
@@ -579,7 +582,7 @@
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
-  background: radial-gradient(circle, hsla(var(--uiu-orange-hue), 93%, 54%, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--aura-purple-glow) 0%, transparent 70%);
   border-radius: 50%;
   animation: pulse-glow 2s infinite ease-in-out;
 }
@@ -610,21 +613,21 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   color: white;
   border: none;
-  padding: 1rem 2rem;
+  padding: 1.25rem 2.5rem;
   border-radius: 1.25rem;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 10px 30px hsla(var(--uiu-orange-hue), 93%, 54%, 0.3);
+  box-shadow: 0 10px 30px var(--aura-purple-glow);
 }
 
 .btn-create-listing:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 40px hsla(var(--uiu-orange-hue), 93%, 54%, 0.4);
+  box-shadow: 0 15px 40px var(--aura-purple-glow);
   filter: brightness(1.1);
 }
 

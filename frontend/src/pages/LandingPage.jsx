@@ -42,7 +42,6 @@ export function LandingPage() {
           <div className="hero-btns">
             <button className="btn-main primary-gradient" onClick={handleStart}>
               Get Started
-              <Zap size={20} className="icon-pulse" />
             </button>
             <button className="btn-main secondary-glass" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>Explore Features</button>
           </div>
@@ -50,7 +49,7 @@ export function LandingPage() {
         <div className="hero-visual">
           <div className="glass-orbit">
               <div className="feature-card-floating res">
-                <BookOpen color="#F68B1E" />
+                <BookOpen color="var(--aura-purple)" />
                 <span>CSE 4165 Notes</span>
               </div>
               <div className="feature-card-floating srv">
@@ -58,7 +57,7 @@ export function LandingPage() {
                 <span>UIU Medical Center</span>
               </div>
               <div className="feature-card-floating mkt">
-                <ShoppingBag color="#f59e0b" />
+                <ShoppingBag color="var(--aura-pink)" />
                 <span>UIU Bus Schedule</span>
               </div>
           </div>

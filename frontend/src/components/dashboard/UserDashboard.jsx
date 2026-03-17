@@ -82,7 +82,7 @@ export function UserDashboard({ onTabChange }) {
 
       <div className="stats-grid">
         <div className="stat-card glass-card" onClick={() => onTabChange('resources')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `#F68B1E20`, color: '#F68B1E' }}>
+          <div className="stat-icon" style={{ backgroundColor: `var(--aura-purple-glow)`, color: 'var(--aura-purple)' }}>
             <BookOpen />
           </div>
           <div className="stat-info">
@@ -92,7 +92,7 @@ export function UserDashboard({ onTabChange }) {
           <TrendingUp size={16} className="trend-icon" />
         </div>
         <div className="stat-card glass-card" onClick={() => onTabChange('planner')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `#fb923c20`, color: '#fb923c' }}>
+          <div className="stat-icon" style={{ backgroundColor: `var(--aura-cyan-glow)`, color: 'var(--aura-cyan)' }}>
             <Clock />
           </div>
           <div className="stat-info">
@@ -102,7 +102,7 @@ export function UserDashboard({ onTabChange }) {
           <TrendingUp size={16} className="trend-icon" />
         </div>
         <div className="stat-card glass-card" onClick={() => onTabChange('resources')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `#10b98120`, color: '#10b981' }}>
+          <div className="stat-icon" style={{ backgroundColor: `var(--aura-pink-glow)`, color: 'var(--aura-pink)' }}>
             <Activity />
           </div>
           <div className="stat-info">
@@ -112,7 +112,7 @@ export function UserDashboard({ onTabChange }) {
           <TrendingUp size={16} className="trend-icon" />
         </div>
         <div className="stat-card glass-card" onClick={() => onTabChange('market')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `#f59e0b20`, color: '#f59e0b' }}>
+          <div className="stat-icon" style={{ backgroundColor: `rgba(255, 255, 255, 0.1)`, color: 'white' }}>
             <ShoppingBag />
           </div>
           <div className="stat-info">

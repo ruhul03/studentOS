@@ -89,9 +89,13 @@ export function ResourceFeed() {
         setEditingResource(null);
         setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
         fetchResources();
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to update resource: ${response.status} ${errorText}`);
       }
     } catch (err) {
       console.error('Update failed', err);
+      alert(`Update error: ${err.message}`);
     }
   };
 
@@ -101,14 +105,21 @@ export function ResourceFeed() {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}`, {
         method: 'DELETE',
-        headers: { 'X-User-Id': user.id, 'X-User-Role': user.role }
+        headers: { 
+          'X-User-Id': user.id, 
+          'X-User-Role': user.role 
+        }
       });
 
       if (response.ok) {
         fetchResources();
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to delete resource: ${response.status} ${errorText}`);
       }
     } catch (err) {
       console.error('Delete failed', err);
+      alert(`Delete error: ${err.message}`);
     }
   };
 
@@ -164,9 +175,6 @@ export function ResourceFeed() {
     const newUpvotes = { ...userUpvotes, [id]: true };
     setUserUpvotes(newUpvotes);
     localStorage.setItem('userUpvotes', JSON.stringify(newUpvotes));
-    
-    // Show thanks message
-    alert('Thanks for upvoting! 🎉');
     
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { 
@@ -409,9 +417,8 @@ export function ResourceFeed() {
                       title={userUpvotes[res.id] ? 'You have already upvoted' : 'Upvote this resource'}
                       disabled={userUpvotes[res.id]}
                     >
-                      <ArrowUpCircle size={20} fill={userUpvotes[res.id] ? 'currentColor' : 'none'} />
                       <span className="upvote-count">
-                        {userUpvotes[res.id] ? 'Thanks' : res.upvotes}
+                        {userUpvotes[res.id] ? '✓ Helpful' : res.upvotes}
                       </span>
                     </button>
                   </div>

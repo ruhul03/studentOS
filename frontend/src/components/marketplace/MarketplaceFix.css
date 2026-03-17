@@ -2,43 +2,51 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 6rem 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 2px dashed rgba(246, 139, 30, 0.2);
-  border-radius: 2rem;
+  background: hsla(0, 0%, 100%, 0.02);
+  border: 2px dashed hsla(270, 100%, 65%, 0.2);
+  border-radius: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
-  animation: fadeIn 0.5s ease-out;
+  animation: auraFadeInUp 0.6s ease-out;
   margin: 2rem 0;
 }
 
+@keyframes auraFadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .empty-state-market h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
   margin: 0;
-  color: var(--text-main);
+  color: white;
+  letter-spacing: -0.02em;
 }
 
 .empty-state-market .text-dim {
-  color: #fb923c;
+  color: var(--aura-purple);
   opacity: 0.8;
+  font-weight: 600;
 }
 
 .sell-btn-secondary {
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   color: white;
   border: none;
-  padding: 1rem 2.5rem;
-  border-radius: 1rem;
-  font-weight: 700;
-  font-size: 1rem;
+  padding: 1.25rem 3rem;
+  border-radius: 1.25rem;
+  font-weight: 800;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 20px -5px rgba(246, 139, 30, 0.3);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 10px 25px var(--aura-purple-glow);
 }
 
 .sell-btn-secondary:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 30px -5px rgba(246, 139, 30, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 35px var(--aura-purple-glow);
+  filter: brightness(1.1);
 }

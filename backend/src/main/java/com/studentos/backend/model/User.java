@@ -51,6 +51,11 @@ public class User {
     private String phoneNumber;
 
     @Builder.Default
+    private boolean isVerified = false;
+
+    private String verificationCode;
+
+    @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private int updateCount = 0;
 

@@ -37,8 +37,8 @@
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #F68B1E;
-  box-shadow: 0 0 30px rgba(246, 139, 30, 0.2);
+  border: 3px solid var(--aura-purple);
+  box-shadow: 0 0 30px var(--aura-purple-glow);
   flex-shrink: 0;
 }
 
@@ -50,7 +50,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.05);
-  color: #F68B1E;
+  color: var(--aura-purple);
 }
 
 /* Overlay for editing image */
@@ -95,14 +95,14 @@
 }
 
 .image-url-input:focus {
-  border-color: #F68B1E;
+  border-color: var(--aura-purple);
   background: rgba(255, 255, 255, 0.1);
 }
 
 .profile-title h2 {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -110,15 +110,15 @@
 }
 
 .role-badge {
-  background: rgba(246, 139, 30, 0.1);
-  color: #F68B1E;
+  background: hsla(270, 100%, 65%, 0.1);
+  color: var(--aura-purple);
   padding: 0.35rem 1rem;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  border: 1px solid rgba(246, 139, 30, 0.3);
+  border: 1px solid hsla(270, 100%, 65%, 0.3);
 }
 
 .edit-toggle-btn {
@@ -138,7 +138,8 @@
 
 .edit-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: #F68B1E;
+  border-color: var(--aura-purple);
+  box-shadow: 0 0 15px var(--aura-purple-glow);
 }
 
 .profile-form {
@@ -161,7 +162,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #fb923c;
+  color: var(--aura-purple);
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
@@ -179,8 +180,9 @@
 }
 
 .form-group input:focus, .form-group textarea:focus {
-  border-color: #F68B1E;
+  border-color: var(--aura-purple);
   background: rgba(15, 23, 42, 0.5);
+  box-shadow: 0 0 15px var(--aura-purple-glow);
 }
 
 .view-value {
@@ -203,17 +205,24 @@
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 1rem;
-  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border-radius: 1.25rem;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 10px 20px -5px rgba(246, 139, 30, 0.3);
+  box-shadow: 0 10px 20px -5px var(--aura-purple-glow);
+  transition: all 0.3s;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 30px -10px var(--aura-purple-glow);
 }
 
 .cancel-btn {
@@ -369,7 +378,7 @@
 
 .back-btn-profile:hover {
   background: hsla(222, 47%, 15%, 0.8);
-  border-color: #F68B1E;
+  border-color: var(--aura-purple);
   transform: translateX(-5px);
 }
 
@@ -380,7 +389,7 @@
   justify-content: center;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #F68B1E;
+  color: var(--aura-purple);
 }
 
 .profile-error {

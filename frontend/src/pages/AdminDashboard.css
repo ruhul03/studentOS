@@ -15,10 +15,11 @@
 .admin-header h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #F68B1E, #fb923c);
+  background: linear-gradient(135deg, var(--aura-purple), var(--aura-pink));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 0 15px var(--aura-purple-glow));
 }
 
 .admin-tabs {
@@ -98,9 +99,9 @@
 }
 
 .role-badge.admin {
-  background: rgba(246, 139, 30, 0.1);
-  color: #fb923c;
-  border: 1px solid rgba(246, 139, 30, 0.2);
+  background: hsla(270, 100%, 65%, 0.1);
+  color: var(--aura-purple);
+  border: 1px solid hsla(270, 100%, 65%, 0.2);
 }
 
 .role-badge.student {
@@ -275,11 +276,12 @@
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--primary);
-  background: rgba(251, 146, 60, 0.1);
+  color: var(--aura-purple);
+  background: hsla(270, 100%, 65%, 0.1);
   padding: 0.2rem 0.6rem;
   border-radius: 99px;
   margin-bottom: 0.75rem;
+  border: 1px solid hsla(270, 100%, 65%, 0.2);
 }
 
 .audit-info {

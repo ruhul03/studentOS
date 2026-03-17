@@ -62,7 +62,7 @@ export function ActivityHistory({ onBack, onNavigate }) {
       case 'success': return '#10b981';
       case 'warning': return '#f59e0b';
       case 'info': return '#3b82f6';
-      default: return '#F68B1E';
+      default: return 'var(--aura-purple)';
     }
   };
 
