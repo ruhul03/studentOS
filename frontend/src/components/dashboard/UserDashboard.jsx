@@ -127,31 +127,36 @@ export function UserDashboard({ onTabChange }) {
         {/* Quick Actions */}
         <section className="quick-actions-section">
           <h3>Quick Actions</h3>
-          <div className="actions-grid">
-            <button className="action-btn action-upload glass-card" onClick={() => onTabChange('resources')}>
-              <div className="shimmer-overlay"></div>
-              <div className="action-circle"><BookOpen /></div>
-              <span>Upload Notes</span>
-            </button>
-            <button className="action-btn action-task glass-card" onClick={() => onTabChange('planner')}>
-              <div className="shimmer-overlay"></div>
-              <div className="action-circle"><Clock /></div>
-              <span>Add Task</span>
-            </button>
+          <div className="actions-stack">
+            <div className="actions-grid">
+              <button className="action-btn action-upload glass-card" onClick={() => onTabChange('resources')}>
+                <div className="shimmer-overlay"></div>
+                <div className="action-circle"><BookOpen /></div>
+                <span>Upload Notes</span>
+              </button>
+              <button className="action-btn action-task glass-card" onClick={() => onTabChange('planner')}>
+                <div className="shimmer-overlay"></div>
+                <div className="action-circle"><Clock /></div>
+                <span>Add Task</span>
+              </button>
               <button className="action-btn action-sell glass-card" onClick={() => onTabChange('market')}>
                 <div className="shimmer-overlay"></div>
                 <div className="action-circle"><ShoppingBag /></div>
                 <span>Sell Item</span>
               </button>
-              {user?.role === 'ADMIN' && (
+            </div>
+            
+            {user?.role === 'ADMIN' && (
+              <div className="admin-actions-grid">
                 <button className="action-btn action-admin glass-card" onClick={() => window.location.href='/admin'}>
                   <div className="shimmer-overlay"></div>
                   <div className="action-circle"><Shield /></div>
                   <span>System Control</span>
                 </button>
-              )}
-            </div>
-          </section>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Recent Activity */}
         <section className="recent-activity-section">
