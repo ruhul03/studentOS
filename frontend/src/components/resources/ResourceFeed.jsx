@@ -30,7 +30,9 @@ export function ResourceFeed() {
   const [description, setDescription] = useState('');
   const [courseCode, setCourseCode] = useState('');
   const [courseTitle, setCourseTitle] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
   const [fileUrl, setFileUrl] = useState('');
+  const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'link'
   const [type, setType] = useState('Notes');
   
   // Edit State
@@ -64,7 +66,9 @@ export function ResourceFeed() {
     setDescription(resource.description);
     setCourseCode(resource.courseCode);
     setCourseTitle(resource.courseTitle);
-    setFileUrl(resource.fileUrl);
+    setSelectedFile(null);
+    setFileUrl(resource.fileUrl.startsWith('/uploads/') ? '' : resource.fileUrl);
+    setUploadMethod(resource.fileUrl.startsWith('/uploads/') ? 'file' : 'link');
     setType(resource.type);
     setEditingResource(resource);
     setShowEditForm(true);
@@ -76,18 +80,24 @@ export function ResourceFeed() {
     if (!user || !editingResource) return;
 
     try {
+      const formData = new FormData();
+      formData.append('resource', JSON.stringify({
+        title, description, courseCode, courseTitle, type, uploaderId: user.id,
+        fileUrl: uploadMethod === 'link' ? fileUrl : ''
+      }));
+      if (uploadMethod === 'file' && selectedFile) {
+        formData.append('file', selectedFile);
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${editingResource.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title, description, courseCode, courseTitle, fileUrl, type, uploaderId: user.id
-        })
+        body: formData
       });
 
       if (response.ok) {
         setShowEditForm(false);
         setEditingResource(null);
-        setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
+        setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setSelectedFile(null); setType('Notes');
         fetchResources();
       } else {
         const errorText = await response.text();
@@ -133,14 +143,25 @@ export function ResourceFeed() {
     setPostError(null);
     try {
       console.log("Submitting resource with uploaderId:", user.id);
-      const payload = {
-        title, description, courseCode, courseTitle, fileUrl, type, uploaderId: user.id
-      };
+      
+      const formData = new FormData();
+      formData.append('resource', JSON.stringify({
+        title, description, courseCode, courseTitle, type, uploaderId: user.id,
+        fileUrl: uploadMethod === 'link' ? fileUrl : ''
+      }));
+      if (uploadMethod === 'file' && selectedFile) {
+        formData.append('file', selectedFile);
+      } else if (uploadMethod === 'link' && !fileUrl) {
+        setPostError("Please provide a link to the resource.");
+        return;
+      } else if (uploadMethod === 'file' && !selectedFile) {
+        setPostError("Please select a file to upload.");
+        return;
+      }
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
       });
       
       if (response.ok) {
@@ -282,9 +303,53 @@ export function ResourceFeed() {
             </div>
 
             <div className="form-group">
-              <label>File URL (Google Drive / Link)</label>
-              <input type="url" placeholder="https://drive.google.com/..." value={fileUrl} onChange={e => setFileUrl(e.target.value)} required />
+              <label>Attachment Method</label>
+              <div className="upload-method-toggle">
+                <button 
+                  type="button" 
+                  className={`method-btn ${uploadMethod === 'file' ? 'active' : ''}`}
+                  onClick={() => setUploadMethod('file')}
+                >
+                  File Upload
+                </button>
+                <button 
+                  type="button" 
+                  className={`method-btn ${uploadMethod === 'link' ? 'active' : ''}`}
+                  onClick={() => setUploadMethod('link')}
+                >
+                   External Link
+                </button>
+              </div>
             </div>
+
+            {uploadMethod === 'file' ? (
+              <div className="form-group">
+                <label>Attachment (PDF, Image, ZIP)</label>
+                <div className="file-input-wrapper">
+                  <input 
+                    type="file" 
+                    id="edit-file-upload"
+                    style={{ display: 'none' }}
+                    onChange={e => setSelectedFile(e.target.files[0])} 
+                    className="file-input"
+                  />
+                  <label htmlFor="edit-file-upload" className="file-input-label premium-file-label">
+                    <Plus size={16} /> {selectedFile ? selectedFile.name : 'Change file (optional)'}
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div className="form-group">
+                <label>External URL (Google Drive / Link)</label>
+                <input 
+                  type="url" 
+                  placeholder="https://drive.google.com/..." 
+                  value={fileUrl} 
+                  onChange={e => setFileUrl(e.target.value)} 
+                  required 
+                />
+              </div>
+            )}
 
             <div className="form-actions">
               <button type="submit" className="submit-upload-btn">
@@ -294,7 +359,7 @@ export function ResourceFeed() {
               <button type="button" className="cancel-btn" onClick={() => {
                 setShowEditForm(false);
                 setEditingResource(null);
-                setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setFileUrl(''); setType('Notes');
+                setTitle(''); setDescription(''); setCourseCode(''); setCourseTitle(''); setSelectedFile(null); setType('Notes');
               }}>Cancel</button>
             </div>
           </motion.form>
@@ -347,9 +412,54 @@ export function ResourceFeed() {
             </div>
 
             <div className="form-group">
-              <label>File URL (Google Drive / Link)</label>
-              <input type="url" placeholder="https://drive.google.com/..." value={fileUrl} onChange={e => setFileUrl(e.target.value)} required />
+              <label>Attachment Method</label>
+              <div className="upload-method-toggle">
+                <button 
+                  type="button" 
+                  className={`method-btn ${uploadMethod === 'file' ? 'active' : ''}`}
+                  onClick={() => setUploadMethod('file')}
+                >
+                  File Upload
+                </button>
+                <button 
+                  type="button" 
+                  className={`method-btn ${uploadMethod === 'link' ? 'active' : ''}`}
+                  onClick={() => setUploadMethod('link')}
+                >
+                   External Link
+                </button>
+              </div>
             </div>
+
+            {uploadMethod === 'file' ? (
+              <div className="form-group">
+                <label>Attachment (PDF, Image, ZIP)</label>
+                <div className="file-input-wrapper">
+                  <input 
+                    type="file" 
+                    id="file-upload"
+                    style={{ display: 'none' }}
+                    onChange={e => setSelectedFile(e.target.files[0])} 
+                    required 
+                    className="file-input"
+                  />
+                  <label htmlFor="file-upload" className="file-input-label premium-file-label">
+                    <Plus size={16} /> {selectedFile ? selectedFile.name : 'Select File'}
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div className="form-group">
+                <label>External URL (Google Drive / Link)</label>
+                <input 
+                  type="url" 
+                  placeholder="https://drive.google.com/..." 
+                  value={fileUrl} 
+                  onChange={e => setFileUrl(e.target.value)} 
+                  required 
+                />
+              </div>
+            )}
 
             <button type="submit" className="submit-upload-btn">
               <FileText size={20} />
@@ -407,9 +517,15 @@ export function ResourceFeed() {
                   </div>
                   
                   <div className="resource-actions">
-                    <a href={res.fileUrl} target="_blank" rel="noopener noreferrer" className="download-btn">
-                      <FileText size={16} />
-                      <span>View</span>
+                    <a 
+                      href={res.fileUrl.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="download-btn"
+                      download
+                    >
+                      <ArrowUpCircle size={16} style={{ transform: 'rotate(180deg)' }} />
+                      <span>Download</span>
                     </a>
                     <button 
                       className={`upvote-btn ${res.upvotes > 0 ? 'active' : ''} ${userUpvotes[res.id] ? 'upvoted' : ''}`} 

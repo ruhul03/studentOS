@@ -137,17 +137,19 @@ export function AdminDashboard() {
         <div className="glow glow-3"></div>
       </div>
 
-      <header className="admin-header">
+      <header className="admin-header glass-card">
         <div className="header-left">
-          <button className="icon-btn" onClick={() => navigate('/dashboard')} style={{ marginBottom: '1rem' }}>
-            <ArrowLeft size={20} />
+          <button className="back-link-btn" onClick={() => navigate('/dashboard')}>
+            <ArrowLeft size={16} />
             <span>Back to Hub</span>
           </button>
           <h1>System Control <span>Panel</span></h1>
         </div>
-        <div className="admin-profile">
-          <div className="role-badge admin">ADMIN ACCESS</div>
-          <span>{user.name}</span>
+        <div className="admin-profile-section">
+          <div className="admin-info-pill">
+            <div className="role-badge admin">ADMIN ACCESS</div>
+            <span className="admin-name">{user.name}</span>
+          </div>
         </div>
       </header>
 

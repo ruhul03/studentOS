@@ -61,47 +61,80 @@ public class ResourceController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Resource> uploadResource(@RequestBody ResourceRequest request) {
-        Optional<User> uploaderOpt = userRepository.findById(request.getUploaderId());
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Resource> uploadResource(
+            @RequestPart("resource") String resourceJson,
+            @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file) {
         
-        if (uploaderOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            ResourceRequest request = mapper.readValue(resourceJson, ResourceRequest.class);
+            
+            Optional<User> uploaderOpt = userRepository.findById(request.getUploaderId());
+            if (uploaderOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            String fileUrl = request.getFileUrl();
+
+            // Handle file upload if present
+            if (file != null && !file.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
+                java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                
+                // Build the URL for the file
+                fileUrl = "/uploads/" + fileName;
+            }
+
+            if (fileUrl == null || fileUrl.trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+
+            Resource resource = Resource.builder()
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .courseCode(request.getCourseCode())
+                    .courseTitle(request.getCourseTitle())
+                    .fileUrl(fileUrl)
+                    .type(request.getType())
+                    .uploader(uploaderOpt.get())
+                    .upvotes(0)
+                    .build();
+
+            Resource savedResource = resourceRepository.save(resource);
+            
+            // Trigger background processing (Multithreading)
+            asyncService.processResourceBackground(savedResource.getTitle());
+
+            // Log Activity
+            activityService.logActivity(
+                request.getUploaderId(),
+                savedResource.getTitle() + " uploaded",
+                "You shared \"" + savedResource.getTitle() + "\" in Resource Sharing.",
+                "resources",
+                "success"
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        Resource resource = Resource.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .courseCode(request.getCourseCode())
-                .courseTitle(request.getCourseTitle())
-                .fileUrl(request.getFileUrl())
-                .type(request.getType())
-                .uploader(uploaderOpt.get())
-                .upvotes(0)
-                .build();
-
-        Resource savedResource = resourceRepository.save(resource);
-        
-        // Trigger background processing (Multithreading)
-        asyncService.processResourceBackground(savedResource.getTitle());
-
-        // Log Activity
-        activityService.logActivity(
-            request.getUploaderId(),
-            savedResource.getTitle() + " uploaded",
-            "You shared \"" + savedResource.getTitle() + "\" in Resource Sharing.",
-            "resources",
-            "success"
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateResource(@PathVariable String id, @RequestBody ResourceRequest request) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateResource(
+            @PathVariable String id, 
+            @RequestPart("resource") String resourceJson,
+            @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file) {
+        
         System.out.println("DEBUG: Handled PUT /api/resources/" + id);
         try {
             Long longId = Long.parseLong(id);
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            ResourceRequest request = mapper.readValue(resourceJson, ResourceRequest.class);
+            
             Optional<Resource> resourceOpt = resourceRepository.findById(longId);
             if (resourceOpt.isPresent()) {
                 Resource resource = resourceOpt.get();
@@ -109,15 +142,23 @@ public class ResourceController {
                 resource.setDescription(request.getDescription());
                 resource.setCourseCode(request.getCourseCode());
                 resource.setCourseTitle(request.getCourseTitle());
-                resource.setFileUrl(request.getFileUrl());
                 resource.setType(request.getType());
+                
+                if (file != null && !file.isEmpty()) {
+                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                    java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
+                    java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    resource.setFileUrl("/uploads/" + fileName);
+                }
+                
                 Resource updated = resourceRepository.save(resource);
                 return ResponseEntity.ok(updated);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: ResourceID " + id + " not found in DB.");
             }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Error: ID " + id + " is not a valid number.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

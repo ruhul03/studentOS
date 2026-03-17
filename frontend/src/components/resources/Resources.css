@@ -149,6 +149,74 @@
   filter: brightness(1.1);
 }
 
+.file-input-wrapper {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.premium-file-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-dim, #a0aec0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.premium-file-label:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent, #6366f1);
+  color: white;
+}
+
+.premium-file-label svg {
+  color: var(--accent, #6366f1);
+}
+
+.download-btn {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.upload-method-toggle {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+}
+
+.method-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.method-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.method-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
 .cancel-btn {
   flex: 1;
   background: rgba(255, 255, 255, 0.03);

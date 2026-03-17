@@ -39,7 +39,7 @@ public class MessageController {
         Message saved = messageRepository.save(message);
 
         // Notify the receiver
-        notificationService.sendPrivateNotification(request.getReceiverId(), saved);
+        notificationService.sendDirectMessageNotification(request.getReceiverId(), saved);
 
         return ResponseEntity.ok(saved);
     }

@@ -169,7 +169,7 @@ export function CourseReviews({ onProfileView }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             text: replyText,
-            replierId: user.id,
+            commenterId: user.id,
             anonymous: isReplyAnonymous
           })
         });
@@ -1022,7 +1022,7 @@ export function CourseReviews({ onProfileView }) {
                                 <div className="replier-info">
                                   <User size={14} className="replier-avatar" />
                                   <span className="replier-name">
-                                    {reply.anonymous ? 'Anonymous Student' : reply.replier.name}
+                                    {reply.anonymous ? 'Anonymous Student' : reply.commenter.name}
                                   </span>
                                   <span className="reply-date">
                                     {new Date(reply.createdAt).toLocaleDateString()}

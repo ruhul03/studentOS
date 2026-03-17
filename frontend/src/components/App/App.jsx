@@ -54,28 +54,34 @@ function Dashboard() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { notifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
+  const { notifications: wsNotifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
   const [activeChatUser, setActiveChatUser] = useState(null);
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [appNotifications, setAppNotifications] = useState([]);
 
+  // Sync WebSocket notifications with App state
+  React.useEffect(() => {
+    if (wsNotifications.length > 0) {
+      const latest = wsNotifications[wsNotifications.length - 1];
+      // Avoid duplicates if possible, or just append
+      setAppNotifications(prev => {
+        // Simple check: if ID exists, don't add
+        if (latest.id && prev.some(n => n.id === latest.id)) return prev;
+        return [latest, ...prev];
+      });
+    }
+  }, [wsNotifications]);
+
   // Handle incoming message events
   React.useEffect(() => {
     if (messageEvent) {
-      // If chat is already open with this user, don't necessarily need a toast?
-      // But user wanted notification OR chat panel opening.
-      // Let's show a toast and offer to open chat if not already open.
-      
+      // If it's a message object, we could show a toast or open chat
       const fetchSender = async () => {
         try {
           const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${messageEvent.senderId}`);
           if (res.ok) {
             const senderData = await res.json();
-            // Show notification toast logic could be here, or we use the notifications array
-            // Let's add it to notifications for now so it shows in Toast
-            // But we actually want to pop up the ChatModal if not active
-            
             if (!activeChatUser || activeChatUser.id !== messageEvent.senderId) {
               setActiveChatUser(senderData);
             }
@@ -86,7 +92,7 @@ function Dashboard() {
       };
       
       fetchSender();
-      setMessageEvent(null); // Clear handled event
+      setMessageEvent(null);
     }
   }, [messageEvent, activeChatUser]);
 
@@ -103,22 +109,11 @@ function Dashboard() {
 
   const fetchAppNotifications = async () => {
     try {
-      // Try API first
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${user.id}`);
-        if (response.ok) {
-          const userNotifications = await response.json();
-          setAppNotifications(userNotifications);
-          return;
-        }
-      } catch (apiErr) {
-        console.log('API not available, using localStorage');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${user.id}`);
+      if (response.ok) {
+        const userNotifications = await response.json();
+        setAppNotifications(userNotifications);
       }
-      
-      // Fallback to localStorage
-      const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-      const userNotifications = savedNotifications.filter(n => n.recipientId === user.id);
-      setAppNotifications(userNotifications);
     } catch (err) {
       console.error('Failed to fetch notifications', err);
     }
@@ -336,7 +331,7 @@ function Dashboard() {
       </main>
 
       <NotificationToast 
-        notifications={notifications} 
+        notifications={wsNotifications} 
         onClear={clearNotification} 
       />
 
