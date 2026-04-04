@@ -82,45 +82,48 @@ export function UserDashboard({ onTabChange }) {
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card glass-card" onClick={() => onTabChange('resources')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `var(--aura-purple-glow)`, color: 'var(--aura-purple)' }}>
-            <BookOpen />
+        <div className="stat-card action-upload" onClick={() => onTabChange('resources')}>
+          <div className="card-shimmer"></div>
+          <div className="stat-header">
+            <div className="card-icon"><BookOpen size={24} /></div>
           </div>
-          <div className="stat-info">
+          <div className="stat-content">
             <span className="stat-value">{statsData.totalCourses}</span>
-            <span className="stat-label">Courses</span>
+            <span className="stat-label">Courses Active</span>
           </div>
-          <TrendingUp size={16} className="trend-icon" />
         </div>
-        <div className="stat-card glass-card" onClick={() => onTabChange('planner')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `var(--aura-cyan-glow)`, color: 'var(--aura-cyan)' }}>
-            <Clock />
+
+        <div className="stat-card action-task" onClick={() => onTabChange('planner')}>
+          <div className="card-shimmer"></div>
+          <div className="stat-header">
+            <div className="card-icon"><Clock size={24} /></div>
           </div>
-          <div className="stat-info">
+          <div className="stat-content">
             <span className="stat-value">{statsData.pendingTasks}</span>
             <span className="stat-label">Pending Tasks</span>
           </div>
-          <TrendingUp size={16} className="trend-icon" />
         </div>
-        <div className="stat-card glass-card" onClick={() => onTabChange('resources')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `var(--aura-pink-glow)`, color: 'var(--aura-pink)' }}>
-            <Activity />
+
+        <div className="stat-card action-sell" onClick={() => onTabChange('resources')}>
+          <div className="card-shimmer"></div>
+          <div className="stat-header">
+            <div className="card-icon"><Activity size={24} /></div>
           </div>
-          <div className="stat-info">
+          <div className="stat-content">
             <span className="stat-value">{statsData.sharedResources}</span>
             <span className="stat-label">Shared Resources</span>
           </div>
-          <TrendingUp size={16} className="trend-icon" />
         </div>
-        <div className="stat-card glass-card" onClick={() => onTabChange('market')} style={{cursor: 'pointer'}}>
-          <div className="stat-icon" style={{ backgroundColor: `rgba(255, 255, 255, 0.1)`, color: 'white' }}>
-            <ShoppingBag />
+
+        <div className="stat-card action-admin" onClick={() => onTabChange('market')}>
+          <div className="card-shimmer"></div>
+          <div className="stat-header">
+            <div className="card-icon"><ShoppingBag size={24} /></div>
           </div>
-          <div className="stat-info">
+          <div className="stat-content">
             <span className="stat-value">{statsData.soldItems}</span>
-            <span className="stat-label">Sold Items</span>
+            <span className="stat-label">Market Items</span>
           </div>
-          <TrendingUp size={16} className="trend-icon" />
         </div>
       </div>
 
