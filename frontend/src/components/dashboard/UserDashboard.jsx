@@ -28,7 +28,12 @@ export function UserDashboard({ onTabChange }) {
   React.useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/stats`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/stats`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setStatsData(data);
@@ -40,7 +45,12 @@ export function UserDashboard({ onTabChange }) {
 
     const fetchActivities = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/activities?limit=3`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/activities?limit=3`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setRecentActivities(data);
