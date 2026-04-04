@@ -20,7 +20,8 @@ export function UserDashboard({ onTabChange }) {
     totalCourses: 0,
     pendingTasks: 0,
     sharedResources: 0,
-    soldItems: 0
+    soldItems: 0,
+    completedTasks: 0
   });
   const [recentActivities, setRecentActivities] = React.useState([]);
 
@@ -86,6 +87,7 @@ export function UserDashboard({ onTabChange }) {
           <div className="card-shimmer"></div>
           <div className="stat-header">
             <div className="card-icon"><BookOpen size={24} /></div>
+            <ArrowUpRight size={18} className="arrow-icon" />
           </div>
           <div className="stat-content">
             <span className="stat-value">{statsData.totalCourses}</span>
@@ -97,6 +99,7 @@ export function UserDashboard({ onTabChange }) {
           <div className="card-shimmer"></div>
           <div className="stat-header">
             <div className="card-icon"><Clock size={24} /></div>
+            <ArrowUpRight size={18} className="arrow-icon" />
           </div>
           <div className="stat-content">
             <span className="stat-value">{statsData.pendingTasks}</span>
@@ -108,6 +111,7 @@ export function UserDashboard({ onTabChange }) {
           <div className="card-shimmer"></div>
           <div className="stat-header">
             <div className="card-icon"><Activity size={24} /></div>
+            <ArrowUpRight size={18} className="arrow-icon" />
           </div>
           <div className="stat-content">
             <span className="stat-value">{statsData.sharedResources}</span>
@@ -115,81 +119,50 @@ export function UserDashboard({ onTabChange }) {
           </div>
         </div>
 
-        <div className="stat-card action-admin" onClick={() => onTabChange('market')}>
+        <div className="stat-card action-sell" onClick={() => onTabChange('market')}>
           <div className="card-shimmer"></div>
           <div className="stat-header">
             <div className="card-icon"><ShoppingBag size={24} /></div>
+            <ArrowUpRight size={18} className="arrow-icon" />
           </div>
           <div className="stat-content">
             <span className="stat-value">{statsData.soldItems}</span>
             <span className="stat-label">Market Items</span>
           </div>
         </div>
-      </div>
 
-      <div className="dashboard-main">
-        {/* Quick Actions */}
-        <section className="quick-actions-section">
-          <h3>Quick Actions</h3>
-          <div className="actions-stack">
-            <div className="actions-grid">
-              <button className="action-card action-upload" onClick={() => onTabChange('resources')}>
-                <div className="card-shimmer"></div>
-                <div className="card-icon"><BookOpen size={28} /></div>
-                <div className="card-content">
-                  <div className="card-title">
-                    <span>Upload Notes</span>
-                    <ArrowUpRight size={18} className="arrow-icon" />
-                  </div>
-                  <p className="card-description">Share study materials with your peers</p>
-                </div>
-              </button>
-              
-              <button className="action-card action-task" onClick={() => onTabChange('planner')}>
-                <div className="card-shimmer"></div>
-                <div className="card-icon"><Clock size={28} /></div>
-                <div className="card-content">
-                  <div className="card-title">
-                    <span>Add Task</span>
-                    <ArrowUpRight size={18} className="arrow-icon" />
-                  </div>
-                  <p className="card-description">Schedule and manage your daily workload</p>
-                </div>
-              </button>
-              
-              <button className="action-card action-sell" onClick={() => onTabChange('market')}>
-                <div className="card-shimmer"></div>
-                <div className="card-icon"><ShoppingBag size={28} /></div>
-                <div className="card-content">
-                  <div className="card-title">
-                    <span>Sell Item</span>
-                    <ArrowUpRight size={18} className="arrow-icon" />
-                  </div>
-                  <p className="card-description">Post items to the student marketplace</p>
-                </div>
-              </button>
-
-              {user?.role === 'ADMIN' && (
-                <button className="action-card action-admin" onClick={() => window.location.href='/admin'}>
-                  <div className="card-shimmer"></div>
-                  <div className="card-icon"><Shield size={28} /></div>
-                  <div className="card-content">
-                    <div className="card-title">
-                      <span>System Control</span>
-                      <ArrowUpRight size={18} className="arrow-icon" />
-                    </div>
-                    <p className="card-description">Manage all platform users & services</p>
-                  </div>
-                </button>
-              )}
+        {user?.role === 'ADMIN' ? (
+          <div className="stat-card action-admin" onClick={() => window.location.href='/admin'}>
+            <div className="card-shimmer"></div>
+            <div className="stat-header">
+              <div className="card-icon"><Shield size={24} /></div>
+              <ArrowUpRight size={18} className="arrow-icon" />
+            </div>
+            <div className="stat-content">
+              <span className="stat-value" style={{fontSize: '1.25rem', letterSpacing: '0'}}>ADM</span>
+              <span className="stat-label">System Control</span>
             </div>
           </div>
-        </section>
+        ) : (
+          <div className="stat-card action-task" onClick={() => onTabChange('planner')}>
+            <div className="card-shimmer"></div>
+            <div className="stat-header">
+              <div className="card-icon"><CheckCircle2 size={24} /></div>
+              <ArrowUpRight size={18} className="arrow-icon" />
+            </div>
+            <div className="stat-content">
+              <span className="stat-value">{statsData.completedTasks}</span>
+              <span className="stat-label">Tasks Completed</span>
+            </div>
+          </div>
+        )}
+      </div>
 
+      <div className="dashboard-main-single">
         {/* Recent Activity */}
-        <section className="recent-activity-section">
+        <section className="recent-activity-section full-width">
           <div className="section-header">
-            <h3>Recent Activity</h3>
+            <h3>Recent Activity Feed</h3>
             <button className="view-all-btn" onClick={() => onTabChange('activity')}>View All <ArrowRight size={14} /></button>
           </div>
           <div className="activity-list glass-card">
@@ -206,7 +179,7 @@ export function UserDashboard({ onTabChange }) {
               ))
             ) : (
               <div className="empty-activity">
-                <p>No recent activity yet. Start exploring!</p>
+                <p>No recent activity yet. Start exploring StudentOS!</p>
               </div>
             )}
           </div>

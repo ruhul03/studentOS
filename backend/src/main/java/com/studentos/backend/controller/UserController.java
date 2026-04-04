@@ -162,6 +162,7 @@ public class UserController {
                 .pendingTasks(studyTaskRepository.countByUserIdAndCompletedFalse(id))
                 .sharedResources(resourceRepository.countByUploader(user))
                 .soldItems(marketplaceItemRepository.countBySellerAndSoldTrue(user))
+                .completedTasks(studyTaskRepository.countByUserIdAndCompletedTrue(id))
                 .build();
 
         return ResponseEntity.ok(stats);

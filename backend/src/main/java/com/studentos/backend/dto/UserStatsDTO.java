@@ -14,4 +14,5 @@ public class UserStatsDTO {
     private long pendingTasks;
     private long sharedResources;
     private long soldItems;
+    private long completedTasks;
 }
