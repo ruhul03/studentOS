@@ -141,6 +141,7 @@ public class AuthController {
         Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            user.setVerified(true);
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userRepository.save(user);
             return ResponseEntity.ok("Password reset successfully.");
