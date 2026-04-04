@@ -64,4 +64,7 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Transient
+    private String token;
 }

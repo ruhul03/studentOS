@@ -32,6 +32,9 @@ export function Login() {
 
       if (response.ok) {
         const data = await response.json();
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+        }
         login(data);
         navigate('/dashboard');
       } else {

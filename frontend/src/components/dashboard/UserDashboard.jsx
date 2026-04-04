@@ -9,7 +9,8 @@ import {
   ArrowRight,
   TrendingUp,
   Activity,
-  Shield
+  Shield,
+  ArrowUpRight
 } from 'lucide-react';
 import './UserDashboard.css';
 
@@ -129,32 +130,56 @@ export function UserDashboard({ onTabChange }) {
           <h3>Quick Actions</h3>
           <div className="actions-stack">
             <div className="actions-grid">
-              <button className="action-btn action-upload glass-card" onClick={() => onTabChange('resources')}>
-                <div className="shimmer-overlay"></div>
-                <div className="action-circle"><BookOpen /></div>
-                <span>Upload Notes</span>
+              <button className="action-card action-upload" onClick={() => onTabChange('resources')}>
+                <div className="card-shimmer"></div>
+                <div className="card-icon"><BookOpen size={28} /></div>
+                <div className="card-content">
+                  <div className="card-title">
+                    <span>Upload Notes</span>
+                    <ArrowUpRight size={18} className="arrow-icon" />
+                  </div>
+                  <p className="card-description">Share study materials with your peers</p>
+                </div>
               </button>
-              <button className="action-btn action-task glass-card" onClick={() => onTabChange('planner')}>
-                <div className="shimmer-overlay"></div>
-                <div className="action-circle"><Clock /></div>
-                <span>Add Task</span>
+              
+              <button className="action-card action-task" onClick={() => onTabChange('planner')}>
+                <div className="card-shimmer"></div>
+                <div className="card-icon"><Clock size={28} /></div>
+                <div className="card-content">
+                  <div className="card-title">
+                    <span>Add Task</span>
+                    <ArrowUpRight size={18} className="arrow-icon" />
+                  </div>
+                  <p className="card-description">Schedule and manage your daily workload</p>
+                </div>
               </button>
-              <button className="action-btn action-sell glass-card" onClick={() => onTabChange('market')}>
-                <div className="shimmer-overlay"></div>
-                <div className="action-circle"><ShoppingBag /></div>
-                <span>Sell Item</span>
+              
+              <button className="action-card action-sell" onClick={() => onTabChange('market')}>
+                <div className="card-shimmer"></div>
+                <div className="card-icon"><ShoppingBag size={28} /></div>
+                <div className="card-content">
+                  <div className="card-title">
+                    <span>Sell Item</span>
+                    <ArrowUpRight size={18} className="arrow-icon" />
+                  </div>
+                  <p className="card-description">Post items to the student marketplace</p>
+                </div>
               </button>
-            </div>
-            
-            {user?.role === 'ADMIN' && (
-              <div className="admin-actions-grid">
-                <button className="action-btn action-admin glass-card" onClick={() => window.location.href='/admin'}>
-                  <div className="shimmer-overlay"></div>
-                  <div className="action-circle"><Shield /></div>
-                  <span>System Control</span>
+
+              {user?.role === 'ADMIN' && (
+                <button className="action-card action-admin" onClick={() => window.location.href='/admin'}>
+                  <div className="card-shimmer"></div>
+                  <div className="card-icon"><Shield size={28} /></div>
+                  <div className="card-content">
+                    <div className="card-title">
+                      <span>System Control</span>
+                      <ArrowUpRight size={18} className="arrow-icon" />
+                    </div>
+                    <p className="card-description">Manage all platform users & services</p>
+                  </div>
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </section>
 

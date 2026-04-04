@@ -148,123 +148,150 @@ h3 {
   color: white;
 }
 
-/* Quick Actions - Premium Pill Design */
+/* Quick Actions - Premium Card Overhaul */
 .quick-actions-section h3 {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
 }
 
 .actions-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  width: 100%;
 }
 
 .actions-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
-.admin-actions-grid {
-  display: flex;
-  padding-top: 0.5rem;
-  border-top: 1px solid hsla(0, 0%, 100%, 0.05);
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1.25rem 3rem;
-  padding-left: 1.25rem;
-  border-radius: 999px;
-  background: hsla(0, 0%, 100%, 0.03);
-  border: 1px solid hsla(0, 0%, 100%, 0.08);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
+.action-card {
   position: relative;
-  overflow: visible; /* Changed to visible to ensure no clipping */
-  height: auto;
-  animation: pillEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  overflow: hidden;
+  text-align: left;
+  height: 220px;
+  justify-content: space-between;
 }
 
-@keyframes pillEntrance {
-  from { 
-    opacity: 0; 
-    transform: translateX(-20px); 
-    filter: blur(10px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
-    filter: blur(0);
-  }
+.card-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  transition: 0.5s;
 }
 
-.action-btn:nth-child(1) { animation-delay: 0.1s; }
-.action-btn:nth-child(2) { animation-delay: 0.15s; }
-.action-btn:nth-child(3) { animation-delay: 0.2s; }
-.action-btn:nth-child(4) { animation-delay: 0.25s; }
+.action-card:hover .card-shimmer {
+  left: 100%;
+}
 
-.action-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: hsla(0, 0%, 100%, 0.05);
+.card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.card-content {
+  width: 100%;
   z-index: 2;
-  flex-shrink: 0;
 }
 
-.action-circle svg {
-  width: 28px;
-  height: 28px;
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  width: 100%;
 }
 
-.action-btn span {
-  font-size: 1.25rem;
+.card-title span {
+  font-size: 1.35rem;
   font-weight: 800;
   color: white;
   letter-spacing: -0.01em;
-  z-index: 2;
-  white-space: nowrap;
 }
 
-.action-btn:hover {
-  transform: translateY(-4px) scale(1.03);
-  background: hsla(0, 0%, 100%, 0.08);
-  border-color: var(--accent-glow);
-  box-shadow: 0 15px 40px -10px var(--accent-glow-alpha);
+.arrow-icon {
+  opacity: 0;
+  transform: translate(-10px, 10px);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  color: white;
 }
 
-.action-btn:hover .action-circle {
-  transform: scale(1.1);
-  background: var(--accent-glow);
-  box-shadow: 0 0 20px var(--accent-glow-alpha);
+.card-description {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* Specific Action Accents */
+/* Hover States */
+.action-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--card-accent);
+  box-shadow: 0 20px 40px -10px var(--card-accent-glow);
+}
+
+.action-card:hover .card-icon {
+  background: var(--card-accent);
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 0 20px var(--card-accent-glow);
+}
+
+.action-card:hover .arrow-icon {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.action-card:hover .card-title span {
+  color: white;
+}
+
+/* Specific Card Accents */
 .action-upload { 
-  --accent-glow: var(--aura-purple); 
-  --accent-glow-alpha: var(--aura-purple-glow);
+  --card-accent: var(--aura-purple); 
+  --card-accent-glow: var(--aura-purple-glow);
 }
 .action-task { 
-  --accent-glow: var(--aura-cyan); 
-  --accent-glow-alpha: var(--aura-cyan-glow);
+  --card-accent: var(--aura-cyan); 
+  --card-accent-glow: var(--aura-cyan-glow);
 }
 .action-sell { 
-  --accent-glow: var(--aura-pink); 
-  --accent-glow-alpha: var(--aura-pink-glow);
+  --card-accent: var(--aura-pink); 
+  --card-accent-glow: var(--aura-pink-glow);
 }
 .action-admin { 
-  --accent-glow: #ffffff; 
-  --accent-glow-alpha: rgba(255, 255, 255, 0.4);
+  --card-accent: #ffffff; 
+  --card-accent-glow: rgba(255, 255, 255, 0.3);
 }
 
 .shimmer-overlay {

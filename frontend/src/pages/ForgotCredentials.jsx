@@ -6,7 +6,9 @@ import './Auth.css';
 
 export function ForgotCredentials() {
   const [activeTab, setActiveTab] = useState('username'); // 'username' or 'password'
+  const [resetStep, setResetStep] = useState(1);
   const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -41,6 +43,34 @@ export function ForgotCredentials() {
     }
   };
 
+  const handleRequestResetCode = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/request-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage(data.message || 'Reset code sent!');
+        setResetStep(2);
+      } else {
+        const errText = await response.text();
+        setError(errText || 'Failed to send reset code.');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError('');
@@ -57,7 +87,7 @@ export function ForgotCredentials() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
+        body: JSON.stringify({ email, newPassword, code }),
       });
 
       if (response.ok) {
@@ -97,7 +127,7 @@ export function ForgotCredentials() {
           </button>
           <button 
             className={`tab-btn ${activeTab === 'password' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('password'); setError(''); setMessage(''); }}
+            onClick={() => { setActiveTab('password'); setResetStep(1); setError(''); setMessage(''); }}
           >
             Forgot Password
           </button>
@@ -144,7 +174,8 @@ export function ForgotCredentials() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleResetPassword} key="password-form">
+          resetStep === 1 ? (
+          <form onSubmit={handleRequestResetCode} key="password-form-step1">
             <div className="form-group">
               <label><Mail size={16} /> Recovery Email</label>
               <input 
@@ -153,6 +184,22 @@ export function ForgotCredentials() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="e.g. student@uiu.ac.bd"
+              />
+            </div>
+            <button type="submit" className="auth-button" disabled={loading}>
+              {loading ? 'Sending Code...' : 'Send Reset Code'}
+            </button>
+          </form>
+          ) : (
+          <form onSubmit={handleResetPassword} key="password-form-step2">
+            <div className="form-group">
+              <label><Key size={16} /> Verification Code</label>
+              <input 
+                type="text" 
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+                placeholder="6-digit code"
               />
             </div>
             <div className="form-group">
@@ -178,7 +225,11 @@ export function ForgotCredentials() {
             <button type="submit" className="auth-button" disabled={loading}>
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>
+            <button type="button" onClick={() => setResetStep(1)} style={{marginTop: "10px", background: "none", border: "none", color: "var(--primary-color, #4f46e5)", cursor: "pointer", width: "100%", fontSize: "0.9rem", fontWeight: "500"}}>
+              Back to request code
+            </button>
           </form>
+          )
         )}
       </motion.div>
     </div>

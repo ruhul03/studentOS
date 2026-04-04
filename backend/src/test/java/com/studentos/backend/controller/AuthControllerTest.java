@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.studentos.backend.util.JwtUtil;
 
 import java.util.Optional;
 
@@ -25,6 +26,9 @@ public class AuthControllerTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private AuthController authController;
@@ -42,9 +46,11 @@ public class AuthControllerTest {
         mockUser.setEmail("test@student.com");
         mockUser.setPassword("password123");
         mockUser.setRole("STUDENT");
+        mockUser.setVerified(true);
 
         Mockito.when(userRepository.findByEmail("test@student.com")).thenReturn(Optional.of(mockUser));
         Mockito.when(passwordEncoder.matches("password123", "password123")).thenReturn(true);
+        Mockito.when(jwtUtil.generateToken(Mockito.anyString(), Mockito.anyString())).thenReturn("mocked-jwt-token");
 
         LoginRequest req = new LoginRequest();
         req.setEmail("test@student.com");

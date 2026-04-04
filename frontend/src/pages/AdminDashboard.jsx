@@ -57,9 +57,12 @@ export function AdminDashboard() {
         { url: '/api/admin/analytics/contributors', setter: setTopContributors }
       ];
 
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
       await Promise.all(endpoints.map(async ({ url, setter }) => {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, { headers });
           if (res.ok) setter(await res.json());
         } catch (err) {
           console.error(`Failed to fetch from ${url}`, err);
@@ -74,8 +77,10 @@ export function AdminDashboard() {
 
   const handleToggleRole = async (userId) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/role`, {
-        method: 'PATCH'
+        method: 'PATCH',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (res.ok) {
         const updatedUser = await res.json();
@@ -91,8 +96,10 @@ export function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this user? ALL THEIR CONTENT will be removed. This action cannot be undone.')) return;
     
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (res.ok) {
         setUsers(users.filter(u => u.id !== userId));
@@ -110,7 +117,10 @@ export function AdminDashboard() {
     setModalLoading(true);
     setShowUserModal(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/activity`);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/activity`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         setSelectedUserActivity(await res.json());
       }
@@ -129,9 +139,13 @@ export function AdminDashboard() {
       : `${import.meta.env.VITE_API_URL}/api/services`;
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ ...serviceForm, adminName: user.name })
       });
 
@@ -155,7 +169,11 @@ export function AdminDashboard() {
   const handleDeleteService = async (serviceId) => {
     if (!window.confirm('Delete this service?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/services/${serviceId}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/services/${serviceId}`, { 
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         setServices(services.filter(s => s.id !== serviceId));
         setMessage({ type: 'success', text: 'Service removed' });
@@ -168,7 +186,11 @@ export function AdminDashboard() {
   const handleDeleteResource = async (id) => {
     if (!window.confirm('Delete this resource asset?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/resources/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/resources/${id}`, { 
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         setResources(resources.filter(r => r.id !== id));
         setMessage({ type: 'success', text: 'Knowledge asset removed' });
@@ -181,7 +203,11 @@ export function AdminDashboard() {
   const handleDeleteMarketItem = async (id) => {
     if (!window.confirm('Remove this marketplace listing?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/marketplace/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/marketplace/${id}`, { 
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         setMarketItems(marketItems.filter(m => m.id !== id));
         setMessage({ type: 'success', text: 'Listing removed' });
@@ -194,7 +220,11 @@ export function AdminDashboard() {
   const handleDeleteEvent = async (id) => {
     if (!window.confirm('Cancel this campus event?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events/${id}`, { 
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         setEvents(events.filter(e => e.id !== id));
         setMessage({ type: 'success', text: 'Event cancelled' });
