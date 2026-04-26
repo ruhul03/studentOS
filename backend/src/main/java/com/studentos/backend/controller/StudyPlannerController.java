@@ -1,16 +1,17 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.StudyTaskRequest;
 import com.studentos.backend.model.StudyTask;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.StudyTaskRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class StudyPlannerController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<StudyTask> createTask(@RequestBody StudyTaskRequest request) {
+    public ResponseEntity<StudyTask> createTask(@Valid @RequestBody StudyTaskRequest request) {
         Optional<User> userOpt = userRepository.findById(request.getUserId());
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -104,26 +105,4 @@ public class StudyPlannerController {
         }
         return ResponseEntity.notFound().build();
     }
-}
-
-class StudyTaskRequest {
-    private String title;
-    private String description;
-    private String courseCode;
-    private String type;
-    private LocalDateTime dueDate;
-    private Long userId;
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public LocalDateTime getDueDate() { return dueDate; }
-    public void setDueDate(LocalDateTime dueDate) { this.dueDate = dueDate; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
 }

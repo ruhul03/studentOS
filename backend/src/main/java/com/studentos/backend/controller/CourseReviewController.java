@@ -1,5 +1,7 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.CommentRequest;
+import com.studentos.backend.dto.CourseReviewRequest;
 import com.studentos.backend.model.Comment;
 import com.studentos.backend.model.CourseReview;
 import com.studentos.backend.model.User;
@@ -9,6 +11,7 @@ import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.NotificationService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +56,7 @@ public class CourseReviewController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CourseReview> createReview(@RequestBody CourseReviewRequest request) {
+    public ResponseEntity<CourseReview> createReview(@Valid @RequestBody CourseReviewRequest request) {
         Optional<User> reviewerOpt = userRepository.findById(request.getReviewerId());
         if (reviewerOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -86,7 +89,7 @@ public class CourseReviewController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<CourseReview> updateReview(@PathVariable Long id, @RequestBody CourseReviewRequest request) {
+    public ResponseEntity<CourseReview> updateReview(@PathVariable Long id, @Valid @RequestBody CourseReviewRequest request) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isEmpty())
             return ResponseEntity.notFound().build();
@@ -157,7 +160,7 @@ public class CourseReviewController {
 
     @PostMapping("/{id}/comments")
     @Transactional
-    public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentRequest request) {
+    public ResponseEntity<Comment> addComment(@PathVariable Long id, @Valid @RequestBody CommentRequest request) {
         Optional<CourseReview> reviewOpt = reviewRepository.findById(id);
         Optional<User> commenterOpt = userRepository.findById(request.getCommenterId());
 
@@ -195,7 +198,7 @@ public class CourseReviewController {
     @PostMapping("/{reviewId}/comments/{commentId}/replies")
     @Transactional
     public ResponseEntity<Comment> addReply(@PathVariable Long reviewId, @PathVariable Long commentId,
-            @RequestBody CommentRequest request) {
+            @Valid @RequestBody CommentRequest request) {
         Optional<Comment> parentOpt = commentRepository.findById(commentId);
         Optional<User> replierOpt = userRepository.findById(request.getCommenterId());
 
@@ -229,110 +232,5 @@ public class CourseReviewController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reply);
-    }
-}
-
-class CourseReviewRequest {
-    private String courseCode;
-    private String courseName;
-    private String professor;
-    private int difficultyRating;
-    private int qualityRating;
-    private String reviewText;
-    private Long reviewerId;
-    private boolean anonymous;
-
-    public String getCourseCode() {
-        return courseCode;
-    }
-
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
-
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public String getProfessor() {
-        return professor;
-    }
-
-    public void setProfessor(String professor) {
-        this.professor = professor;
-    }
-
-    public int getDifficultyRating() {
-        return difficultyRating;
-    }
-
-    public void setDifficultyRating(int difficultyRating) {
-        this.difficultyRating = difficultyRating;
-    }
-
-    public int getQualityRating() {
-        return qualityRating;
-    }
-
-    public void setQualityRating(int qualityRating) {
-        this.qualityRating = qualityRating;
-    }
-
-    public String getReviewText() {
-        return reviewText;
-    }
-
-    public void setReviewText(String reviewText) {
-        this.reviewText = reviewText;
-    }
-
-    public Long getReviewerId() {
-        return reviewerId;
-    }
-
-    public void setReviewerId(Long reviewerId) {
-        this.reviewerId = reviewerId;
-    }
-
-    public boolean isAnonymous() {
-        return anonymous;
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        this.anonymous = anonymous;
-    }
-}
-
-class CommentRequest {
-    private String text;
-    private Long commenterId;
-    private boolean anonymous;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Long getCommenterId() {
-        return commenterId;
-    }
-
-    public void setCommenterId(Long commenterId) {
-        this.commenterId = commenterId;
-    }
-
-    public boolean isAnonymous() {
-        return anonymous;
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        this.anonymous = anonymous;
     }
 }

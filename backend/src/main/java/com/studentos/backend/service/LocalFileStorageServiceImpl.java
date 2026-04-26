@@ -1,5 +1,6 @@
 package com.studentos.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class LocalFileStorageServiceImpl implements FileStorageService {
 
     private final Path storageLocation;
@@ -41,7 +43,7 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
     @Override
     public void deleteFile(String fileUrl) {
         if (fileUrl == null || !fileUrl.startsWith("/uploads/")) {
-            System.out.println("DEBUG: Ignored delete request for non-upload URL: " + fileUrl);
+            log.debug("Ignored delete request for non-upload URL: {}", fileUrl);
             return;
         }
         
@@ -52,10 +54,10 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
             
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
-                System.out.println("DEBUG: Successfully deleted file: " + filePath);
+                log.info("Successfully deleted file: {}", filePath);
             }
         } catch (IOException e) {
-            System.err.println("CRITICAL: Failed to delete file at " + fileUrl + ": " + e.getMessage());
+            log.error("Failed to delete file at {}: {}", fileUrl, e.getMessage());
         }
     }
 }

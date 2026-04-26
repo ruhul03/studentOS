@@ -6,6 +6,7 @@ import com.studentos.backend.model.User;
 import com.studentos.backend.repository.LostFoundItemRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class LostFoundController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<LostFoundItem> reportItem(@RequestBody LostFoundRequest request) {
+    public ResponseEntity<LostFoundItem> reportItem(@Valid @RequestBody LostFoundRequest request) {
         Optional<User> reporterOpt = userRepository.findById(request.getReporterId());
         if (reporterOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -73,7 +74,7 @@ public class LostFoundController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @RequestBody LostFoundRequest request) {
+    public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @Valid @RequestBody LostFoundRequest request) {
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
 

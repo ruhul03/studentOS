@@ -1,21 +1,23 @@
 package com.studentos.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 public class AsyncService {
 
     @Async
     public void processResourceBackground(String resourceName) {
-        System.out.println("Starting background processing for: " + resourceName + " on thread: " + Thread.currentThread().getName());
+        log.info("Starting background processing for: {} on thread: {}", resourceName, Thread.currentThread().getName());
         try {
             // Simulate heavy work
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("Finished background processing for: " + resourceName);
+        log.info("Finished background processing for: {}", resourceName);
     }
 }

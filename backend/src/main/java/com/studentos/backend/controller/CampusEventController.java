@@ -1,7 +1,9 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.CampusEventRequest;
 import com.studentos.backend.model.CampusEvent;
 import com.studentos.backend.repository.CampusEventRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,7 @@ public class CampusEventController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CampusEvent> createEvent(@RequestBody CampusEventRequest request) {
+    public ResponseEntity<CampusEvent> createEvent(@Valid @RequestBody CampusEventRequest request) {
         CampusEvent event = CampusEvent.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -45,7 +47,7 @@ public class CampusEventController {
     @Transactional
     public ResponseEntity<CampusEvent> updateEvent(
             @PathVariable Long id, 
-            @RequestBody CampusEventRequest request,
+            @Valid @RequestBody CampusEventRequest request,
             @RequestHeader(value = "X-User-Id", required = false) Long userId,
             @RequestHeader(value = "X-User-Role", required = false) String role) {
         
@@ -85,31 +87,4 @@ public class CampusEventController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-}
-
-class CampusEventRequest {
-    private String title;
-    private String description;
-    private String location;
-    private String eventDate;
-    private String organizer;
-    private Long uploaderId;
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    
-    public String getEventDate() { return eventDate; }
-    public void setEventDate(String eventDate) { this.eventDate = eventDate; }
-    
-    public String getOrganizer() { return organizer; }
-    public void setOrganizer(String organizer) { this.organizer = organizer; }
-
-    public Long getUploaderId() { return uploaderId; }
-    public void setUploaderId(Long uploaderId) { this.uploaderId = uploaderId; }
 }

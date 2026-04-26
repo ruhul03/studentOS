@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import './LostFound.css';
-import { MapPin, Phone, Plus, X, AlertTriangle, CheckCircle2, Info, FileText, Package, Search, Calendar, User, Edit, Trash2, Eye, Camera, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LostFoundFiltersModal } from './LostFoundFiltersModal';
 
 export function LostFoundBoard({ onProfileView }) {
   const [items, setItems] = useState([]);
-  const [filter, setFilter] = useState('ALL');
+  const [activeFilters, setActiveFilters] = useState({
+    status: 'ALL',
+    category: 'All',
+    dateRange: 'All time'
+  });
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [showReportForm, setShowReportForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [postError, setPostError] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('LOST');
+  const [category, setCategory] = useState('');
+  const [dateLost, setDateLost] = useState('');
   const [location, setLocation] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [editingItem, setEditingItem] = useState(null);
@@ -22,7 +29,6 @@ export function LostFoundBoard({ onProfileView }) {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const { user } = useAuth();
 
-  // Load items from localStorage on component mount
   useEffect(() => {
     const savedItems = localStorage.getItem('lostfound-items');
     if (savedItems) {
@@ -34,7 +40,6 @@ export function LostFoundBoard({ onProfileView }) {
     }
   }, []);
 
-  // Save items to localStorage whenever they change
   useEffect(() => {
     if (items.length > 0) {
       localStorage.setItem('lostfound-items', JSON.stringify(items));
@@ -50,7 +55,6 @@ export function LostFoundBoard({ onProfileView }) {
           const newPhotoPreview = reader.result;
           setPhotoPreviews(prev => [...prev, newPhotoPreview]);
           setItemPhotos(prev => [...prev, file]);
-          console.log('Photo added successfully');
         };
         reader.readAsDataURL(file);
       } else {
@@ -79,6 +83,8 @@ export function LostFoundBoard({ onProfileView }) {
     setTitle(item.title);
     setDescription(item.description);
     setType(item.type);
+    setCategory(item.category || '');
+    setDateLost(item.dateLost || '');
     setLocation(item.location);
     setContactInfo(item.contactInfo);
     setPhotoPreviews(item.photos || (item.photo ? [item.photo] : []));
@@ -90,7 +96,9 @@ export function LostFoundBoard({ onProfileView }) {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const url = filter === 'ALL' ? `${import.meta.env.VITE_API_URL}/api/lostfound` : `${import.meta.env.VITE_API_URL}/api/lostfound?type=${filter}`;
+      const url = activeFilters.status === 'ALL' 
+        ? `${import.meta.env.VITE_API_URL}/api/lostfound` 
+        : `${import.meta.env.VITE_API_URL}/api/lostfound?type=${activeFilters.status}`;
       const response = await fetch(url);
       if (response.ok) {
         setItems(await response.json());
@@ -104,21 +112,15 @@ export function LostFoundBoard({ onProfileView }) {
 
   useEffect(() => {
     fetchItems();
-  }, [filter]);
+  }, [activeFilters.status]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
     
     if (!user) {
         setPostError("Please log in to report items.");
         return;
-    }
-
-    // Prevent multiple submissions
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    if (submitButton) {
-      submitButton.disabled = true;
     }
 
     setPostError(null);
@@ -128,28 +130,11 @@ export function LostFoundBoard({ onProfileView }) {
         ? `${import.meta.env.VITE_API_URL}/api/lostfound/${editingItem.id}` 
         : `${import.meta.env.VITE_API_URL}/api/lostfound`;
       
-      // Get auth token
       const token = localStorage.getItem('token');
-      const headers = { 
-        'Content-Type': 'application/json'
-      };
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      // Prepare request data - don't include photo in JSON for now
-      const requestData = {
-        title, 
-        description, 
-        type, 
-        location, 
-        contactInfo, 
-        reporterId: user.id
-      };
-      
-      console.log('Sending request to:', url);
-      console.log('Request body:', requestData);
+      const requestData = { title, description, type, category, dateLost, location, contactInfo, reporterId: user.id };
       
       const response = await fetch(url, {
         method: isEdit ? 'PUT' : 'POST',
@@ -157,105 +142,63 @@ export function LostFoundBoard({ onProfileView }) {
         body: JSON.stringify(requestData)
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Success response:', result);
-        
-        // If we have photos and got a successful response, add them to the result
         if (photoPreviews.length > 0) {
-          // For now, just include the photo previews in the local item
-          const newItem = {
-            ...result,
-            photos: photoPreviews
-          };
-          
+          const newItem = { ...result, photos: photoPreviews };
           if (isEdit) {
-            setItems(prevItems => 
-              prevItems.map(item => 
-                item.id === editingItem.id ? newItem : item
-              )
-            );
+            setItems(prevItems => prevItems.map(item => item.id === editingItem.id ? newItem : item));
           } else {
             setItems(prevItems => [newItem, ...prevItems]);
           }
         } else {
-          // Normal fetch without photos
           fetchItems();
         }
         
         setShowReportForm(false);
         setEditingItem(null);
-        setTitle(''); setDescription(''); setLocation(''); setContactInfo('');
-        setItemPhotos([]);
-        setPhotoPreviews([]);
+        setTitle(''); setDescription(''); setLocation(''); setContactInfo(''); setCategory(''); setDateLost('');
+        setItemPhotos([]); setPhotoPreviews([]);
       } else {
         const errorData = await response.text();
-        console.log('Error response:', errorData);
         setPostError(`Server Error (${response.status}): ${errorData || response.statusText}`);
       }
     } catch (err) {
       console.error('Report failed:', err);
-      // Fallback: Add item locally if backend is not available
       const newItem = {
-        id: Date.now(), // Temporary ID
-        title,
-        description,
-        type,
-        location,
-        contactInfo,
-        photos: photoPreviews, // Include multiple photos in local fallback
+        id: Date.now(),
+        title, description, type, category, dateLost, location, contactInfo,
+        photos: photoPreviews,
         reporter: user,
         reportedAt: new Date().toISOString(),
         resolved: false
       };
       
       if (editingItem) {
-        // Update existing item locally
-        setItems(prevItems => 
-          prevItems.map(item => 
-            item.id === editingItem.id ? { ...item, ...newItem, id: editingItem.id } : item
-          )
-        );
+        setItems(prevItems => prevItems.map(item => item.id === editingItem.id ? { ...item, ...newItem, id: editingItem.id } : item));
       } else {
-        // Add new item locally
         setItems(prevItems => [newItem, ...prevItems]);
       }
       
       setShowReportForm(false);
       setEditingItem(null);
-      setTitle(''); setDescription(''); setLocation(''); setContactInfo('');
-      setItemPhotos([]);
-      setPhotoPreviews([]);
-      
-      setPostError("Backend server error. Item saved locally only. Check console for details.");
-    } finally {
-      // Re-enable submit button
-      if (submitButton) {
-        submitButton.disabled = false;
-      }
+      setTitle(''); setDescription(''); setLocation(''); setContactInfo(''); setCategory(''); setDateLost('');
+      setItemPhotos([]); setPhotoPreviews([]);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this report?")) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound/${id}?userId=${user.id}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lostfound/${id}?userId=${user.id}`, { method: 'DELETE' });
       if (response.ok) {
         fetchItems();
       } else {
-        // Fallback: Delete locally if backend fails
         const updatedItems = items.filter(item => item.id !== id);
         setItems(updatedItems);
         localStorage.setItem('lostfound-items', JSON.stringify(updatedItems));
       }
     } catch (err) {
-      console.error('Delete failed', err);
-      // Fallback: Delete locally if backend is not available
       const updatedItems = items.filter(item => item.id !== id);
       setItems(updatedItems);
       localStorage.setItem('lostfound-items', JSON.stringify(updatedItems));
@@ -268,269 +211,441 @@ export function LostFoundBoard({ onProfileView }) {
       if (response.ok) {
         fetchItems();
       } else {
-        // Fallback: Update locally if backend fails
-        const updatedItems = items.map(item => 
-          item.id === id ? { ...item, resolved: true } : item
-        );
+        const updatedItems = items.map(item => item.id === id ? { ...item, resolved: true } : item);
         setItems(updatedItems);
         localStorage.setItem('lostfound-items', JSON.stringify(updatedItems));
       }
     } catch (err) {
-      console.error('Resolve failed', err);
-      // Fallback: Update locally if backend is not available
-      const updatedItems = items.map(item => 
-        item.id === id ? { ...item, resolved: true } : item
-      );
+      const updatedItems = items.map(item => item.id === id ? { ...item, resolved: true } : item);
       setItems(updatedItems);
       localStorage.setItem('lostfound-items', JSON.stringify(updatedItems));
     }
   };
 
+  const getDaysAgo = (dateString) => {
+    if (!dateString) return 0;
+    const diffTime = Math.abs(new Date() - new Date(dateString));
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const getBadgeInfo = (item) => {
+    const days = getDaysAgo(item.reportedAt);
+    if (item.type === 'LOST') {
+      return {
+        text: days === 0 ? 'Missing Today' : `Missing ${days} Days`,
+        bgClass: 'bg-error-container',
+        textClass: 'text-on-error'
+      };
+    } else {
+      return {
+        text: days === 0 ? 'Just Found' : `Found ${days} Days Ago`,
+        bgClass: 'bg-secondary-container',
+        textClass: 'text-on-secondary-container'
+      };
+    }
+  };
+
+  const filteredItems = items.filter(item => {
+    // Text search
+    if (searchQuery && 
+        !item.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        !item.description.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    
+    // Category filter
+    if (activeFilters.category !== 'All' && item.category !== activeFilters.category) {
+      // If the item doesn't have a category, or it doesn't match
+      return false;
+    }
+    
+    // Date Range filter
+    if (activeFilters.dateRange !== 'All time') {
+      const daysAgo = getDaysAgo(item.reportedAt);
+      if (activeFilters.dateRange === 'Last 24 hours' && daysAgo > 1) return false;
+      if (activeFilters.dateRange === 'Last 7 days' && daysAgo > 7) return false;
+      if (activeFilters.dateRange === 'Last 30 days' && daysAgo > 30) return false;
+    }
+    
+    return true;
+  });
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="lostfound-container"
-    >
-      <div className="lf-header">
-        <div>
-          <h2>Lost & Found</h2>
-          <p>Help your fellow students find their belongings</p>
+    <div className="flex flex-col h-full w-full max-w-[1440px] mx-auto pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 shrink-0">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-bold tracking-tight text-on-surface">
+            Lost & <span className="text-transparent bg-clip-text bg-gradient-to-r from-error to-secondary">Found</span>
+          </h1>
+          <p className="text-on-surface-variant text-base">Reunite with your missing items or help others find theirs.</p>
         </div>
-        <button className="report-btn" onClick={() => {
-          if (showReportForm) {
-            setShowReportForm(false);
-            setEditingItem(null);
-            setTitle(''); setDescription(''); setLocation(''); setContactInfo('');
-          } else {
-            setShowReportForm(true);
-          }
-        }}>
-          {showReportForm ? <X size={20} /> : <Plus size={20} />}
-          {showReportForm ? 'Cancel' : 'Report Item'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsFilterModalOpen(true)}
+            className="bg-surface-variant border border-outline-variant hover:bg-surface-bright text-on-surface text-sm px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[18px]">filter_list</span>
+            Filters
+          </button>
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              if (showReportForm) {
+                setShowReportForm(false);
+                setEditingItem(null);
+                setTitle(''); setDescription(''); setLocation(''); setContactInfo(''); setCategory(''); setDateLost('');
+              } else {
+                setShowReportForm(true);
+              }
+            }}
+            className="bg-primary text-on-primary text-sm font-bold px-6 py-2 rounded-xl transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[20px]">{showReportForm ? 'close' : 'add'}</span>
+            {showReportForm ? 'Cancel Report' : 'Report Item'}
+          </motion.button>
+        </div>
       </div>
 
-      <div className="lf-filters">
-        <button 
-          className={filter === 'ALL' ? 'active' : ''} 
-          onClick={() => setFilter('ALL')}
-        >All Items</button>
-        <button 
-          className={filter === 'LOST' ? 'active' : ''} 
-          onClick={() => setFilter('LOST')}
-        >Lost</button>
-        <button 
-          className={filter === 'FOUND' ? 'active' : ''} 
-          onClick={() => setFilter('FOUND')}
-        >Found</button>
+      {/* Search and Filter Module */}
+      <div className="bg-surface-container-low rounded-xl border border-outline-variant p-4 mb-8 flex flex-col md:flex-row gap-4 items-center shrink-0">
+        <div className="relative flex-1 w-full">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">search</span>
+          <input 
+            type="text"
+            className="w-full bg-background border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm" 
+            placeholder="Search for 'keys', 'blue backpack'..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+          <button 
+            className={`text-sm px-4 py-2 rounded-full whitespace-nowrap transition-colors border ${activeFilters.status === 'ALL' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-surface-variant text-on-surface-variant hover:bg-surface-bright border-transparent'}`}
+            onClick={() => setActiveFilters({ ...activeFilters, status: 'ALL' })}
+          >All Items</button>
+          <button 
+            className={`text-sm px-4 py-2 rounded-full whitespace-nowrap transition-colors border ${activeFilters.status === 'LOST' ? 'bg-error/10 text-error border-error/20' : 'bg-surface-variant text-on-surface-variant hover:bg-surface-bright border-transparent'}`}
+            onClick={() => setActiveFilters({ ...activeFilters, status: 'LOST' })}
+          >Lost</button>
+          <button 
+            className={`text-sm px-4 py-2 rounded-full whitespace-nowrap transition-colors border ${activeFilters.status === 'FOUND' ? 'bg-secondary/10 text-secondary border-secondary/20' : 'bg-surface-variant text-on-surface-variant hover:bg-surface-bright border-transparent'}`}
+            onClick={() => setActiveFilters({ ...activeFilters, status: 'FOUND' })}
+          >Found</button>
+        </div>
       </div>
 
       <AnimatePresence>
         {showReportForm && (
-          <motion.form 
-            initial={{ opacity: 0, height: 0, scale: 0.95 }}
-            animate={{ opacity: 1, height: 'auto', scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.9 }}
-            className="report-form" 
-            onSubmit={handleSubmit}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           >
-            <h3>{editingItem ? 'Edit Report' : 'Report New Item'}</h3>
-
-            {postError && (
-              <div className="error-alert">
-                 <Info size={18} />
-                 <span>{postError}</span>
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-surface-container-high w-full max-w-2xl rounded-xl border border-outline-variant shadow-[0_8px_32px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container/50">
+                <div>
+                  <h2 className="text-2xl font-bold text-on-surface">
+                    {editingItem ? 'Edit Report' : (type === 'LOST' ? 'Report Lost Item' : 'Report Found Item')}
+                  </h2>
+                  <p className="text-sm text-on-surface-variant mt-1">Please provide detailed information to help us locate the item.</p>
+                </div>
+                <button 
+                  type="button"
+                  className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant p-2 rounded-full transition-colors"
+                  onClick={() => {
+                    setShowReportForm(false);
+                    setEditingItem(null);
+                    setTitle(''); setDescription(''); setLocation(''); setContactInfo(''); setCategory(''); setDateLost('');
+                  }}
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
               </div>
-            )}
 
-            <div className="form-row">
-              <div className="form-group flex-1">
-                <label>Item Name</label>
-                <input type="text" placeholder="e.g., Black backpack, iPhone charger, Student ID card" value={title} onChange={e => setTitle(e.target.value)} required />
-              </div>
-              <div className="form-group select-group">
-                <label>Type</label>
-                <select value={type} onChange={e => setType(e.target.value)}>
-                  <option value="LOST">🔴 Lost Item</option>
-                  <option value="FOUND">🟢 Found Item</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Photos (Optional)</label>
-              <div className="photo-upload-area">
-                {photoPreviews.length > 0 ? (
-                  <div className="photo-preview-grid">
-                    {photoPreviews.map((preview, index) => (
-                      <div key={index} className="photo-preview-item" onClick={() => openPhotoViewer(preview)}>
-                        <img src={preview} alt={`Item photo ${index + 1}`} />
-                        <button type="button" className="remove-photo-btn" onClick={(e) => { e.stopPropagation(); removePhoto(index); }}>
-                          <X size={16} />
-                        </button>
-                      </div>
-                    ))}
-                    <div className="add-more-photo">
-                      <label className="add-photo-btn">
-                        <Plus size={24} />
-                        <span>Add More</span>
-                        <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
-                      </label>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="photo-upload-placeholder">
-                    <Camera size={32} />
-                    <p>Add photos of the item</p>
-                    <div className="photo-upload-buttons">
-                      <label className="photo-upload-btn">
-                        <Upload size={16} />
-                        Choose File
-                        <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
-                      </label>
-                      <label className="camera-btn">
-                        <Camera size={16} />
-                        Take Photo
-                        <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} hidden />
-                      </label>
-                    </div>
+              {/* Modal Body (Form) */}
+              <div className="p-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                {postError && (
+                  <div className="bg-error-container text-on-error-container p-4 rounded-lg mb-6 flex items-center gap-2">
+                    <span className="material-symbols-outlined">info</span>
+                    <span className="text-sm">{postError}</span>
                   </div>
                 )}
-              </div>
-            </div>
 
-            <div className="form-group">
-              <label>Description</label>
-              <textarea placeholder="Include details like color, brand, size, unique features, when/where it was lost or found" value={description} onChange={e => setDescription(e.target.value)} required />
-            </div>
+                <form id="report-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Item Name */}
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Item Name</label>
+                    <input 
+                      type="text" 
+                      className="bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline" 
+                      placeholder="e.g., MacBook Pro 14-inch, Blue Water Bottle" 
+                      value={title} 
+                      onChange={e => setTitle(e.target.value)} 
+                      required 
+                    />
+                  </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Location</label>
-                <input type="text" placeholder="e.g., Library 3rd floor, Room 301, Cafeteria, Parking area" value={location} onChange={e => setLocation(e.target.value)} required />
-              </div>
-              <div className="form-group">
-                <label>Contact Info</label>
-                <input type="text" placeholder="Your phone number or email address" value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
-              </div>
-            </div>
+                  {/* Type */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Report Type</label>
+                    <div className="relative">
+                      <select 
+                        className="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" 
+                        value={type} 
+                        onChange={e => setType(e.target.value)}
+                      >
+                        <option value="LOST">Lost Item</option>
+                        <option value="FOUND">Found Item</option>
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                    </div>
+                  </div>
 
-            <button type="submit" className="submit-report-btn">
-              {editingItem ? 'Update Report' : 'Submit Report'}
-            </button>
-          </motion.form>
+                  {/* Category */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Category</label>
+                    <div className="relative">
+                      <select 
+                        className="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" 
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>Select category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing & Accessories</option>
+                        <option value="Books & Materials">Books & Documents</option>
+                        <option value="Keys & Lanyards">Keys & IDs</option>
+                        <option value="Wallets & IDs">Wallets & IDs</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                    </div>
+                  </div>
+
+                  {/* Date Lost/Found */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Date {type === 'LOST' ? 'Lost' : 'Found'}</label>
+                    <input 
+                      type="date" 
+                      className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" 
+                      style={{ colorScheme: 'dark' }}
+                      value={dateLost}
+                      onChange={e => setDateLost(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Contact Info</label>
+                    <input 
+                      type="text" 
+                      className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline" 
+                      placeholder="Your phone number or email" 
+                      value={contactInfo} 
+                      onChange={e => setContactInfo(e.target.value)} 
+                      required 
+                    />
+                  </div>
+
+                  {/* Location Lost/Found */}
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Last Known Location</label>
+                    <div className="relative">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
+                      <input 
+                        type="text" 
+                        className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline" 
+                        placeholder="e.g., Library 2nd Floor, Main Cafeteria" 
+                        value={location} 
+                        onChange={e => setLocation(e.target.value)} 
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Detailed Description</label>
+                    <textarea 
+                      className="bg-surface border border-outline-variant rounded-lg px-4 py-3 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline resize-none" 
+                      placeholder="Provide identifying marks, colors, brand names, or specific contents..." 
+                      rows="3"
+                      value={description} 
+                      onChange={e => setDescription(e.target.value)} 
+                      required 
+                    ></textarea>
+                  </div>
+
+                  {/* Image Upload */}
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-[12px] font-bold tracking-wider uppercase text-on-surface-variant">Photo of Item (Optional)</label>
+                    
+                    {photoPreviews.length > 0 ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {photoPreviews.map((preview, index) => (
+                          <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-outline-variant group">
+                            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <button 
+                                type="button" 
+                                className="bg-error text-white p-2 rounded-full hover:bg-error/80 transition-colors"
+                                onClick={() => removePhoto(index)}
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <label className="aspect-square border-2 border-outline-variant/30 rounded-xl flex flex-col items-center justify-center text-center hover:bg-surface hover:border-outline transition-colors cursor-pointer group">
+                          <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-2xl">add</span>
+                          <span className="text-xs text-on-surface-variant mt-1">Add More</span>
+                          <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                        </label>
+                      </div>
+                    ) : (
+                      <label className="border-2 border-outline-variant/30 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-surface hover:border-outline transition-colors cursor-pointer group">
+                        <div className="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+                          <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-2xl">add_photo_alternate</span>
+                        </div>
+                        <p className="text-sm text-on-surface font-medium">Click to upload or drag and drop</p>
+                        <p className="text-[12px] text-on-surface-variant mt-1">PNG, JPG, or HEIC up to 5MB</p>
+                        <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                      </label>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-4 border-t border-outline-variant flex justify-end gap-3 bg-surface-container/50">
+                <button 
+                  type="button"
+                  className="px-6 py-2.5 rounded-lg border border-outline-variant text-on-surface text-sm font-medium hover:bg-surface-variant transition-colors"
+                  onClick={() => {
+                    setShowReportForm(false);
+                    setEditingItem(null);
+                    setTitle(''); setDescription(''); setLocation(''); setContactInfo(''); setCategory(''); setDateLost('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  form="report-form"
+                  className="px-6 py-2.5 rounded-lg bg-[#6366F1] text-white text-sm font-medium hover:bg-[#5255D9] transition-colors shadow-md flex items-center gap-2"
+                >
+                  <span>{editingItem ? 'Update Report' : 'Submit Report'}</span>
+                  <span className="material-symbols-outlined text-[18px]">send</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div layout className="lf-grid">
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence>
-          {items.map((item) => (
-            <motion.div 
-              layout
-              key={item.id} 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className={`lf-card ${item.resolved ? 'resolved-card' : ''}`}
-            >
-              <div className="lf-card-header">
-                <span className={`type-badge ${item.type === 'LOST' ? 'badge-lost' : 'badge-found'}`}>
-                  {item.type === 'LOST' ? <AlertTriangle size={14} /> : <CheckCircle2 size={14} />}
-                  {item.type}
-                </span>
-                <div className="card-meta">
-                  <span className="time-ago">
-                    <Calendar size={12} />
-                    {new Date(item.reportedAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              {(item.photos && item.photos.length > 0) && (
-                <div className="item-photos">
-                  {item.photos.length === 1 ? (
-                    <div className="item-photo" onClick={() => openPhotoViewer(item.photos[0])}>
-                      <img src={item.photos[0]} alt={item.title} />
-                    </div>
+          {filteredItems.map((item) => {
+            const badgeInfo = getBadgeInfo(item);
+            
+            return (
+              <motion.div 
+                layout
+                key={item.id} 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className={`bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden group hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition-all duration-300 flex flex-col ${item.resolved ? 'opacity-50 grayscale' : ''}`}
+              >
+                <div className="relative h-48 bg-surface-variant overflow-hidden flex items-center justify-center bg-gradient-to-br from-surface-variant to-background">
+                  {item.photos && item.photos.length > 0 ? (
+                    <img 
+                      src={item.photos[0]} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" 
+                      onClick={() => openPhotoViewer(item.photos[0])}
+                    />
                   ) : (
-                    <div className="item-photo-grid">
-                      {item.photos.slice(0, 4).map((photo, index) => (
-                        <div key={index} className="item-photo-thumb" onClick={() => openPhotoViewer(photo)}>
-                          <img src={photo} alt={`${item.title} ${index + 1}`} />
-                          {item.photos.length > 4 && index === 3 && (
-                            <div className="more-photos-overlay">
-                              +{item.photos.length - 4}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                    <span className="material-symbols-outlined text-[64px] text-outline/30">{item.type === 'LOST' ? 'search' : 'inventory_2'}</span>
                   )}
-                </div>
-              )}
-
-              <div className="item-content">
-                <h3>{item.title}</h3>
-                <p className="item-desc">{item.description}</p>
-              </div>
-
-              <div className="item-meta-grid">
-                <div className="meta-item">
-                  <MapPin size={16} />
-                  <span>{item.location}</span>
-                </div>
-                <div className="meta-item">
-                  <Phone size={16} />
-                  <span>{item.contactInfo}</span>
-                </div>
-              </div>
-
-              <div className="lf-card-footer">
-                <div className="reporter-info" onClick={() => onProfileView(item.reporter.id)}>
-                  <User size={14} />
-                  <span>{item.reporter.name}</span>
-                </div>
-                
-                <div className="footer-actions">
-                  {(user?.id === item.reporter.id || user?.role === 'ADMIN') && (
-                    <div className="owner-actions">
-                      <button className="action-btn edit-btn" onClick={() => startEdit(item)}>
-                        <Edit size={14} />
-                        Edit
-                      </button>
-                      <button className="action-btn delete-btn" onClick={() => handleDelete(item.id)}>
-                        <Trash2 size={14} />
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none"></div>
                   
-                  {!item.resolved && (user?.id === item.reporter.id || user?.role === 'ADMIN') && (
-                    <button className="resolve-btn" onClick={() => handleResolve(item.id)}>
-                      <CheckCircle2 size={16} />
-                      Resolve Item
-                    </button>
-                  )}
-                  {item.resolved && (
-                    <span className="resolved-badge">
-                      <CheckCircle2 size={16} />
-                      Resolved
-                    </span>
-                  )}
+                  <div className={`absolute top-3 left-3 ${badgeInfo.bgClass} ${badgeInfo.textClass} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md`}>
+                    {item.resolved ? 'RESOLVED' : badgeInfo.text}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+
+                <div className="p-4 flex-1 flex flex-col relative z-10 bg-surface-container-low">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-on-surface line-clamp-1">{item.title}</h3>
+                    <span className="material-symbols-outlined text-outline text-[20px]">
+                      {item.type === 'LOST' ? 'help_center' : 'where_to_vote'}
+                    </span>
+                  </div>
+                  
+                  <p className="text-sm text-on-surface-variant line-clamp-2 mb-4">{item.description}</p>
+                  
+                  <div className="mt-auto pt-4 border-t border-outline-variant/50 flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-on-surface-variant text-[13px]">
+                      <div className="flex items-center gap-1.5 font-medium truncate max-w-[60%]">
+                        <span className="material-symbols-outlined text-[16px] shrink-0">location_on</span>
+                        <span className="truncate">{item.location}</span>
+                      </div>
+                      <span className="shrink-0">{new Date(item.reportedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-on-surface-variant text-[13px]">
+                      <div className="flex items-center gap-1.5 font-medium truncate max-w-[60%] hover:text-on-surface cursor-pointer transition-colors" onClick={() => onProfileView && onProfileView(item.reporter.id)}>
+                        <span className="material-symbols-outlined text-[16px] shrink-0">person</span>
+                        <span className="truncate">{item.reporter?.name || 'Anonymous'}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {user && (user.id === item.reporter?.id || user.role === 'ADMIN') && !item.resolved && (
+                          <button 
+                            className="text-primary hover:text-primary-fixed-dim transition-colors"
+                            onClick={() => handleResolve(item.id)}
+                            title="Mark as Resolved"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">task_alt</span>
+                          </button>
+                        )}
+                        {user && (user.id === item.reporter?.id || user.role === 'ADMIN') && (
+                          <button 
+                            className="text-error hover:text-error-container transition-colors"
+                            onClick={() => handleDelete(item.id)}
+                            title="Delete"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
-        {items.length === 0 && !loading && (
-          <div className="empty-state">
-            <Search size={48} />
-            <h3>No items found</h3>
-            <p>No items reported in this category yet.</p>
+        
+        {filteredItems.length === 0 && !loading && (
+          <div className="col-span-full p-12 text-center border border-outline-variant/30 rounded-xl bg-surface-container-highest mt-4">
+             <span className="material-symbols-outlined text-4xl text-outline mb-4">search_off</span>
+             <h3 className="text-xl font-bold text-on-surface mb-2">No items found</h3>
+             <p className="text-on-surface-variant">Try adjusting your filters or search term.</p>
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Photo Viewer Modal */}
       <AnimatePresence>
@@ -539,49 +654,40 @@ export function LostFoundBoard({ onProfileView }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="photo-crop-modal"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 backdrop-blur-sm p-4"
             onClick={closePhotoViewer}
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="photo-crop-container"
+              className="relative max-w-4xl max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="photo-crop-header">
-                <h3>Photo Viewer</h3>
-                <button className="close-crop-btn" onClick={closePhotoViewer}>
-                  <X size={20} />
-                </button>
-              </div>
+              <button 
+                className="absolute -top-12 right-0 text-white hover:text-primary transition-colors bg-surface-container-highest/50 p-2 rounded-full" 
+                onClick={closePhotoViewer}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
               
-              <div className="photo-viewer-area">
-                <img 
-                  src={selectedPhoto} 
-                  alt="Full size photo" 
-                  style={{ 
-                    maxWidth: '90vw', 
-                    maxHeight: '80vh', 
-                    width: 'auto', 
-                    height: 'auto',
-                    display: 'block',
-                    margin: '0 auto',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-                  }}
-                />
-              </div>
-              
-              <div className="photo-crop-actions">
-                <button className="cancel-crop-btn" onClick={closePhotoViewer}>
-                  Close
-                </button>
-              </div>
+              <img 
+                src={selectedPhoto} 
+                alt="Full size photo" 
+                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-outline-variant/50"
+              />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+
+      {/* Filters Modal */}
+      <LostFoundFiltersModal 
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        currentFilters={activeFilters}
+        onApplyFilters={(newFilters) => setActiveFilters(newFilters)}
+      />
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
@@ -22,15 +23,14 @@ import { Terms } from '../../pages/Terms';
 import { Profile } from '../../pages/Profile';
 import ScrollToTop from './ScrollToTop';
 import { EventsAnnouncements } from '../events/EventsAnnouncements';
+import { SettingsPage } from '../dashboard/SettingsPage';
+import { HelpPage } from '../dashboard/HelpPage';
 import { useWebSockets } from '../../hooks/useWebSockets';
 import { ProtectedRoute, AdminRoute } from '../routes/ProtectedRoutes';
 import { DashboardLayout } from '../layout/DashboardLayout';
 import { Navbar } from '../Navigation/Navbar';
 import { MobileNav } from '../Navigation/MobileNav';
 import { ChatManager } from '../social/ChatManager';
-
-import './App.css';
-import './BackgroundEffects.css';
 
 function Dashboard() {
   const { user } = useAuth();
@@ -60,24 +60,36 @@ function Dashboard() {
         onNavigate={handleTabChange} 
       />
       
-      <main className="main-viewport animate-in">
-        <div className="content-container">
-          {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
-          {activeTab === 'resources' && <ResourceFeed />}
-          {activeTab === 'services' && <CampusServicesDirectory />}
-          {activeTab === 'planner' && <StudyPlanner />}
-          {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}
-          {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
-          {activeTab === 'events' && <EventsAnnouncements />}
-          {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
-          {activeTab === 'calculator' && <UiuCalculator />}
-          {(activeTab === 'profile' || queryParams.get('viewUserId')) && <Profile />}
-          {activeTab === 'activity' && (
-            <ActivityHistory 
-              onBack={() => handleTabChange('home')} 
-              onNavigate={handleTabChange}
-            />
-          )}
+      <main className="flex-1 md:ml-64 pt-16 min-h-screen w-full md:w-[calc(100%-256px)] pb-20 md:pb-0">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
+              {activeTab === 'resources' && <ResourceFeed />}
+              {activeTab === 'services' && <CampusServicesDirectory />}
+              {activeTab === 'planner' && <StudyPlanner />}
+              {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}
+              {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
+              {activeTab === 'events' && <EventsAnnouncements />}
+              {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
+              {activeTab === 'calculator' && <UiuCalculator />}
+              {(activeTab === 'profile' || queryParams.get('viewUserId')) && <Profile />}
+              {activeTab === 'settings' && <SettingsPage />}
+              {activeTab === 'help' && <HelpPage />}
+              {activeTab === 'activity' && (
+                <ActivityHistory 
+                  onBack={() => handleTabChange('home')} 
+                  onNavigate={handleTabChange}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
 

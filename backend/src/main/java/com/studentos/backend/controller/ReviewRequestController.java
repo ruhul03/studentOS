@@ -1,10 +1,12 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.ReviewRequestSubmit;
 import com.studentos.backend.model.ReviewRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.ReviewRequestRepository;
 import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,7 @@ public class ReviewRequestController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<ReviewRequest> createRequest(@RequestBody ReviewRequestSubmit request) {
+    public ResponseEntity<ReviewRequest> createRequest(@Valid @RequestBody ReviewRequestSubmit request) {
         Optional<User> userOpt = userRepository.findById(request.getRequesterId());
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -65,7 +67,7 @@ public class ReviewRequestController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<ReviewRequest> updateRequest(@PathVariable Long id, @RequestBody ReviewRequestSubmit request) {
+    public ResponseEntity<ReviewRequest> updateRequest(@PathVariable Long id, @Valid @RequestBody ReviewRequestSubmit request) {
         Optional<ReviewRequest> reqOpt = requestRepository.findById(id);
         if (reqOpt.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -105,20 +107,4 @@ public class ReviewRequestController {
         requestRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-}
-
-class ReviewRequestSubmit {
-    private String courseCode;
-    private String professor;
-    private Long requesterId;
-    private boolean anonymous;
-
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
-    public String getProfessor() { return professor; }
-    public void setProfessor(String professor) { this.professor = professor; }
-    public Long getRequesterId() { return requesterId; }
-    public void setRequesterId(Long requesterId) { this.requesterId = requesterId; }
-    public boolean isAnonymous() { return anonymous; }
-    public void setAnonymous(boolean anonymous) { this.anonymous = anonymous; }
 }

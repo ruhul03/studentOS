@@ -1,5 +1,7 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.ResourceRequest;
+import jakarta.validation.Valid;
 import com.studentos.backend.model.Resource;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.ResourceRepository;
@@ -8,9 +10,6 @@ import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
 import com.studentos.backend.service.FileStorageService;
 import com.studentos.backend.service.NotificationService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,25 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 import java.util.Optional;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-class ResourceRequest {
-    private String title;
-    private String description;
-    private String courseCode;
-    private String courseTitle;
-    private String fileUrl;
-    private String type;
-    private Long uploaderId;
-    private boolean anonymous;
-}
 
 @RestController
 @RequestMapping("/api/resources")
@@ -88,20 +71,10 @@ public class ResourceController {
     @PostMapping(consumes = {"multipart/form-data"})
     @Transactional
     public ResponseEntity<Resource> uploadResource(
-            @RequestPart("resource") ResourceRequest request,
+            @Valid @RequestPart("resource") ResourceRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         
         try {
-            // Comprehensive Validation
-            if (request.getTitle() == null || request.getTitle().trim().isEmpty() ||
-                request.getCourseCode() == null || request.getCourseCode().trim().isEmpty() ||
-                request.getDescription() == null || request.getDescription().trim().isEmpty() ||
-                request.getCourseTitle() == null || request.getCourseTitle().trim().isEmpty() ||
-                request.getUploaderId() == null) {
-                logger.warn("Invalid upload request: missing mandatory fields");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-
             Optional<User> uploaderOpt = userRepository.findById(request.getUploaderId());
             if (uploaderOpt.isEmpty()) {
                 logger.error("Uploader ID {} not found", request.getUploaderId());
@@ -170,7 +143,7 @@ public class ResourceController {
     @Transactional
     public ResponseEntity<?> updateResource(
             @PathVariable Long id, 
-            @RequestPart("resource") ResourceRequest request,
+            @Valid @RequestPart("resource") ResourceRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         
         logger.info("Updating resource ID: {}", id);

@@ -5,6 +5,7 @@ import com.studentos.backend.dto.UserStatsDTO;
 import com.studentos.backend.model.Activity;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.*;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -81,7 +82,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody ProfileUpdateRequest profileUpdate) {
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @Valid @RequestBody ProfileUpdateRequest profileUpdate) {
         logger.info("Profile update request received for user ID: {}", id);
         logger.debug("Request body: {}", profileUpdate);
 

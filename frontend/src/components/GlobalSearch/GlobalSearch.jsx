@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Loader2, Link as LinkIcon } from 'lucide-react';
-import './GlobalSearch.css';
 
 export function GlobalSearch({ onNavigate }) {
   const [query, setQuery] = useState('');
@@ -95,12 +93,13 @@ export function GlobalSearch({ onNavigate }) {
   };
 
   return (
-    <div className="global-search-wrapper" ref={wrapperRef}>
-      <div className={`global-search-input ${isOpen ? 'active' : ''}`}>
-        <Search size={18} className="search-icon" />
+    <div className="relative w-full" ref={wrapperRef}>
+      <div className={`flex items-center bg-surface-container border rounded-full px-4 py-2 transition-all duration-300 ${isOpen ? 'border-primary shadow-[0_0_15px_rgba(73,75,214,0.15)] bg-surface-container-high' : 'border-outline-variant hover:border-outline'}`}>
+        <span className={`material-symbols-outlined text-[20px] mr-2 ${isOpen ? 'text-primary' : 'text-on-surface-variant'}`}>search</span>
         <input
           type="text"
-          placeholder="Search anything..."
+          placeholder="Search campus resources..."
+          className="bg-transparent border-none text-on-surface w-full p-0 outline-none text-sm placeholder:text-on-surface-variant/50 focus:ring-0"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -109,45 +108,63 @@ export function GlobalSearch({ onNavigate }) {
           onFocus={() => { if (query) setIsOpen(true); }}
         />
         {query && (
-          <button className="clear-btn" onClick={() => setQuery('')}>
-            <X size={16} />
+          <button className="text-on-surface-variant hover:text-on-surface p-0.5" onClick={() => setQuery('')}>
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         )}
       </div>
 
       {isOpen && query.length >= 2 && (
-        <div className="search-dropdown glass-card">
+        <div className="absolute top-[calc(100%+12px)] left-0 right-0 bg-surface-container-highest border border-outline-variant rounded-2xl shadow-2xl z-[1000] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {isLoading ? (
-            <div className="search-loading">
-              <Loader2 size={24} className="animate-spin" />
-              <span>Searching campus network...</span>
+            <div className="flex items-center justify-center gap-3 p-8 text-on-surface-variant">
+              <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+              <span className="text-sm font-medium">Searching UIU Network...</span>
             </div>
           ) : results.length > 0 ? (
-            <div className="search-results">
+            <div className="p-2 space-y-1 max-h-[400px] overflow-y-auto custom-scrollbar">
               {results.map(result => (
                 <div
                   key={result.id}
-                  className={`search-result-item ${result.type}-result`}
+                  className="flex items-center gap-4 p-3 rounded-xl cursor-pointer hover:bg-surface-variant transition-colors group"
                   onClick={() => handleResultClick(result.type)}
                 >
-                  <div className="result-icon">
-                    <LinkIcon size={16} />
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container transition-transform group-hover:scale-105 ${
+                    result.type === 'resource' ? 'text-primary' :
+                    result.type === 'service' ? 'text-secondary' :
+                    result.type === 'marketplace' ? 'text-tertiary' : 'text-on-surface-variant'
+                  }`}>
+                    <span className="material-symbols-outlined text-[20px]">
+                      {result.type === 'resource' ? 'description' :
+                       result.type === 'service' ? 'hub' :
+                       result.type === 'marketplace' ? 'shopping_bag' : 'reviews'}
+                    </span>
                   </div>
-                  <div className="result-info">
-                    <h4>{result.title}</h4>
-                    <span className="result-subtitle">{result.subtitle}</span>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-bold text-on-surface truncate">{result.title}</h4>
+                    <span className="text-[11px] text-on-surface-variant block truncate">{result.subtitle}</span>
                   </div>
+                  <span className="material-symbols-outlined text-on-surface-variant/0 group-hover:text-on-surface-variant/100 transition-all text-[18px]">chevron_right</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="search-empty">
-              <p>No results found for "{query}"</p>
-              <span className="search-hint">Try searching for a UIU course like CSE 1110, a building, or a service.</span>
+            <div className="p-8 text-center">
+              <p className="text-sm font-bold text-on-surface mb-2">No matches for "{query}"</p>
+              <span className="text-xs text-on-surface-variant leading-relaxed">
+                Try searching for a course (e.g., CSE 1110), a professor, or campus services.
+              </span>
             </div>
           )}
         </div>
       )}
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #34343d; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #464554; }
+      `}} />
     </div>
   );
 }

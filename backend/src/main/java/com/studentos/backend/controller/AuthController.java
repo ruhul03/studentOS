@@ -5,18 +5,21 @@ import com.studentos.backend.dto.LoginRequest;
 import com.studentos.backend.dto.RegisterRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.studentos.backend.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*") // Allow frontend to call APIs
+@CrossOrigin(origins = "*")
+@Slf4j
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -31,31 +34,21 @@ public class AuthController {
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registration) {
-        // Enforce UIU email domain extension
-        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)?uiu\\.ac\\.bd$";
-        if (registration.getEmail() == null || !registration.getEmail().matches(emailRegex)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please provide a valid UIU email address (e.g., student@bscse.uiu.ac.bd).");
-        }
-
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registration) {
         if (userRepository.existsByEmail(registration.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
         
-        if (registration.getUsername() == null || registration.getUsername().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required.");
-        }
-
         if (userRepository.existsByUsername(registration.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
         }
         
         // Generate a 6-digit verification code
         String verificationCode = String.format("%06d", new java.util.Random().nextInt(1000000));
-        System.out.println("VERIFICATION CODE FOR " + registration.getEmail() + ": " + verificationCode);
+        log.warn("VERIFICATION CODE FOR {}: {}", registration.getEmail(), verificationCode);
 
         User user = User.builder()
-                .name(registration.getName() != null ? registration.getName() : registration.getUsername())
+                .name(registration.getName())
                 .username(registration.getUsername())
                 .email(registration.getEmail())
                 .password(passwordEncoder.encode(registration.getPassword()))
@@ -79,6 +72,10 @@ public class AuthController {
         String email = request.get("email");
         String code = request.get("code");
 
+        if (email == null || code == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email and code are required.");
+        }
+
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -93,18 +90,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         String identifier = loginRequest.getEmail();
         Optional<User> userOptional;
         
-        if (identifier == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username/Email is required.");
-        }
-
         if (identifier.contains("@")) {
             userOptional = userRepository.findByEmail(identifier);
         } else {
-            // Find by username logic
             userOptional = userRepository.findByUsername(identifier);
         }
 
@@ -125,11 +117,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-username")
-    public ResponseEntity<?> forgotUsername(@RequestBody ForgotRequest request) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");
-        }
-        
+    public ResponseEntity<?> forgotUsername(@Valid @RequestBody ForgotRequest request) {
         Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         if (userOptional.isPresent()) {
             return ResponseEntity.ok(java.util.Collections.singletonMap("username", userOptional.get().getUsername()));
@@ -139,16 +127,12 @@ public class AuthController {
 
     @PostMapping("/request-password-reset")
     @Transactional
-    public ResponseEntity<?> requestPasswordReset(@RequestBody ForgotRequest request) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");
-        }
-
+    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody ForgotRequest request) {
         Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String verificationCode = String.format("%06d", new java.util.Random().nextInt(1000000));
-            System.out.println("PASSWORD RESET CODE FOR " + user.getEmail() + ": " + verificationCode);
+            log.warn("PASSWORD RESET CODE FOR {}: {}", user.getEmail(), verificationCode);
             user.setVerificationCode(verificationCode);
             userRepository.save(user);
             return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Reset code generated. Please check your email/console."));
@@ -158,10 +142,7 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     @Transactional
-    public ResponseEntity<?> resetPassword(@RequestBody ForgotRequest request) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required.");
-        }
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ForgotRequest request) {
         if (request.getCode() == null || request.getCode().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification code is required.");
         }

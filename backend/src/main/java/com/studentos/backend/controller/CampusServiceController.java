@@ -1,7 +1,9 @@
 package com.studentos.backend.controller;
 
+import com.studentos.backend.dto.CampusServiceRequest;
 import com.studentos.backend.model.CampusService;
 import com.studentos.backend.repository.CampusServiceRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,7 @@ public class CampusServiceController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CampusService> createService(@RequestBody CampusServiceRequest request) {
+    public ResponseEntity<CampusService> createService(@Valid @RequestBody CampusServiceRequest request) {
         CampusService service = CampusService.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -55,7 +57,7 @@ public class CampusServiceController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<CampusService> updateService(@PathVariable Long id, @RequestBody CampusServiceRequest request) {
+    public ResponseEntity<CampusService> updateService(@PathVariable Long id, @Valid @RequestBody CampusServiceRequest request) {
         return serviceRepository.findById(id)
                 .map(service -> {
                     service.setName(request.getName());
@@ -105,30 +107,4 @@ public class CampusServiceController {
         }
         return service;
     }
-}
-
-class CampusServiceRequest {
-    private String name;
-    private String description;
-    private String category;
-    private String location;
-    private String operatingHours;
-    private String contactInfo;
-    private String adminName;
-
-    // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    public String getOperatingHours() { return operatingHours; }
-    public void setOperatingHours(String operatingHours) { this.operatingHours = operatingHours; }
-    public String getContactInfo() { return contactInfo; }
-    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
-    public String getAdminName() { return adminName; }
-    public void setAdminName(String adminName) { this.adminName = adminName; }
 }
