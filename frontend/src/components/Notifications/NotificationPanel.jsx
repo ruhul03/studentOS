@@ -55,7 +55,6 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
           method: 'PUT'
         });
       } catch (apiErr) {
-        console.log('API not available, using localStorage');
       }
       
       const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');

@@ -5,7 +5,6 @@ import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
 import { NewEntryModal } from './NewEntryModal';
-import './Navbar.css';
 
 export function Navbar({ activeTab, onNavigate, wsNotifications }) {
   const { user, logout } = useAuth();

@@ -11,14 +11,13 @@ export function useWebSockets(userId = null) {
 
     const client = new Client({
       webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL),
-      debug: (str) => console.log('STOMP: ' + str),
+      debug: () => {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
 
     client.onConnect = () => {
-      console.log('Connected to WebSocket');
       
       // Subscribe to global notifications
       client.subscribe('/topic/notifications', (message) => {
@@ -51,7 +50,6 @@ export function useWebSockets(userId = null) {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             setMessageEvent(data);
           } catch (e) {
-            console.error('Failed to parse message event', e);
           }
         }
       });
