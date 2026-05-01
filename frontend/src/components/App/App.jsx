@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';

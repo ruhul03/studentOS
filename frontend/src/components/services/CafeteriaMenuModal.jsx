@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function CafeteriaMenuModal({ service, onClose }) {
   if (!service) return null;
 

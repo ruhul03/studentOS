@@ -59,14 +59,38 @@ studentOS/
 - **Java JDK** 17+
 - **MySQL Server** 8.0+
 
-### Quick Start
-1. **Database**: Create a MySQL database named `studentos`.
-2. **Environment**: Configure `backend/src/main/resources/application.properties` with your DB credentials.
-3. **Execution**: Run the `run-all.bat` script in the root directory to launch both services simultaneously.
+### Database Setup
+1. Create a MySQL database named `studentos`.
+2. Configure your database credentials in `backend/src/main/resources/application.yml`.
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:mysql://localhost:3306/studentos?createDatabaseIfNotExist=true
+       username: your_username
+       password: your_password
+   ```
+
+### Execution
+Run the `run-all.bat` script in the root directory to launch both services simultaneously.
 
 Alternatively, follow the manual setup:
-- **Backend**: `cd backend && ./mvnw spring-boot:run`
-- **Frontend**: `cd frontend && npm install && npm run dev`
+- **Backend**: `cd backend` then `./mvnw spring-boot:run`
+- **Frontend**: `cd frontend` then `npm install` and `npm run dev`
+
+---
+
+## 🔍 Manual Verification
+
+To ensure everything is connected and functioning correctly:
+
+1. **Backend Connectivity**: Check the terminal logs for `BUILD SUCCESS`. Once running, verify API access at `http://localhost:8081`.
+2. **Database Integrity**: Log into your MySQL CLI and run:
+   ```sql
+   USE studentos;
+   SHOW TABLES;
+   ```
+   You should see tables like `users`, `campus_events`, `study_tasks`, etc.
+3. **Frontend Diagnostics**: Open the browser console (`F12`) on `http://localhost:5173`. Check the **Network** tab to ensure API calls to `:8081` are returning `200 OK`.
 
 ## 📄 License
 This project is developed as part of the AOOP Course (2026). All rights reserved.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ChatModal } from './ChatModal';
 import { PublicProfile } from './PublicProfile';

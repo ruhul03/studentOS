@@ -1,4 +1,3 @@
-import React from 'react';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 
 export function MobileNav({ activeTab, onNavigate }) {

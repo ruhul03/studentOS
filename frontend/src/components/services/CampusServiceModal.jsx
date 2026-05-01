@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function CampusServiceModal({ service, onClose }) {
   if (!service) return null;
 
