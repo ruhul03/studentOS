@@ -90,7 +90,7 @@ To ensure everything is connected and functioning correctly:
    SHOW TABLES;
    ```
    You should see tables like `users`, `campus_events`, `study_tasks`, etc.
-3. **Frontend Diagnostics**: Open the browser console (`F12`) on `http://localhost:5173`. Check the **Network** tab to ensure API calls to `:8081` are returning `200 OK`.
+3. **Frontend Diagnostics**: Open the browser console (`F12`) on `http://localhost:5174`. Check the **Network** tab to ensure API calls to `:8081` are returning `200 OK`.
 
 ## 📄 License
 This project is developed as part of the AOOP Course (2026). All rights reserved.

@@ -51,13 +51,17 @@ graph TD
 ## 2. Project Structure
 
 ### Backend (`/backend`)
-Located in `src/main/java/com/studentos/backend/`:
-- **config/**: System configurations (JWT Security, CORS, WebMvc, WebSockets).
-- **controller/**: REST API Endpoints that handle incoming JSON requests.
-- **service/**: Core business logic and service orchestration.
-- **repository/**: Data access layer using Spring Data JPA.
-- **model/**: JPA Entities representing the relational database schema.
-- **dto/**: Data Transfer Objects for secure and optimized API responses.
+Located in `src/main/java/com/studentos/backend/`. The backend follows a **Layered Architecture** pattern:
+
+| Package | Purpose |
+| :--- | :--- |
+| `config` | Security configurations (JWT, CORS), WebSocket STOMP brokers, and WebMvc settings. |
+| `controller` | REST API entry points. Manages request mapping and HTTP response statuses. |
+| `service` | **Business Logic Layer**. Implementation of complex rules (e.g., fee calculations, activity logging). |
+| `repository` | Data Access Layer. JPA interfaces extending `JpaRepository` for DB interaction. |
+| `model` | Core JPA Entities representing the relational database schema. |
+| `dto` | Data Transfer Objects used to decouple API responses from internal models. |
+| `util` | Reusable helpers, such as JWT token generators and file handling utilities. |
 
 ### Frontend (`/frontend`)
 Located in `src/`:
@@ -110,6 +114,12 @@ The schema is highly relational, centering around the `User` entity.
 - **Usage**: Used for instant chat messages and system-wide notifications.
 - **Endpoint**: `ws://localhost:8081/ws-studentos`.
 
+### Request Trace: User Profile Retrieval
+1.  **Request Mapping**: `UserController.java` receives request at `@GetMapping("/{id}")`.
+2.  **Logic**: Controller calls `userRepository.findById(id)` (Simple CRUD pattern).
+3.  **Persistence**: `UserRepository.java` executes a `SELECT` query on the `users` table.
+4.  **Mapping**: Database record is mapped into a `User.java` entity and returned as JSON.
+
 ---
 
 ## 5. Manual Verification Guide 🔍
@@ -134,3 +144,14 @@ SELECT * FROM users WHERE role = 'ADMIN';
 Use **Postman** or **Insomnia** to test routes independently:
 - **Base URL**: `http://localhost:8081`
 - **Protected Routes**: Include the header `Authorization: Bearer <YOUR_TOKEN>`.
+
+---
+
+## 6. Implementation Case Study: Service Layer
+To understand how business logic is isolated, refer to `TuitionFeeService.java`.
+
+### Logic Orchestration
+- **Annotations**: Uses `@Service` for component scanning and `@Transactional` to ensure data integrity during complex calculations.
+- **Multi-Condition Logic**: Calculates fees based on `ProgramType` (Trimester vs Semester) and `Batch` (applying pre-registration payment rules).
+- **Calculated Installments**: Dynamically generates payment schedules (e.g., 40/30/30 splits) based on the user's enrollment context.
+- **Security**: Implements manual security checks to verify that students can only access their own financial records, even if they know the ID of another record.

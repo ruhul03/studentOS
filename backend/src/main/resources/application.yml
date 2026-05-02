@@ -12,9 +12,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+jwt:
+  secret: thisIsAVeryLongAndSecureDevelopmentSecretKeyForStudentOS12345!@#
+
 server:
   port: 8081
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate

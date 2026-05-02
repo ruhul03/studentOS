@@ -3,6 +3,7 @@ package com.studentos.backend.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -12,10 +13,12 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Permanent base64 key for Development to survive Spring restarts
-    private static final String SECRET = "thisIsAVeryLongAndSecureDevelopmentSecretKeyForStudentOS12345!@#";
-    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key secretKey;
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
+
+    public JwtUtil(@Value("${jwt.secret:thisIsAVeryLongAndSecureDevelopmentSecretKeyForStudentOS12345!@#}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String username, String role) {
         return Jwts.builder()
@@ -23,7 +26,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SECRET_KEY)
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -38,7 +41,7 @@ public class JwtUtil {
 
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
