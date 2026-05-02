@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = "*")
 public class CourseReviewController {
 
     private final CourseReviewRepository reviewRepository;

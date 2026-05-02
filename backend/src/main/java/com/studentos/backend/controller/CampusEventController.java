@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "*")
 public class CampusEventController {
 
     private final CampusEventRepository campusEventRepository;

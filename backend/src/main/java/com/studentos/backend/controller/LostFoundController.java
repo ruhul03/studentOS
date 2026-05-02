@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/lostfound")
-@CrossOrigin(origins = "*")
 public class LostFoundController {
 
     private final LostFoundItemRepository itemRepository;

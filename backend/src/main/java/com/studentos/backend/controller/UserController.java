@@ -20,7 +20,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 

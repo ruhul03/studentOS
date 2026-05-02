@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/planner")
-@CrossOrigin(origins = "*")
 public class StudyPlannerController {
 
     private final StudyTaskRepository taskRepository;

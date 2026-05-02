@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/review-requests")
-@CrossOrigin(origins = "*")
 public class ReviewRequestController {
 
     private final ReviewRequestRepository requestRepository;

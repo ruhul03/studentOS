@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/marketplace")
-@CrossOrigin(origins = "*")
 public class MarketplaceController {
 
     private final MarketplaceItemRepository itemRepository;

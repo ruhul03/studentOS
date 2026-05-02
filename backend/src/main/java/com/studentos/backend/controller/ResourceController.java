@@ -23,7 +23,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resources")
-@CrossOrigin(origins = "*")
 public class ResourceController {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
