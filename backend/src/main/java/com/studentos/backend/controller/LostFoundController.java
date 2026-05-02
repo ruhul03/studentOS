@@ -4,7 +4,6 @@ import com.studentos.backend.dto.LostFoundRequest;
 import com.studentos.backend.model.LostFoundItem;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.LostFoundItemRepository;
-import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,17 +17,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/lostfound")
+@SuppressWarnings("null")
 public class LostFoundController {
-
     private final LostFoundItemRepository itemRepository;
-    private final UserRepository userRepository;
     private final ActivityService activityService;
 
     public LostFoundController(LostFoundItemRepository itemRepository, 
-                               UserRepository userRepository,
                                ActivityService activityService) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
         this.activityService = activityService;
     }
 

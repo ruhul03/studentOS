@@ -4,7 +4,6 @@ import com.studentos.backend.dto.StudyTaskRequest;
 import com.studentos.backend.model.StudyTask;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.StudyTaskRepository;
-import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,17 +17,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/planner")
+@SuppressWarnings("null")
 public class StudyPlannerController {
 
     private final StudyTaskRepository taskRepository;
-    private final UserRepository userRepository;
     private final ActivityService activityService;
 
     public StudyPlannerController(StudyTaskRepository taskRepository, 
-                                  UserRepository userRepository,
                                   ActivityService activityService) {
         this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
         this.activityService = activityService;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -22,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@SuppressWarnings("null")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 

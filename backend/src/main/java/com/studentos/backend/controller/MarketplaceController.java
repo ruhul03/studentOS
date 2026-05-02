@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import com.studentos.backend.model.MarketplaceItem;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.MarketplaceItemRepository;
-import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +17,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/marketplace")
+@SuppressWarnings("null")
 public class MarketplaceController {
 
     private final MarketplaceItemRepository itemRepository;
-    private final UserRepository userRepository;
     private final ActivityService activityService;
 
     public MarketplaceController(MarketplaceItemRepository itemRepository, 
-                                 UserRepository userRepository,
                                  ActivityService activityService) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
         this.activityService = activityService;
     }
 

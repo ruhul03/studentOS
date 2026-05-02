@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
+@SuppressWarnings("null")
 public class AdminController {
 
     private final UserRepository userRepository;

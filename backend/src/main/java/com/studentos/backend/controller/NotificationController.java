@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notifications")
+@SuppressWarnings("null")
 public class NotificationController {
 
     private final NotificationService notificationService;

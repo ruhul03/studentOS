@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("null")
 public class TrafficService {
 
     private final TrafficRepository trafficRepository;

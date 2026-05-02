@@ -14,16 +14,6 @@
 	<name>backend</name>
 	<description>StudentOS Backend</description>
 	<url/>
-	<licenses>
-	</licenses>
-	<developers>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
 		<java.version>17</java.version>
 		<lombok.version>1.18.30</lombok.version>

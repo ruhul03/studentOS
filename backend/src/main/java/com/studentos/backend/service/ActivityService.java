@@ -5,6 +5,7 @@ import com.studentos.backend.repository.ActivityRepository;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("null")
 public class ActivityService {
 
     private final ActivityRepository activityRepository;

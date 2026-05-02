@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
+@SuppressWarnings("null")
 public class MessageController {
 
     private final MessageRepository messageRepository;

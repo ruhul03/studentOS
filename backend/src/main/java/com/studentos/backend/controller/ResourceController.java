@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import com.studentos.backend.model.Resource;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.ResourceRepository;
-import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import com.studentos.backend.service.AsyncService;
 import com.studentos.backend.service.FileStorageService;
@@ -24,25 +23,23 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resources")
+@SuppressWarnings("null")
 public class ResourceController {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
 
     private final ResourceRepository resourceRepository;
-    private final UserRepository userRepository;
     private final AsyncService asyncService;
     private final ActivityService activityService;
     private final FileStorageService fileStorageService;
     private final NotificationService notificationService;
 
     public ResourceController(ResourceRepository resourceRepository, 
-                              UserRepository userRepository, 
                               AsyncService asyncService,
                               ActivityService activityService,
                               FileStorageService fileStorageService,
                               NotificationService notificationService) {
         this.resourceRepository = resourceRepository;
-        this.userRepository = userRepository;
         this.asyncService = asyncService;
         this.activityService = activityService;
         this.fileStorageService = fileStorageService;

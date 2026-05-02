@@ -9,8 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-
 @Configuration
 public class GlobalDataInitializer {
 
@@ -20,6 +18,7 @@ public class GlobalDataInitializer {
     }
 
     @Bean
+    @SuppressWarnings("null")
     public CommandLineRunner initData(
             UserRepository userRepository,
             CampusEventRepository eventRepository,

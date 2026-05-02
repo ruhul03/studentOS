@@ -22,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reviews")
+@SuppressWarnings("null")
 public class CourseReviewController {
 
     private final CourseReviewRepository reviewRepository;

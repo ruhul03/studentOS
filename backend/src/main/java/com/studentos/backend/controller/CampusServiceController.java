@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/services")
+@SuppressWarnings("null")
 public class CampusServiceController {
 
     private final CampusServiceRepository serviceRepository;
