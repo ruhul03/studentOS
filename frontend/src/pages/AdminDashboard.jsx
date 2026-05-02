@@ -266,7 +266,7 @@ export function AdminDashboard() {
               <p className="text-[10px] font-black text-primary tracking-widest uppercase">Lead Administrator</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center border border-outline-variant/30 overflow-hidden">
-              {user?.avatarUrl ? <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-outline">shield_person</span>}
+              {user?.profilePicture ? <img src={user.profilePicture} alt="Avatar" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-outline">shield_person</span>}
             </div>
           </div>
         </header>
@@ -393,7 +393,7 @@ export function AdminDashboard() {
                             <td className="py-5 px-8">
                               <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center font-black text-primary overflow-hidden">
-                                  {u.avatarUrl ? <img src={u.avatarUrl} alt="AV" className="w-full h-full object-cover" /> : u.name.charAt(0)}
+                                  {u.profilePicture ? <img src={u.profilePicture} alt="AV" className="w-full h-full object-cover" /> : u.name.charAt(0)}
                                 </div>
                                 <div>
                                   <div className="font-bold text-white text-sm">{u.name}</div>

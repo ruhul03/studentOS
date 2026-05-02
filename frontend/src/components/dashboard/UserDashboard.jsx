@@ -20,9 +20,18 @@ export function UserDashboard({ onTabChange }) {
 
   const API = import.meta.env.VITE_API_URL;
 
+  const fetchWithAuth = useCallback(async (url, options = {}) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(user?.token ? { 'Authorization': `Bearer ${user.token}` } : {}),
+      ...options.headers
+    };
+    return fetch(url, { ...options, headers });
+  }, [user?.token]);
+
   const fetchStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API}/api/users/${user.id}/stats`);
+      const response = await fetchWithAuth(`${API}/api/users/${user.id}/stats`);
       if (response.ok) {
         const data = await response.json();
         setStatsData(data);
@@ -30,28 +39,25 @@ export function UserDashboard({ onTabChange }) {
     } catch (err) {
       console.error('Failed to fetch stats', err);
     }
-  }, [user?.id, API]);
+  }, [user?.id, API, fetchWithAuth]);
 
   const fetchTodos = useCallback(async () => {
     try {
-      const response = await fetch(`${API}/api/planner/user/${user.id}`);
+      const response = await fetchWithAuth(`${API}/api/planner/user/${user.id}`);
       if (response.ok) {
         const data = await response.json();
-        // Show up to 5 most recent tasks
         setTodos(data.slice(0, 5));
       }
     } catch (err) {
       console.error('Failed to fetch todos', err);
     }
-  }, [user?.id, API]);
+  }, [user?.id, API, fetchWithAuth]);
 
   const fetchSchedule = useCallback(async () => {
     try {
-      // Get today's incomplete tasks as schedule items
-      const response = await fetch(`${API}/api/planner/user/${user.id}?completed=false`);
+      const response = await fetchWithAuth(`${API}/api/planner/user/${user.id}?completed=false`);
       if (response.ok) {
         const data = await response.json();
-        // Filter to today's tasks
         const today = new Date().toDateString();
         const todayTasks = data.filter(task => {
           if (!task.dueDate) return false;
@@ -62,24 +68,23 @@ export function UserDashboard({ onTabChange }) {
     } catch (err) {
       console.error('Failed to fetch schedule', err);
     }
-  }, [user?.id, API]);
+  }, [user?.id, API, fetchWithAuth]);
 
   const fetchEvents = useCallback(async () => {
     try {
-      const response = await fetch(`${API}/api/events`);
+      const response = await fetchWithAuth(`${API}/api/events`);
       if (response.ok) {
         const data = await response.json();
-        // Show 2 most recent/upcoming events
         setEvents(data.slice(0, 2));
       }
     } catch (err) {
       console.error('Failed to fetch events', err);
     }
-  }, [API]);
+  }, [API, fetchWithAuth]);
 
   const fetchActivities = useCallback(async () => {
     try {
-      const response = await fetch(`${API}/api/users/${user.id}/activities?limit=3`);
+      const response = await fetchWithAuth(`${API}/api/users/${user.id}/activities?limit=3`);
       if (response.ok) {
         const data = await response.json();
         setRecentActivities(data);
@@ -87,7 +92,7 @@ export function UserDashboard({ onTabChange }) {
     } catch (err) {
       console.error('Failed to fetch activities', err);
     }
-  }, [user?.id, API]);
+  }, [user?.id, API, fetchWithAuth]);
 
   useEffect(() => {
     if (user?.id) {
@@ -101,7 +106,7 @@ export function UserDashboard({ onTabChange }) {
 
   const handleToggleTodo = async (taskId) => {
     try {
-      const resp = await fetch(`${API}/api/planner/${taskId}/toggle`, { method: 'PUT' });
+      const resp = await fetchWithAuth(`${API}/api/planner/${taskId}/toggle`, { method: 'PUT' });
       if (resp.ok) {
         fetchTodos();
         fetchStats();
@@ -113,7 +118,7 @@ export function UserDashboard({ onTabChange }) {
 
   const handleDeleteTodo = async (taskId) => {
     try {
-      const resp = await fetch(`${API}/api/planner/${taskId}`, { method: 'DELETE' });
+      const resp = await fetchWithAuth(`${API}/api/planner/${taskId}`, { method: 'DELETE' });
       if (resp.ok) {
         fetchTodos();
         fetchStats();
@@ -131,9 +136,8 @@ export function UserDashboard({ onTabChange }) {
       tomorrow.setDate(tomorrow.getDate() + 1);
       const dueDate = tomorrow.toISOString().split('T')[0] + 'T23:59:00';
 
-      const resp = await fetch(`${API}/api/planner`, {
+      const resp = await fetchWithAuth(`${API}/api/planner`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newTodoText.trim(),
           description: '',

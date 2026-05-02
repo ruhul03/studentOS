@@ -9,6 +9,7 @@ import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,11 +42,8 @@ public class MarketplaceController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<MarketplaceItem> createListing(@Valid @RequestBody MarketplaceRequest request) {
-        Optional<User> sellerOpt = userRepository.findById(request.getSellerId());
-        if (sellerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<MarketplaceItem> createListing(@Valid @RequestBody MarketplaceRequest request, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         MarketplaceItem item = MarketplaceItem.builder()
                 .title(request.getTitle())
@@ -55,7 +53,7 @@ public class MarketplaceController {
                 .category(request.getCategory())
                 .contactInfo(request.getContactInfo())
                 .photosJson(request.getPhotosJson())
-                .seller(sellerOpt.get())
+                .seller(currentUser)
                 .sold(false)
                 .build();
 
@@ -63,7 +61,7 @@ public class MarketplaceController {
 
         // Log Activity
         activityService.logActivity(
-            request.getSellerId(),
+            currentUser.getId(),
             "Item Listed",
             "You listed \"" + savedItem.getTitle() + "\" for sale in Marketplace.",
             "market",
@@ -75,12 +73,15 @@ public class MarketplaceController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<MarketplaceItem> updateItem(@PathVariable Long id, @Valid @RequestBody MarketplaceRequest request) {
+    public ResponseEntity<MarketplaceItem> updateItem(@PathVariable Long id, @Valid @RequestBody MarketplaceRequest request, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
 
         MarketplaceItem item = itemOpt.get();
-        if (!item.getSeller().getId().equals(request.getSellerId())) {
+        // Check ownership or Admin role
+        if (!item.getSeller().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -97,11 +98,14 @@ public class MarketplaceController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        if (!itemOpt.get().getSeller().getId().equals(userId)) {
+        // Check ownership or Admin role
+        if (!itemOpt.get().getSeller().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -111,10 +115,17 @@ public class MarketplaceController {
 
     @PutMapping("/{id}/sold")
     @Transactional
-    public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable Long id) {
+    public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<MarketplaceItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isPresent()) {
             MarketplaceItem item = itemOpt.get();
+            // Check ownership
+            if (!item.getSeller().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             item.setSold(true);
             MarketplaceItem soldItem = itemRepository.save(item);
 

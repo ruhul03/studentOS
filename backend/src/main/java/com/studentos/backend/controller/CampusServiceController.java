@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -38,6 +39,7 @@ public class CampusServiceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public ResponseEntity<CampusService> createService(@Valid @RequestBody CampusServiceRequest request) {
         CampusService service = CampusService.builder()
@@ -55,6 +57,7 @@ public class CampusServiceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public ResponseEntity<CampusService> updateService(@PathVariable Long id, @Valid @RequestBody CampusServiceRequest request) {
         return serviceRepository.findById(id)
@@ -73,6 +76,7 @@ public class CampusServiceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         if (serviceRepository.existsById(id)) {

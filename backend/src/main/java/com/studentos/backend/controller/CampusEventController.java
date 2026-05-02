@@ -2,10 +2,13 @@ package com.studentos.backend.controller;
 
 import com.studentos.backend.dto.CampusEventRequest;
 import com.studentos.backend.model.CampusEvent;
+import com.studentos.backend.model.User;
 import com.studentos.backend.repository.CampusEventRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,13 +50,12 @@ public class CampusEventController {
     public ResponseEntity<CampusEvent> updateEvent(
             @PathVariable Long id, 
             @Valid @RequestBody CampusEventRequest request,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
+            @AuthenticationPrincipal User user) {
         
         return campusEventRepository.findById(id)
                 .map(event -> {
-                    // Authorization Check
-                    if (!"ADMIN".equals(role) && (userId == null || !userId.equals(event.getUploaderId()))) {
+                    // Authorization Check: User must be ADMIN or the owner of the event
+                    if (user == null || (!"ADMIN".equals(user.getRole()) && !user.getId().equals(event.getUploaderId()))) {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).<CampusEvent>build();
                     }
                     
@@ -71,13 +73,12 @@ public class CampusEventController {
     @Transactional
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
+            @AuthenticationPrincipal User user) {
         
         return campusEventRepository.findById(id)
                 .map(event -> {
-                    // Authorization Check
-                    if (!"ADMIN".equals(role) && (userId == null || !userId.equals(event.getUploaderId()))) {
+                    // Authorization Check: User must be ADMIN or the owner of the event
+                    if (user == null || (!"ADMIN".equals(user.getRole()) && !user.getId().equals(event.getUploaderId()))) {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).<Void>build();
                     }
                     

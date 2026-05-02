@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-
 import { motion, AnimatePresence } from 'framer-motion';
+
 export function Profile() {
   const { user, updateUserData, logout } = useAuth();
   const { userId } = useParams();
@@ -20,6 +20,7 @@ export function Profile() {
   const [viewedUser, setViewedUser] = useState(null);
 
   const isOwnProfile = !activeUserId || activeUserId === user?.id;
+  const API = import.meta.env.VITE_API_URL;
 
   const [formData, setFormData] = useState({
     username: '',
@@ -33,7 +34,16 @@ export function Profile() {
     phoneNumber: ''
   });
 
-  React.useEffect(() => {
+  const fetchWithAuth = useCallback(async (url, options = {}) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(user?.token ? { 'Authorization': `Bearer ${user.token}` } : {}),
+      ...options.headers
+    };
+    return fetch(url, { ...options, headers });
+  }, [user?.token]);
+
+  useEffect(() => {
     if (isOwnProfile) {
       setViewedUser(user);
       setFormData({
@@ -51,7 +61,7 @@ export function Profile() {
       const fetchViewedUser = async () => {
         setLoading(true);
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${activeUserId}`);
+          const res = await fetchWithAuth(`${API}/api/users/${activeUserId}`);
           if (res.ok) {
             const data = await res.json();
             setViewedUser(data);
@@ -66,9 +76,9 @@ export function Profile() {
       };
       fetchViewedUser();
     }
-  }, [activeUserId, user, isOwnProfile]);
+  }, [activeUserId, user, isOwnProfile, API, fetchWithAuth]);
 
-  const fileInputRef = React.useRef(null);
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -91,15 +101,16 @@ export function Profile() {
     setSuccess('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`, {
+      const response = await fetchWithAuth(`${API}/api/users/${user.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
-        updateUserData(updatedUser);
+        // Preserve token if the backend didn't return a new one
+        const userToStore = { ...updatedUser, token: user.token };
+        updateUserData(userToStore);
         setIsEditing(false);
         setSuccess('Profile updated successfully!');
       } else {
@@ -113,7 +124,7 @@ export function Profile() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`, {
+      const response = await fetchWithAuth(`${API}/api/users/${user.id}`, {
         method: 'DELETE'
       });
       if (response.ok) {

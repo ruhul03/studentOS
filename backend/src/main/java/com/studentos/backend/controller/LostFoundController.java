@@ -9,6 +9,7 @@ import com.studentos.backend.service.ActivityService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,11 +42,8 @@ public class LostFoundController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<LostFoundItem> reportItem(@Valid @RequestBody LostFoundRequest request) {
-        Optional<User> reporterOpt = userRepository.findById(request.getReporterId());
-        if (reporterOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<LostFoundItem> reportItem(@Valid @RequestBody LostFoundRequest request, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         LostFoundItem item = LostFoundItem.builder()
                 .title(request.getTitle())
@@ -53,7 +51,7 @@ public class LostFoundController {
                 .type(request.getType())
                 .location(request.getLocation())
                 .contactInfo(request.getContactInfo())
-                .reporter(reporterOpt.get())
+                .reporter(currentUser)
                 .resolved(false)
                 .build();
 
@@ -61,7 +59,7 @@ public class LostFoundController {
 
         // Log Activity
         activityService.logActivity(
-            request.getReporterId(),
+            currentUser.getId(),
             "Item Reported: " + savedItem.getType(),
             "You reported a " + savedItem.getType().toLowerCase() + " item: \"" + savedItem.getTitle() + "\".",
             "lostfound",
@@ -73,13 +71,15 @@ public class LostFoundController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @Valid @RequestBody LostFoundRequest request) {
+    public ResponseEntity<LostFoundItem> updateItem(@PathVariable Long id, @Valid @RequestBody LostFoundRequest request, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
 
         LostFoundItem item = itemOpt.get();
-        // Simple ownership check (in real app, use SecurityContext)
-        if (!item.getReporter().getId().equals(request.getReporterId())) {
+        // Ownership check or Admin role
+        if (!item.getReporter().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -94,11 +94,14 @@ public class LostFoundController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        if (!itemOpt.get().getReporter().getId().equals(userId)) {
+        // Ownership check or Admin role
+        if (!itemOpt.get().getReporter().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -108,10 +111,17 @@ public class LostFoundController {
 
     @PutMapping("/{id}/resolve")
     @Transactional
-    public ResponseEntity<LostFoundItem> resolveItem(@PathVariable Long id) {
+    public ResponseEntity<LostFoundItem> resolveItem(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         Optional<LostFoundItem> itemOpt = itemRepository.findById(id);
         if (itemOpt.isPresent()) {
             LostFoundItem item = itemOpt.get();
+            // Ownership check or Admin role
+            if (!item.getReporter().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             item.setResolved(true);
             return ResponseEntity.ok(itemRepository.save(item));
         }

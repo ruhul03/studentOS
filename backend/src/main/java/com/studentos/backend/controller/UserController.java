@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +83,14 @@ public class UserController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> updateProfile(@PathVariable Long id, @Valid @RequestBody ProfileUpdateRequest profileUpdate) {
-        logger.info("Profile update request received for user ID: {}", id);
-        logger.debug("Request body: {}", profileUpdate);
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, 
+                                         @Valid @RequestBody ProfileUpdateRequest profileUpdate,
+                                         @AuthenticationPrincipal User currentUser) {
+        
+        // SECURITY CHECK: User can only update their own profile unless they are ADMIN
+        if (currentUser == null || (!currentUser.getId().equals(id) && !"ADMIN".equals(currentUser.getRole()))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only update your own profile.");
+        }
 
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
@@ -92,8 +99,8 @@ public class UserController {
 
         User user = userOptional.get();
 
-        // Enforce 2x update limit logic
-        if (user.getUpdateCount() >= 2) {
+        // Enforce 2x update limit logic (Admins bypass this)
+        if (!"ADMIN".equals(currentUser.getRole()) && user.getUpdateCount() >= 2) {
             if (user.getLastUpdateAt() != null) {
                 LocalDateTime lastMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                 if (user.getLastUpdateAt().isBefore(lastMonth)) {
@@ -178,7 +185,13 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> deleteProfile(@PathVariable Long id) {
+    public ResponseEntity<?> deleteProfile(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        
+        // SECURITY CHECK: User can only delete their own profile unless they are ADMIN
+        if (currentUser == null || (!currentUser.getId().equals(id) && !"ADMIN".equals(currentUser.getRole()))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own profile.");
+        }
+
         return userRepository.findById(id)
                 .map(user -> {
                     // Manual cascade for safety - Purge all user footprints

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,15 +72,12 @@ public class ResourceController {
     @Transactional
     public ResponseEntity<Resource> uploadResource(
             @Valid @RequestPart("resource") ResourceRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @AuthenticationPrincipal User currentUser) {
         
-        try {
-            Optional<User> uploaderOpt = userRepository.findById(request.getUploaderId());
-            if (uploaderOpt.isEmpty()) {
-                logger.error("Uploader ID {} not found", request.getUploaderId());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
+        try {
             String fileUrl = request.getFileUrl();
 
             // Handle file upload if present
@@ -100,7 +98,7 @@ public class ResourceController {
                     .courseTitle(request.getCourseTitle())
                     .fileUrl(fileUrl)
                     .type(request.getType())
-                    .uploader(uploaderOpt.get())
+                    .uploader(currentUser)
                     .upvotes(0)
                     .anonymous(request.isAnonymous())
                     .build();
@@ -112,7 +110,7 @@ public class ResourceController {
 
             // Log Activity
             activityService.logActivity(
-                request.getUploaderId(),
+                currentUser.getId(),
                 savedResource.getTitle() + " uploaded",
                 "You shared \"" + savedResource.getTitle() + "\" in Resource Sharing.",
                 "resources",
@@ -123,7 +121,7 @@ public class ResourceController {
             java.util.Map<String, Object> notification = new java.util.HashMap<>();
             notification.put("type", "resource_uploaded");
             notification.put("title", "New Resource Uploaded");
-            String senderName = savedResource.isAnonymous() ? "Someone" : uploaderOpt.get().getName();
+            String senderName = savedResource.isAnonymous() ? "Someone" : currentUser.getName();
             notification.put("message", senderName + " shared a new resource: " + savedResource.getTitle());
             notification.put("relatedEntityId", savedResource.getId());
             notification.put("createdAt", java.time.LocalDateTime.now());
@@ -143,14 +141,22 @@ public class ResourceController {
     public ResponseEntity<?> updateResource(
             @PathVariable Long id, 
             @Valid @RequestPart("resource") ResourceRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @AuthenticationPrincipal User currentUser) {
         
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         logger.info("Updating resource ID: {}", id);
         try {
             Optional<Resource> resourceOpt = resourceRepository.findById(id);
             if (resourceOpt.isPresent()) {
                 Resource resource = resourceOpt.get();
                 
+                // Security Check: Ownership or Admin
+                if (!resource.getUploader().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+
                 // Track old file for conditional deletion
                 String oldFileUrl = resource.getFileUrl();
                 
@@ -160,7 +166,6 @@ public class ResourceController {
                 resource.setCourseTitle(request.getCourseTitle());
                 resource.setType(request.getType());
                 
-                // Fix: Allow updating fileUrl (for external links) even if no new file is uploaded
                 if (request.getFileUrl() != null && !request.getFileUrl().isEmpty()) {
                     resource.setFileUrl(request.getFileUrl());
                 }
@@ -170,7 +175,6 @@ public class ResourceController {
                     String newFileUrl = fileStorageService.storeFile(file);
                     resource.setFileUrl(newFileUrl);
                     
-                    // Cleanup old file only if it was a local storage file and is replaced
                     if (oldFileUrl != null && oldFileUrl.startsWith("/uploads/") && !oldFileUrl.equals(newFileUrl)) {
                         fileStorageService.deleteFile(oldFileUrl);
                     }
@@ -190,12 +194,19 @@ public class ResourceController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> deleteResource(@PathVariable Long id) {
+    public ResponseEntity<?> deleteResource(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         logger.info("Deleting resource ID: {}", id);
         Optional<Resource> resourceOpt = resourceRepository.findById(id);
         if (resourceOpt.isPresent()) {
             Resource resource = resourceOpt.get();
-            // Delete file from disk if it's a local upload
+            
+            // Security Check: Ownership or Admin
+            if (!resource.getUploader().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             if (resource.getFileUrl() != null && resource.getFileUrl().startsWith("/uploads/")) {
                 fileStorageService.deleteFile(resource.getFileUrl());
             }
