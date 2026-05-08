@@ -18,20 +18,28 @@ public class TrafficInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, @Nullable Exception ex) {
-        // Log all API requests asynchronously
-        if (request.getRequestURI().startsWith("/api/")) {
-            trafficService.logTraffic(
-                request.getRequestURI(), 
-                request.getMethod(), 
-                getRelativeIp(request)
-            );
-        }
+    public void afterCompletion(@NonNull HttpServletRequest request, 
+                                @NonNull HttpServletResponse response, 
+                                @NonNull Object handler, 
+                                @Nullable Exception ex) {
+        // Log API traffic asynchronously
+        trafficService.logTraffic(
+            request.getRequestURI(), 
+            request.getMethod(), 
+            getClientIp(request)
+        );
     }
 
-    private String getRelativeIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null) return xf.split(",")[0];
-        return request.getRemoteAddr();
+    private String getClientIp(HttpServletRequest request) {
+        String remoteAddr = "";
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || remoteAddr.isEmpty()) {
+                remoteAddr = request.getRemoteAddr();
+            } else {
+                remoteAddr = remoteAddr.split(",")[0].trim();
+            }
+        }
+        return remoteAddr;
     }
 }

@@ -1,5 +1,6 @@
 package com.studentos.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,6 +12,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final TrafficInterceptor trafficInterceptor;
+    
+    @Value("${app.cors.allowed-origins:http://localhost:5174}")
+    private String allowedOrigins;
 
     public WebConfig(TrafficInterceptor trafficInterceptor) {
         this.trafficInterceptor = trafficInterceptor;
@@ -19,11 +23,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5174")
+                .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("authorization", "content-type", "x-auth-token", "X-User-Id", "X-User-Role")
+                .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
     @Override
@@ -33,8 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
-        registry.addInterceptor(trafficInterceptor);
+        registry.addInterceptor(trafficInterceptor)
+                .addPathPatterns("/api/**");
     }
 }
