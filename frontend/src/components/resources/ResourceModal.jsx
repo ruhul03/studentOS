@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   const { user } = useAuth();
@@ -32,19 +33,13 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
-    }
+    if (e.target.files?.[0]) setSelectedFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) { setError('Title is required'); return; }
-    if (!courseCode.trim()) { setError('Course code is required'); return; }
-    if (!selectedFile && !fileUrl.trim()) { 
-      setError('Please provide either a file or an external URL'); 
-      return; 
-    }
+    if (!title.trim() || !courseCode.trim()) { setError('Title and Course Code are required'); return; }
+    if (!selectedFile && !fileUrl.trim()) { setError('Provide a file or external URL'); return; }
 
     setIsSubmitting(true);
     setError('');
@@ -53,8 +48,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
       const resourceRequest = {
         title: title.trim(),
         description: description.trim(),
-        courseCode: courseCode.trim(),
-        courseTitle: '', // Optional
+        courseCode: courseCode.trim().toUpperCase(),
         fileUrl: fileUrl.trim(),
         type,
         uploaderId: user.id,
@@ -63,23 +57,16 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
 
       const formData = new FormData();
       formData.append('resource', new Blob([JSON.stringify(resourceRequest)], { type: 'application/json' }));
-      
-      if (selectedFile) {
-        formData.append('file', selectedFile);
-      }
+      if (selectedFile) formData.append('file', selectedFile);
 
       const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
         method: 'POST',
         body: formData,
       });
 
-      if (!resp.ok) {
-        const errorData = await resp.text();
-        throw new Error(errorData || 'Failed to share resource');
-      }
+      if (!resp.ok) throw new Error(await resp.text() || 'Failed to share resource');
 
-      resetForm();
-      onClose();
+      handleClose();
       onResourceCreated?.();
     } catch (err) {
       setError(err.message || 'Something went wrong');
@@ -88,182 +75,146 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div style={styles.overlay} onClick={handleClose}>
-      <div style={styles.container} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
-          <h2 style={styles.headerTitle}>
-            <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--primary)' }}>share</span>
-            Share Resource
-          </h2>
-          <button style={styles.closeBtn} onClick={handleClose}>
-            <span className="material-symbols-outlined">close</span>
-          </button>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+          />
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative w-full max-w-xl bg-surface-container-high border border-white/5 rounded-[2rem] shadow-2xl overflow-hidden z-10"
+          >
+            <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
+                  <span className="material-symbols-outlined text-[24px]">share</span>
+                </div>
+                <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">Share Resource</h2>
+              </div>
+              <button onClick={handleClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
+              {error && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-2xl bg-error/10 border border-error/20 flex items-center gap-3 text-error text-xs font-bold uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-[18px]">error</span>
+                  {error}
+                </motion.div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Resource Title *</label>
+                <input 
+                  className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all"
+                  placeholder="e.g., Operating Systems Final Notes"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Code *</label>
+                  <input 
+                    className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all uppercase"
+                    placeholder="CSE 303"
+                    value={courseCode}
+                    onChange={(e) => setCourseCode(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Resource Type</label>
+                  <select 
+                    className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    {resourceTypes.map(t => <option key={t} value={t} className="bg-surface-container-high">{t}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">File Attachment</label>
+                  <div className="relative">
+                    <input type="file" id="resource-file" onChange={handleFileChange} className="hidden" />
+                    <label 
+                      htmlFor="resource-file" 
+                      className={`flex items-center gap-4 p-4 border-2 border-dashed rounded-2xl transition-all cursor-pointer ${selectedFile ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-primary/20 bg-surface/50'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selectedFile ? 'bg-primary text-on-primary' : 'bg-white/5 text-on-surface-variant'}`}>
+                        <span className="material-symbols-outlined text-[20px]">{selectedFile ? 'check_circle' : 'upload_file'}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-bold text-on-surface truncate">
+                          {selectedFile ? selectedFile.name : 'Choose local file...'}
+                        </p>
+                        {!selectedFile && <p className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/30">Maximum size: 50MB</p>}
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Or Cloud URL</label>
+                  <input 
+                    className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all"
+                    placeholder="https://drive.google.com/..."
+                    value={fileUrl}
+                    onChange={(e) => setFileUrl(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative w-10 h-5">
+                    <input type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="sr-only peer" />
+                    <div className="w-full h-full bg-white/10 rounded-full peer-checked:bg-primary transition-colors"></div>
+                    <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant group-hover:text-on-surface transition-colors">Share Anonymously</span>
+                </label>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button" 
+                  onClick={handleClose}
+                  className="flex-1 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-on-surface-variant hover:bg-white/5 transition-all"
+                >
+                  Discard
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="flex-[2] py-4 rounded-2xl bg-primary text-on-primary text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all"
+                >
+                  {isSubmitting ? 'Syncing...' : 'Publish Resource'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
-
-        <form onSubmit={handleSubmit} style={styles.body}>
-          {error && (
-            <div style={styles.error}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>error</span>
-              {error}
-            </div>
-          )}
-
-          <div style={styles.field}>
-            <label style={styles.label}>Title *</label>
-            <input style={styles.input} placeholder="e.g., Mid-term Solved Question 2023" value={title} onChange={(e) => setTitle(e.target.value)} />
-          </div>
-
-          <div style={styles.row}>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Course Code *</label>
-              <input style={styles.input} placeholder="e.g., CSE 303" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
-            </div>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Type</label>
-              <select style={styles.input} value={type} onChange={(e) => setType(e.target.value)}>
-                {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div style={styles.field}>
-            <label style={styles.label}>File Upload</label>
-            <div style={styles.fileInputContainer}>
-              <input 
-                type="file" 
-                onChange={handleFileChange} 
-                style={styles.fileInput}
-                id="resource-file"
-              />
-              <label htmlFor="resource-file" style={styles.fileLabel}>
-                <span className="material-symbols-outlined">upload_file</span>
-                {selectedFile ? selectedFile.name : 'Choose a file...'}
-              </label>
-            </div>
-          </div>
-
-          <div style={styles.field}>
-            <label style={styles.label}>Or External URL (Google Drive, OneDrive, etc.)</label>
-            <input style={styles.input} placeholder="https://drive.google.com/..." value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} />
-          </div>
-
-          <div style={styles.field}>
-            <label style={styles.label}>Description</label>
-            <textarea style={{ ...styles.input, minHeight: 60, resize: 'vertical' }} placeholder="Provide some context about this resource..." value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-
-          <div style={styles.checkboxRow}>
-            <input 
-              type="checkbox" 
-              id="anonymous-check" 
-              checked={isAnonymous} 
-              onChange={(e) => setIsAnonymous(e.target.checked)} 
-              style={styles.checkbox}
-            />
-            <label htmlFor="anonymous-check" style={styles.checkboxLabel}>Share anonymously</label>
-          </div>
-
-          <div style={styles.footer}>
-            <button type="button" style={styles.cancelBtn} onClick={handleClose}>Cancel</button>
-            <button type="submit" style={styles.submitBtn} disabled={isSubmitting}>
-              {isSubmitting ? 'Sharing...' : 'Share Resource'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      )}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #34343d; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #464554; }
+      `}} />
+    </AnimatePresence>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center',
-    justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '1rem',
-  },
-  container: {
-    backgroundColor: 'var(--surface-container-high)', width: '100%', maxWidth: '500px',
-    display: 'flex', flexDirection: 'column',
-    borderRadius: '16px', border: '1px solid var(--outline-variant)',
-    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', overflow: 'hidden',
-    animation: 'zoomIn 0.15s ease-out forwards',
-  },
-  header: {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '12px 20px', borderBottom: '1px solid rgba(70,69,84,0.3)',
-    background: 'rgba(52,52,61,0.3)', flexShrink: 0,
-  },
-  headerTitle: {
-    fontSize: '1.1rem', fontWeight: 600, color: 'var(--on-surface)', margin: 0,
-    display: 'flex', alignItems: 'center', gap: '10px',
-  },
-  closeBtn: {
-    color: 'var(--on-surface-variant)', background: 'transparent', border: 'none',
-    padding: '6px', borderRadius: '50%', cursor: 'pointer', display: 'flex',
-    transition: 'background-color 0.2s',
-  },
-  body: { 
-    padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px',
-    flex: 1,
-  },
-  field: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  label: { fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em' },
-  input: {
-    width: '100%', backgroundColor: 'var(--surface)', border: '1px solid var(--outline-variant)',
-    borderRadius: '8px', padding: '8px 12px', fontSize: '0.9rem', color: 'var(--on-surface)',
-    outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.2s, box-shadow 0.2s',
-  },
-  fileInputContainer: {
-    position: 'relative',
-    width: '100%',
-  },
-  fileInput: {
-    position: 'absolute',
-    width: '1px',
-    height: '1px',
-    padding: '0',
-    margin: '-1px',
-    overflow: 'hidden',
-    clip: 'rect(0,0,0,0)',
-    border: '0',
-  },
-  fileLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 12px',
-    backgroundColor: 'var(--surface-container)',
-    border: '1px solid var(--outline-variant)',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    color: 'var(--on-surface-variant)',
-    fontSize: '0.85rem',
-    transition: 'all 0.2s',
-    minHeight: '38px',
-  },
-  row: { display: 'flex', gap: '12px' },
-  checkboxRow: { display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' },
-  checkbox: { width: '16px', height: '16px', cursor: 'pointer' },
-  checkboxLabel: { fontSize: '0.85rem', color: 'var(--on-surface-variant)', cursor: 'pointer' },
-  footer: { 
-    display: 'flex', justifyContent: 'flex-end', gap: '10px', 
-    padding: '12px 20px', borderTop: '1px solid rgba(70,69,84,0.2)',
-    backgroundColor: 'rgba(52,52,61,0.1)', flexShrink: 0,
-  },
-  cancelBtn: {
-    padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500,
-    color: 'var(--on-surface-variant)', background: 'transparent', border: 'none', cursor: 'pointer',
-  },
-  submitBtn: {
-    padding: '8px 20px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600,
-    backgroundColor: 'var(--primary)', color: 'var(--on-primary)', border: 'none', cursor: 'pointer',
-    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.2)',
-  },
-  error: {
-    display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px',
-    borderRadius: '8px', fontSize: '0.8rem', fontWeight: 500,
-    backgroundColor: 'rgba(239,68,68,0.12)', color: '#ffb4ab', border: '1px solid rgba(239,68,68,0.25)',
-  },
-};

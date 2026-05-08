@@ -18,8 +18,8 @@ export function NotificationToast({ notifications, onClear }) {
             <div className="flex-1 text-sm font-bold text-on-surface leading-tight">
               {note}
             </div>
-            <button 
-              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all shrink-0" 
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all shrink-0"
               onClick={() => onClear(index)}
             >
               <span className="material-symbols-outlined text-[18px]">close</span>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResourceModal } from './ResourceModal';
@@ -8,6 +8,7 @@ export function ResourceFeed() {
   const [resources, setResources] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All Resources');
   const { user } = useAuth();
   
@@ -86,33 +87,22 @@ export function ResourceFeed() {
     }
   };
 
-  const filters = ['All Resources', 'Lecture Notes', 'Exam Papers', 'Study Guides', 'Textbooks'];
+  const filters = useMemo(() => ['All Resources', 'Lecture Notes', 'Exam Papers', 'Study Guides', 'Textbooks'], []);
 
-  const filteredResources = resources.filter(res => {
-    if (activeFilter === 'All Resources') return true;
-    if (activeFilter === 'Lecture Notes' && res.type === 'Notes') return true;
-    if (activeFilter === 'Exam Papers' && res.type === 'Exam Paper') return true;
-    if (activeFilter === 'Study Guides' && res.type === 'Study Guide') return true;
-    if (activeFilter === 'Textbooks' && res.type === 'Textbook') return true;
-    return false;
-  });
+  const filteredResources = useMemo(() => {
+    return resources.filter(res => {
+      if (activeFilter === 'All Resources') return true;
+      const typeMap = { 'Lecture Notes': 'Notes', 'Exam Papers': 'Exam Paper', 'Study Guides': 'Study Guide', 'Textbooks': 'Textbook' };
+      return res.type === typeMap[activeFilter];
+    });
+  }, [resources, activeFilter]);
 
-  const [showModal, setShowModal] = useState(false);
-
-  const getIconForType = (type) => {
-    switch (type) {
-      case 'Notes': return { icon: 'description', colorClass: 'text-primary', bgClass: 'bg-primary/10' };
-      case 'Exam Paper': return { icon: 'quiz', colorClass: 'text-secondary', bgClass: 'bg-secondary/10' };
-      case 'Study Guide': return { icon: 'menu_book', colorClass: 'text-tertiary', bgClass: 'bg-tertiary/10' };
-      case 'Textbook': return { icon: 'picture_as_pdf', colorClass: 'text-primary', bgClass: 'bg-primary/10' };
-      case 'Link': return { icon: 'link', colorClass: 'text-secondary', bgClass: 'bg-secondary/10' };
-      default: return { icon: 'description', colorClass: 'text-primary', bgClass: 'bg-primary/10' };
-    }
-  };
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const typeConfig = {
+    'Notes': { icon: 'description', color: 'text-primary', bg: 'bg-primary/10' },
+    'Exam Paper': { icon: 'quiz', color: 'text-secondary', bg: 'bg-secondary/10' },
+    'Study Guide': { icon: 'menu_book', color: 'text-tertiary', bg: 'bg-tertiary/10' },
+    'Textbook': { icon: 'picture_as_pdf', color: 'text-primary', bg: 'bg-primary/10' },
+    'Link': { icon: 'link', color: 'text-secondary', bg: 'bg-secondary/10' }
   };
 
   return (
@@ -172,80 +162,87 @@ export function ResourceFeed() {
         {/* Resource Grid Bento Style */}
         {loading && resources.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1,2,3,4].map(i => (
-              <div key={i} className={`h-64 bg-surface-container rounded-xl border border-outline-variant/30 p-6 animate-pulse ${i === 1 ? 'md:col-span-2 lg:col-span-2' : 'col-span-1'}`}></div>
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="h-64 bg-surface-container-low/40 rounded-3xl border border-white/5 animate-pulse"></div>
             ))}
           </div>
         ) : (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence>
+            <AnimatePresence mode='popLayout'>
               {filteredResources.map((res, idx) => {
-                const { icon, colorClass, bgClass } = getIconForType(res.type);
-                const isFeatured = idx === 0;
+                const config = typeConfig[res.type] || typeConfig['Notes'];
+                const isFeatured = idx % 5 === 0;
                 
                 return (
                   <motion.div 
                     layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
                     key={res.id}
-                    className={`bg-surface-container-low border border-outline-variant/30 rounded-xl p-6 flex flex-col justify-between group hover:bg-surface-container transition-all hover:shadow-[0px_4px_20px_rgba(0,0,0,0.4)] ${isFeatured ? 'md:col-span-2 lg:col-span-2' : 'col-span-1'}`}
+                    className={`relative bg-surface-container-low/40 backdrop-blur-xl border border-white/[0.03] rounded-3xl p-8 flex flex-col justify-between group hover:bg-surface-container-high/50 transition-all shadow-2xl hover:shadow-primary/5 ${isFeatured ? 'md:col-span-2' : 'col-span-1'}`}
                   >
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`p-3 rounded-lg ${bgClass} ${colorClass}`}>
-                        <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
+                    <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                       {canManageResource(res.uploader?.id) && (
+                         <button onClick={() => handleDeleteResource(res.id)} className="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-all">
+                           <span className="material-symbols-outlined text-[20px]">delete</span>
+                         </button>
+                       )}
+                    </div>
+
+                    <div className="mb-6">
+                      <div className={`w-14 h-14 rounded-2xl ${config.bg} ${config.color} flex items-center justify-center mb-6 shadow-xl`}>
+                        <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>{config.icon}</span>
                       </div>
-                      <div className="flex gap-2 items-center">
-                        <span className="px-2 py-1 bg-surface-container border border-outline-variant/50 rounded text-outline text-xs font-semibold uppercase tracking-wider">
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary opacity-80">
                           {res.type}
                         </span>
-                        {canManageResource(res.uploader.id) && (
-                           <button onClick={() => handleDeleteResource(res.id)} className="text-error hover:text-error/80 transition-colors">
-                             <span className="material-symbols-outlined text-[18px]">delete</span>
-                           </button>
-                        )}
+                        <span className="w-1 h-1 rounded-full bg-on-surface-variant/20"></span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/40">
+                          {res.courseCode}
+                        </span>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-xl font-bold text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-1">
-                        {res.courseCode ? `${res.courseCode}: ` : ''}{res.title}
+
+                      <h3 className="text-xl font-black text-on-surface mb-2 group-hover:text-primary transition-colors tracking-tight line-clamp-2">
+                        {res.title}
                       </h3>
-                      <p className="text-sm text-on-surface-variant line-clamp-2 mb-6 h-[40px]">
+                      <p className="text-sm text-on-surface-variant/60 leading-relaxed line-clamp-2">
                         {res.description}
                       </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-6 border-t border-white/[0.03]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-surface-container-highest flex items-center justify-center text-[10px] font-black text-primary border border-white/5">
+                          {res.anonymous ? '?' : (res.uploader?.name?.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() || 'U')}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-on-surface opacity-80">{res.anonymous ? 'Anonymous' : res.uploader?.name}</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/30">Contributor</span>
+                        </div>
+                      </div>
                       
-                      <div className="flex justify-between items-center mt-auto border-t border-outline-variant/20 pt-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-xs text-outline font-bold">
-                            {getInitials(res.anonymous ? 'Anonymous' : res.uploader.name)}
-                          </div>
-                          <span className="text-sm text-on-surface-variant">
-                            {res.anonymous ? 'Anonymous Student' : res.uploader.name}
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all ${userUpvotes[res.id] ? 'bg-secondary text-on-secondary shadow-lg shadow-secondary/20' : 'bg-white/5 text-on-surface-variant hover:text-on-surface hover:bg-white/10'}`}
+                          onClick={() => handleUpvote(res.id)}
+                          disabled={userUpvotes[res.id]}
+                        >
+                          <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+                          {res.upvotes}
+                        </button>
                         
-                        <div className="flex items-center gap-2">
-                          <button 
-                            className={`flex items-center gap-1 text-xs font-bold rounded-full px-2 py-1 transition-colors ${userUpvotes[res.id] ? 'bg-secondary/20 text-secondary' : 'text-outline hover:text-on-surface bg-surface-container-high'}`}
-                            onClick={() => handleUpvote(res.id)}
-                            disabled={userUpvotes[res.id]}
-                          >
-                            <span className="material-symbols-outlined text-[16px]">{userUpvotes[res.id] ? 'thumb_up' : 'thumb_up'}</span>
-                            {res.upvotes}
-                          </button>
-                          
-                          <a 
-                            href={res.fileUrl.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="p-2 rounded-full bg-surface-container-high hover:bg-surface-variant text-outline hover:text-primary transition-colors flex items-center justify-center"
-                            download
-                          >
-                            <span className="material-symbols-outlined text-[20px]">download</span>
-                          </a>
-                        </div>
+                        <a 
+                          href={res.fileUrl.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                          download
+                        >
+                          <span className="material-symbols-outlined text-[20px]">download</span>
+                        </a>
                       </div>
                     </div>
                   </motion.div>

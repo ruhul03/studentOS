@@ -18,8 +18,8 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
     if (wsNotifications && wsNotifications.length > 0) {
       setAppNotifications(prev => {
         const newItems = wsNotifications.filter(wsN => {
-          const isDuplicate = prev.some(p => 
-            (wsN.id && p.id === wsN.id) || 
+          const isDuplicate = prev.some(p =>
+            (wsN.id && p.id === wsN.id) ||
             (wsN.createdAt && wsN.message === p.message && wsN.createdAt === p.createdAt)
           );
           return !isDuplicate;
@@ -56,14 +56,14 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
         });
       } catch (apiErr) {
       }
-      
+
       const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-      const updatedNotifications = savedNotifications.map(n => 
+      const updatedNotifications = savedNotifications.map(n =>
         n.id === notificationId ? { ...n, read: true } : n
       );
       localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-      
-      setAppNotifications(prev => prev.map(n => 
+
+      setAppNotifications(prev => prev.map(n =>
         n.id === notificationId ? { ...n, read: true } : n
       ));
     } catch (err) {
@@ -78,8 +78,8 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
 
   return (
     <div className="relative">
-      <button 
-        className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all relative" 
+      <button
+        className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all relative"
         onClick={toggleShow}
         title="Notifications"
       >
@@ -96,28 +96,28 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
           <div className="p-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-high/50 backdrop-blur-xl">
             <h4 className="text-sm font-bold text-on-surface">Notifications</h4>
             <div className="flex items-center gap-1">
-              <button 
+              <button
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isMuted ? 'text-error bg-error/10' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-variant'}`}
                 onClick={toggleMute}
                 title={isMuted ? "Unmute Notifications" : "Mute Notifications"}
               >
                 <span className="material-symbols-outlined text-[18px]">{isMuted ? 'notifications_off' : 'notifications'}</span>
               </button>
-              <button 
-                className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" 
+              <button
+                className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant"
                 onClick={toggleShow}
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             </div>
           </div>
-          
+
           <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
             {appNotifications.length > 0 ? (
               <div className="p-2 space-y-1">
                 {appNotifications.slice(0, 15).map(notification => (
-                  <div 
-                    key={notification.id} 
+                  <div
+                    key={notification.id}
                     className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all group relative ${notification.read ? 'opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100' : 'bg-primary/5 hover:bg-primary/10'}`}
                     onClick={() => {
                       markNotificationAsRead(notification.id);
@@ -134,8 +134,8 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notification.read ? 'bg-surface-container text-on-surface-variant' : 'bg-primary text-on-primary shadow-lg shadow-primary/20'}`}>
                       <span className="material-symbols-outlined text-[20px]">
                         {notification.type === 'review_posted' ? 'rate_review' :
-                         notification.type === 'resource_uploaded' ? 'description' :
-                         notification.type === 'direct_message' ? 'chat' : 'notifications'}
+                          notification.type === 'resource_uploaded' ? 'description' :
+                            notification.type === 'direct_message' ? 'chat' : 'notifications'}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -167,7 +167,7 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
               </div>
             )}
           </div>
-          
+
           {appNotifications.length > 0 && (
             <button className="w-full p-4 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors border-t border-outline-variant">
               View All Notifications
@@ -175,8 +175,9 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
           )}
         </div>
       )}
-      
-      <style dangerouslySetInnerHTML={{__html: `
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #34343d; border-radius: 10px; }
