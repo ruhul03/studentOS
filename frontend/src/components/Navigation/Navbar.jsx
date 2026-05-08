@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
 import { NewEntryModal } from './NewEntryModal';
+import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 
 export function Navbar({ activeTab, onNavigate, wsNotifications }) {
   const { user, logout } = useAuth();
@@ -28,8 +29,12 @@ export function Navbar({ activeTab, onNavigate, wsNotifications }) {
     <>
       {/* TopNavBar */}
       <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 h-16 bg-background/95 backdrop-blur-md border-b border-surface-variant/30">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 min-w-[200px]">
           <span className="font-h2 text-xl font-black text-on-background tracking-tighter cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
+        </div>
+
+        <div className="hidden md:flex flex-1 max-w-lg mx-8">
+          <GlobalSearch onNavigate={onNavigate} />
         </div>
         
         {/* Right: Actions */}
