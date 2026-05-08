@@ -1,10 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function SettingsPage() {
-  const { user } = useAuth();
+  const { user, updateUserData } = useAuth();
   const [activeSection, setActiveSection] = useState('account');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
+
+  // Local state for settings
+  const [accountInfo, setAccountInfo] = useState({
+    name: user?.name || '',
+    studentId: user?.studentId || '',
+    phone: user?.phone || ''
+  });
+
+  const [notifications, setNotifications] = useState(user?.settings?.notifications || {
+    email_tasks: true,
+    email_market: true,
+    push_events: false,
+    push_resources: true
+  });
+
+  const [appearance, setAppearance] = useState(user?.settings?.appearance || {
+    mode: 'dark',
+    accent: '#818cf8'
+  });
+
+  const [privacy, setPrivacy] = useState(user?.settings?.privacy || {
+    publicProfile: true,
+    shareEmail: false,
+    analytics: true
+  });
 
   const sections = [
     { id: 'account', label: 'Account', icon: 'person' },
@@ -14,13 +41,71 @@ export function SettingsPage() {
     { id: 'privacy', label: 'Privacy', icon: 'lock' }
   ];
 
+  // Apply appearance changes globally
+  useEffect(() => {
+    const root = document.documentElement;
+    if (appearance.mode === 'light') {
+      root.classList.add('light-theme');
+      root.classList.remove('dark-theme');
+    } else {
+      root.classList.add('dark-theme');
+      root.classList.remove('light-theme');
+    }
+
+    // Update primary color
+    root.style.setProperty('--primary', appearance.accent);
+    // Rough RGB extraction for shadows/opacities
+    const hex = appearance.accent.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    root.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+  }, [appearance]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveStatus(null);
+    try {
+      // Simulate API call
+      await new Promise(r => setTimeout(r, 1000));
+      updateUserData({
+        ...accountInfo,
+        settings: {
+          notifications,
+          appearance,
+          privacy
+        }
+      });
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus(null), 3000);
+    } catch (err) {
+      setSaveStatus('error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full w-full max-w-5xl mx-auto pb-20">
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight text-on-surface">
-          System <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Settings</span>
-        </h1>
-        <p className="text-on-surface-variant text-base mt-1">Manage your account preferences and platform experience.</p>
+    <div className="flex flex-col h-full w-full max-w-5xl mx-auto pb-20 animate-fade-in">
+      <div className="mb-10 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-on-surface">
+            System <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Settings</span>
+          </h1>
+          <p className="text-on-surface-variant text-base mt-1 font-medium opacity-80">Manage your account preferences and platform experience.</p>
+        </div>
+        
+        <AnimatePresence>
+          {saveStatus === 'success' && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-500/20 flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">verified</span>
+              Changes Saved Successfully
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
@@ -30,159 +115,310 @@ export function SettingsPage() {
             <button
               key={section.id}
               onClick={() => setActiveSection(section.id)}
-              className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm ${
+              className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${
                 activeSection === section.id 
-                  ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' 
+                  ? 'bg-primary text-on-primary shadow-xl shadow-primary/30' 
                   : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
               }`}
             >
-              <span className="material-symbols-outlined text-[20px]">{section.icon}</span>
+              <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: activeSection === section.id ? "'FILL' 1" : "'FILL' 0" }}>{section.icon}</span>
               {section.label}
               {activeSection === section.id && (
-                <motion.div layoutId="active-settings" className="ml-auto w-1.5 h-1.5 rounded-full bg-on-primary" />
+                <motion.div layoutId="active-settings" className="ml-auto w-1.5 h-1.5 rounded-full bg-on-primary shadow-sm" />
               )}
             </button>
           ))}
         </aside>
 
         {/* Content Area */}
-        <main className="md:col-span-8 bg-surface-container rounded-3xl border border-outline-variant/30 p-8 min-h-[500px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {activeSection === 'account' && (
-                <div className="space-y-8">
-                  <div className="flex items-center gap-6 pb-8 border-b border-outline-variant/20">
-                    <div className="relative group">
-                      <img 
-                        src={user?.avatarUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
-                        className="w-24 h-24 rounded-full object-cover border-2 border-primary/20 shadow-xl"
-                        alt="Profile"
-                      />
-                      <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface transition-transform hover:scale-110">
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
-                      </button>
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-on-surface">{user?.name || 'Student Name'}</h2>
-                      <p className="text-on-surface-variant text-sm font-medium">{user?.email || 'email@uiu.ac.bd'}</p>
-                      <span className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-widest">
-                        Standard Account
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Full Name</label>
-                      <input 
-                        type="text" 
-                        defaultValue={user?.name}
-                        className="w-full bg-surface-container-high border border-outline-variant rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Email Address</label>
-                      <input 
-                        type="email" 
-                        defaultValue={user?.email}
-                        disabled
-                        className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-on-surface-variant opacity-60 cursor-not-allowed"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Student ID</label>
-                      <input 
-                        type="text" 
-                        placeholder="0112xxxx"
-                        className="w-full bg-surface-container-high border border-outline-variant rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Phone Number</label>
-                      <input 
-                        type="tel" 
-                        placeholder="+880 1xxx xxxxxx"
-                        className="w-full bg-surface-container-high border border-outline-variant rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-6">
-                    <button className="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95">
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {activeSection === 'notifications' && (
-                <div className="space-y-8">
-                  <h2 className="text-xl font-bold text-on-surface mb-6">Notification Preferences</h2>
-                  <div className="space-y-4">
-                    {[
-                      { id: 'email_tasks', label: 'Email Reminders for Tasks', desc: 'Get notified 24h before task deadlines.' },
-                      { id: 'email_market', label: 'New Marketplace Messages', desc: 'Alert me when someone inquires about my listing.' },
-                      { id: 'push_events', label: 'Campus Event Alerts', desc: 'Real-time notifications for upcoming university events.' },
-                      { id: 'push_resources', label: 'Resource Updates', desc: 'Notify when new materials are shared for my courses.' }
-                    ].map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-surface-container-high border border-outline-variant/20">
-                        <div>
-                          <p className="text-sm font-bold text-on-surface">{item.label}</p>
-                          <p className="text-xs text-on-surface-variant">{item.desc}</p>
-                        </div>
-                        <div className="w-10 h-6 rounded-full bg-primary/20 relative p-1 cursor-pointer">
-                          <div className="w-4 h-4 rounded-full bg-primary ml-auto shadow-sm" />
+        <main className="md:col-span-8 bg-surface-container border border-outline-variant/30 rounded-[2.5rem] p-8 min-h-[550px] shadow-2xl relative overflow-hidden flex flex-col">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
+          
+          <div className="flex-1 relative z-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                {activeSection === 'account' && (
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-8 pb-10 border-b border-outline-variant/10">
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img 
+                          src={user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
+                          className="w-28 h-28 rounded-[2rem] object-cover border-4 border-surface shadow-2xl relative z-10"
+                          alt="Profile"
+                        />
+                        <button className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-2xl border-4 border-surface transition-all hover:scale-110 active:scale-95 z-20">
+                          <span className="material-symbols-outlined text-[18px]">add_a_photo</span>
+                        </button>
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-black text-on-surface tracking-tight">{user?.name || 'Student Name'}</h2>
+                        <p className="text-on-surface-variant text-base font-semibold opacity-70">{user?.email || 'email@uiu.ac.bd'}</p>
+                        <div className="mt-3 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
+                            {user?.role || 'STUDENT'}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                            Verified Account
+                          </span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
 
-              {activeSection === 'appearance' && (
-                <div className="space-y-8">
-                  <h2 className="text-xl font-bold text-on-surface mb-6">Interface Customization</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-6 rounded-2xl bg-black border-2 border-primary flex flex-col items-center gap-3 cursor-pointer">
-                      <span className="material-symbols-outlined text-primary text-3xl">dark_mode</span>
-                      <p className="text-xs font-black text-primary tracking-widest uppercase">Dark Mode</p>
-                    </div>
-                    <div className="p-6 rounded-2xl bg-white border border-outline-variant/30 flex flex-col items-center gap-3 cursor-pointer">
-                      <span className="material-symbols-outlined text-slate-400 text-3xl">light_mode</span>
-                      <p className="text-xs font-black text-slate-400 tracking-widest uppercase">Light Mode</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] ml-1">Full Name</label>
+                        <input 
+                          type="text" 
+                          value={accountInfo.name}
+                          onChange={(e) => setAccountInfo({...accountInfo, name: e.target.value})}
+                          className="w-full bg-surface-container-high border border-outline-variant/30 rounded-2xl px-5 py-4 text-on-surface font-bold text-sm focus:outline-none focus:border-primary focus:bg-surface-container transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] ml-1">Email (Immutable)</label>
+                        <input 
+                          type="email" 
+                          value={user?.email}
+                          disabled
+                          className="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-5 py-4 text-on-surface-variant font-bold text-sm opacity-40 cursor-not-allowed"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] ml-1">Student ID</label>
+                        <input 
+                          type="text" 
+                          placeholder="0112xxxx"
+                          value={accountInfo.studentId}
+                          onChange={(e) => setAccountInfo({...accountInfo, studentId: e.target.value})}
+                          className="w-full bg-surface-container-high border border-outline-variant/30 rounded-2xl px-5 py-4 text-on-surface font-bold text-sm focus:outline-none focus:border-primary focus:bg-surface-container transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] ml-1">Phone Number</label>
+                        <input 
+                          type="tel" 
+                          placeholder="+880 1xxx xxxxxx"
+                          value={accountInfo.phone}
+                          onChange={(e) => setAccountInfo({...accountInfo, phone: e.target.value})}
+                          className="w-full bg-surface-container-high border border-outline-variant/30 rounded-2xl px-5 py-4 text-on-surface font-bold text-sm focus:outline-none focus:border-primary focus:bg-surface-container transition-all"
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1">Accent Color</h3>
-                    <div className="flex gap-4">
-                      {['#6366f1', '#ec4899', '#10b981', '#f59e0b'].map((color) => (
-                        <div key={color} className="w-10 h-10 rounded-full cursor-pointer transition-transform hover:scale-110 shadow-lg" style={{ backgroundColor: color, border: color === '#6366f1' ? '3px solid white' : 'none' }} />
+                )}
+
+                {activeSection === 'notifications' && (
+                  <div className="space-y-8">
+                    <div className="mb-8">
+                      <h2 className="text-2xl font-black text-on-surface tracking-tight">Notification Channels</h2>
+                      <p className="text-sm text-on-surface-variant font-medium opacity-70">Define how the system communicates critical updates.</p>
+                    </div>
+                    <div className="space-y-4">
+                      {[
+                        { id: 'email_tasks', label: 'Email Reminders for Tasks', desc: 'Get notified 24h before task deadlines.' },
+                        { id: 'email_market', label: 'New Marketplace Messages', desc: 'Alert me when someone inquires about my listing.' },
+                        { id: 'push_events', label: 'Campus Event Alerts', desc: 'Real-time notifications for upcoming university events.' },
+                        { id: 'push_resources', label: 'Resource Updates', desc: 'Notify when new materials are shared for my courses.' }
+                      ].map((item) => (
+                        <div key={item.id} className="flex items-center justify-between p-5 rounded-3xl bg-surface-container-high border border-outline-variant/20 hover:border-primary/30 transition-all group">
+                          <div>
+                            <p className="text-sm font-black text-on-surface group-hover:text-primary transition-colors">{item.label}</p>
+                            <p className="text-xs text-on-surface-variant font-medium opacity-80">{item.desc}</p>
+                          </div>
+                          <button 
+                            onClick={() => setNotifications({...notifications, [item.id]: !notifications[item.id]})}
+                            className={`w-12 h-7 rounded-full relative p-1 transition-all flex items-center ${
+                              notifications[item.id] ? 'bg-primary' : 'bg-surface-container-highest border border-outline-variant/30'
+                            }`}
+                          >
+                            <motion.div 
+                              layout
+                              className={`w-5 h-5 rounded-full shadow-lg ${notifications[item.id] ? 'bg-on-primary ml-auto' : 'bg-outline-variant'}`} 
+                            />
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Security, Privacy placeholders would go here */}
-              {(activeSection === 'security' || activeSection === 'privacy') && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <span className="material-symbols-outlined text-6xl text-outline-variant mb-4">construction</span>
-                  <h2 className="text-xl font-bold text-on-surface mb-2">{sections.find(s => s.id === activeSection).label} Center</h2>
-                  <p className="text-on-surface-variant text-sm max-w-sm">These advanced settings are being optimized for the next StudentOS core update.</p>
-                </div>
+                {activeSection === 'appearance' && (
+                  <div className="space-y-10">
+                    <div>
+                      <h2 className="text-2xl font-black text-on-surface tracking-tight mb-2">Visual Experience</h2>
+                      <p className="text-sm text-on-surface-variant font-medium opacity-70">Customize the interface mode and brand accent.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                      <motion.div 
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setAppearance({...appearance, mode: 'dark'})}
+                        className={`p-8 rounded-[2rem] flex flex-col items-center gap-4 cursor-pointer transition-all border-2 ${
+                          appearance.mode === 'dark' 
+                            ? 'bg-[#09090b] border-primary shadow-2xl shadow-primary/10' 
+                            : 'bg-surface-container border-transparent hover:border-outline-variant'
+                        }`}
+                      >
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${appearance.mode === 'dark' ? 'bg-primary/20 text-primary' : 'bg-white/5 text-on-surface-variant'}`}>
+                          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: appearance.mode === 'dark' ? "'FILL' 1" : "'FILL' 0" }}>dark_mode</span>
+                        </div>
+                        <p className={`text-xs font-black tracking-[0.2em] uppercase ${appearance.mode === 'dark' ? 'text-primary' : 'text-on-surface-variant'}`}>Dark Mode</p>
+                      </motion.div>
+
+                      <motion.div 
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setAppearance({...appearance, mode: 'light'})}
+                        className={`p-8 rounded-[2rem] flex flex-col items-center gap-4 cursor-pointer transition-all border-2 ${
+                          appearance.mode === 'light' 
+                            ? 'bg-white border-primary shadow-2xl shadow-primary/10' 
+                            : 'bg-surface-container border-transparent hover:border-outline-variant'
+                        }`}
+                      >
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${appearance.mode === 'light' ? 'bg-primary/20 text-primary' : 'bg-black/5 text-on-surface-variant'}`}>
+                          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: appearance.mode === 'light' ? "'FILL' 1" : "'FILL' 0" }}>light_mode</span>
+                        </div>
+                        <p className={`text-xs font-black tracking-[0.2em] uppercase ${appearance.mode === 'light' ? 'text-primary' : 'text-on-surface-variant'}`}>Light Mode</p>
+                      </motion.div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <h3 className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] ml-1">Global Accent Color</h3>
+                      <div className="flex flex-wrap gap-5">
+                        {['#818cf8', '#ec4899', '#2dd4bf', '#fbbf24', '#f87171', '#c084fc'].map((color) => (
+                          <motion.button 
+                            key={color} 
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setAppearance({...appearance, accent: color})}
+                            className="w-12 h-12 rounded-2xl cursor-pointer transition-all shadow-xl relative flex items-center justify-center"
+                            style={{ backgroundColor: color }}
+                          >
+                            {appearance.accent === color && (
+                              <motion.span layoutId="accent-check" className="material-symbols-outlined text-white font-black text-2xl">check</motion.span>
+                            )}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 'security' && (
+                  <div className="space-y-8">
+                    <div className="mb-8">
+                      <h2 className="text-2xl font-black text-on-surface tracking-tight">Security Center</h2>
+                      <p className="text-sm text-on-surface-variant font-medium opacity-70">Enhance your account protection and access controls.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="p-6 rounded-3xl bg-surface-container-high border border-outline-variant/20 flex flex-col gap-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                              <span className="material-symbols-outlined">password</span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-on-surface">Change Password</p>
+                              <p className="text-xs text-on-surface-variant font-medium">Update your account authentication credentials.</p>
+                            </div>
+                          </div>
+                          <button className="px-5 py-2.5 bg-white/5 border border-outline-variant/30 rounded-xl text-xs font-bold text-on-surface hover:bg-white/10 transition-all">Update</button>
+                        </div>
+                        
+                        <div className="border-t border-outline-variant/10 pt-6 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                              <span className="material-symbols-outlined">verified_user</span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-on-surface">Two-Factor Authentication</p>
+                              <p className="text-xs text-on-surface-variant font-medium">Add an extra layer of security to your account.</p>
+                            </div>
+                          </div>
+                          <button className="px-5 py-2.5 bg-emerald-500 text-on-primary rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 hover:opacity-90 transition-all">Enable</button>
+                        </div>
+                      </div>
+
+                      <div className="p-6 rounded-3xl bg-error/5 border border-error/20 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center">
+                              <span className="material-symbols-outlined">heart_broken</span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-error">Terminate All Sessions</p>
+                              <p className="text-xs text-error/60 font-medium">Force logout from all other devices and browsers.</p>
+                            </div>
+                          </div>
+                          <button className="px-5 py-2.5 bg-error text-on-error rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-lg shadow-error/20">Purge Sessions</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 'privacy' && (
+                  <div className="space-y-8">
+                    <div className="mb-8">
+                      <h2 className="text-2xl font-black text-on-surface tracking-tight">Privacy Settings</h2>
+                      <p className="text-sm text-on-surface-variant font-medium opacity-70">Control your digital footprint and data sharing visibility.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                       {[
+                         { id: 'publicProfile', label: 'Public Profile Visibility', desc: 'Allow other students to see your active marketplace listings and reviews.', state: privacy.publicProfile },
+                         { id: 'shareEmail', label: 'Contact Information Sharing', desc: 'Show your university email on your public profile cards.', state: privacy.shareEmail },
+                         { id: 'analytics', label: 'Anonymous Usage Analytics', desc: 'Help us improve StudentOS by sharing anonymous platform interaction data.', state: privacy.analytics }
+                       ].map((item) => (
+                         <div key={item.id} className="flex items-center justify-between p-5 rounded-3xl bg-surface-container-high border border-outline-variant/20">
+                           <div className="max-w-[75%]">
+                             <p className="text-sm font-black text-on-surface">{item.label}</p>
+                             <p className="text-xs text-on-surface-variant font-medium opacity-80">{item.desc}</p>
+                           </div>
+                           <button 
+                             onClick={() => setPrivacy({...privacy, [item.id]: !item.state})}
+                             className={`w-12 h-7 rounded-full relative p-1 transition-all flex items-center ${
+                               item.state ? 'bg-primary' : 'bg-surface-container-highest border border-outline-variant/30'
+                             }`}
+                           >
+                             <motion.div 
+                               layout
+                               className={`w-5 h-5 rounded-full shadow-lg ${item.state ? 'bg-on-primary ml-auto' : 'bg-outline-variant'}`} 
+                             />
+                           </button>
+                         </div>
+                       ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="pt-10 mt-auto flex items-center justify-between border-t border-outline-variant/10 relative z-10">
+            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-50">Last synchronized: {new Date().toLocaleTimeString()}</p>
+            <button 
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`px-10 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3`}
+            >
+              {isSaving ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
+                  Saving Updates...
+                </>
+              ) : (
+                'Save All Changes'
               )}
-            </motion.div>
-          </AnimatePresence>
+            </button>
+          </div>
         </main>
       </div>
     </div>
   );
 }
-
-import { AnimatePresence } from 'framer-motion';
