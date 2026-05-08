@@ -111,7 +111,7 @@ export function ForgotCredentials() {
           StudentOS
         </div>
         <nav>
-          <a href="#" className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Support</a>
+          {/* Support link removed as route doesn't exist */}
         </nav>
       </header>
 
@@ -330,7 +330,6 @@ export function ForgotCredentials() {
         <nav className="flex gap-6 font-body-sm text-xs text-on-surface-variant">
           <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
           <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
-          <a href="#" className="hover:text-primary transition-colors">Accessibility</a>
         </nav>
       </footer>
     </div>

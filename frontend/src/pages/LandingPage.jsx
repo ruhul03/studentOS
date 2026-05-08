@@ -194,8 +194,6 @@ export function LandingPage() {
           <div className="flex gap-6 font-body-sm text-xs text-on-surface-variant">
             <button onClick={() => navigate('/privacy')} className="hover:text-primary transition-colors">Privacy</button>
             <button onClick={() => navigate('/terms')} className="hover:text-primary transition-colors">Terms</button>
-            <button onClick={() => navigate('/status')} className="hover:text-primary transition-colors">API Status</button>
-            <button onClick={() => navigate('/support')} className="hover:text-primary transition-colors">Support</button>
           </div>
         </div>
       </footer>
