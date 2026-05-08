@@ -11,7 +11,7 @@ export function ProtectedRoute({ children }) {
 
 export function AdminRoute({ children }) {
   const { user } = useAuth();
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || user.role?.toUpperCase() !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;

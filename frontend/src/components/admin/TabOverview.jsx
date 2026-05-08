@@ -2,7 +2,13 @@ import { motion } from 'framer-motion';
 import { StatCard } from './StatCard';
 
 export function TabOverview({ stats, health, onShowDiagnostics }) {
-  if (!stats) return null;
+  if (!stats) {
+    return (
+      <div className="rounded-3xl border border-outline-variant bg-surface-container p-10 text-on-surface-variant shadow-lg">
+        <p className="text-sm font-medium">Loading admin statistics… Please wait a moment.</p>
+      </div>
+    );
+  }
 
   const statusMetrics = [
     { label: 'System Memory', value: `${health?.usedMemory || 0} MB`, percent: health?.memoryUsage || 0, color: 'bg-primary' },
