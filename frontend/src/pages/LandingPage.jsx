@@ -29,7 +29,7 @@ export function LandingPage() {
           ) : (
             <>
               <button className="px-4 py-2 font-label-caps text-xs text-on-surface hover:bg-surface-variant rounded-lg transition-colors" onClick={() => navigate('/login')}>Login</button>
-              <button className="px-4 py-2 font-label-caps text-xs bg-primary text-on-primary hover:bg-primary-fixed rounded-lg transition-colors shadow-[0_4px_14px_rgba(192,193,255,0.1)]" onClick={() => navigate('/register')}>Get Started</button>
+              <button className="px-4 py-2 font-label-caps text-xs bg-primary text-on-primary hover:bg-primary-fixed rounded-lg transition-colors shadow-[0_4px_14px_rgba(129,140,248,0.1)]" onClick={() => navigate('/register')}>Get Started</button>
             </>
           )}
         </div>
@@ -58,7 +58,7 @@ export function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button 
-                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(192,193,255,0.2)] flex items-center gap-2"
+                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(129,140,248,0.2)] flex items-center gap-2"
                 onClick={handleStart}
               >
                 Get Started for Free <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -171,7 +171,7 @@ export function LandingPage() {
               <h2 className="font-h1 text-3xl md:text-4xl font-bold text-on-surface mb-4">Ready to optimize your semester?</h2>
               <p className="font-body-lg text-on-surface-variant mb-8">Join thousands of students who have upgraded their academic workflow with StudentOS.</p>
               <button 
-                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(192,193,255,0.2)] flex items-center gap-2 mx-auto"
+                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(129,140,248,0.2)] flex items-center gap-2 mx-auto"
                 onClick={handleStart}
               >
                 Create Free Account

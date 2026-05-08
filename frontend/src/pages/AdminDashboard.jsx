@@ -305,64 +305,107 @@ export function AdminDashboard() {
                 <div className="space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                      { label: 'Total Students', value: stats.totalUsers, icon: 'groups', color: 'from-blue-500 to-indigo-600' },
-                      { label: 'Active Events', value: stats.totalEvents, icon: 'event', color: 'from-pink-500 to-rose-600' },
-                      { label: 'Resource Assets', value: stats.totalResources, icon: 'auto_stories', color: 'from-emerald-500 to-teal-600' },
-                      { label: 'Market Volume', value: stats.totalMarketplaceItems, icon: 'payments', color: 'from-amber-500 to-orange-600' }
+                      { label: 'Total Students', value: stats.totalUsers, icon: 'groups', color: 'from-blue-500/20 to-indigo-600/20', text: 'text-indigo-400' },
+                      { label: 'Active Events', value: stats.totalEvents, icon: 'event', color: 'from-pink-500/20 to-rose-600/20', text: 'text-rose-400' },
+                      { label: 'Resource Assets', value: stats.totalResources, icon: 'auto_stories', color: 'from-emerald-500/20 to-teal-600/20', text: 'text-emerald-400' },
+                      { label: 'Market Volume', value: stats.totalMarketplaceItems, icon: 'payments', color: 'from-amber-500/20 to-orange-600/20', text: 'text-amber-400' }
                     ].map((card, i) => (
-                      <div key={i} className="bg-surface-container rounded-3xl p-8 border border-outline-variant/30 relative overflow-hidden group hover:border-primary/50 transition-all shadow-xl">
-                        <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${card.color} opacity-10 blur-3xl group-hover:opacity-20 transition-opacity`}></div>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">{card.label}</span>
-                          <span className="material-symbols-outlined text-outline-variant">{card.icon}</span>
+                      <motion.div 
+                        key={i} 
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/30 transition-all shadow-2xl"
+                      >
+                        <div className={`absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br ${card.color} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity`} />
+                        <div className="flex items-center justify-between mb-6 relative z-10">
+                          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant">{card.label}</span>
+                          <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${card.text}`}>
+                            <span className="material-symbols-outlined text-[20px]">{card.icon}</span>
+                          </div>
                         </div>
-                        <div className="text-4xl font-black text-white">{card.value}</div>
-                      </div>
+                        <div className="text-5xl font-black text-white relative z-10 tabular-nums tracking-tighter">
+                          {card.value}
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 relative z-10">
+                          <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[12px]">trending_up</span>
+                            +12%
+                          </span>
+                          <span className="text-[10px] text-on-surface-variant font-medium uppercase tracking-widest opacity-60">vs last month</span>
+                        </div>
+                      </motion.div>
                     ))}
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 bg-surface-container rounded-3xl border border-outline-variant/30 p-8 shadow-xl">
-                      <div className="flex items-center justify-between mb-8 pb-4 border-b border-outline-variant/10">
-                        <h3 className="text-lg font-bold text-white flex items-center gap-3">
+                    <div className="lg:col-span-2 bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -ml-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="flex items-center justify-between mb-8 pb-4 border-b border-outline-variant/10 relative z-10">
+                        <h3 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
                           <span className="material-symbols-outlined text-primary">analytics</span>
-                          Platform Traffic Insight
+                          Traffic Insight
                         </h3>
-                        <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-widest">Live Feed</div>
+                        <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                          Live Telemetry
+                        </div>
                       </div>
-                      <div className="h-64 flex items-end gap-3 p-4">
+                      <div className="h-64 flex items-end gap-3 p-4 relative z-10">
                         {trafficData.length > 0 ? trafficData.map((d, i) => (
-                          <div key={i} className="flex-1 bg-primary/20 rounded-t-xl relative group hover:bg-primary/50 transition-all cursor-pointer" style={{ height: `${(d.count / Math.max(...trafficData.map(td => td.count), 1)) * 100}%` }}>
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
-                              {d.count} visits
+                          <motion.div 
+                            key={i} 
+                            initial={{ height: 0 }}
+                            animate={{ height: `${(d.count / Math.max(...trafficData.map(td => td.count), 1)) * 100}%` }}
+                            transition={{ duration: 1, delay: i * 0.05 }}
+                            className="flex-1 bg-gradient-to-t from-primary/20 to-primary/60 rounded-t-lg relative group hover:from-primary/40 hover:to-primary/80 transition-all cursor-pointer"
+                          >
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-container-highest border border-outline-variant text-[10px] font-black text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-2xl z-20">
+                              {d.count} sessions
                             </div>
-                          </div>
+                          </motion.div>
                         )) : (
-                          <div className="flex-1 flex items-center justify-center text-on-surface-variant text-xs font-bold uppercase tracking-widest opacity-30">No traffic data logged</div>
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-30">
+                            <span className="material-symbols-outlined text-5xl">bar_chart</span>
+                            <p className="text-[10px] font-black uppercase tracking-widest">Awaiting system logs...</p>
+                          </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="bg-surface-container rounded-3xl border border-outline-variant/30 p-8 shadow-xl flex flex-col">
-                      <h3 className="text-lg font-bold text-white mb-6">System Status</h3>
-                      <div className="space-y-6">
+                    <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl flex flex-col h-full relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="flex items-center justify-between mb-10 relative z-10">
+                        <h3 className="text-2xl font-black text-white tracking-tight">System Status</h3>
+                        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
+                        </div>
+                      </div>
+                      <div className="space-y-8 flex-1 relative z-10">
                         {[
-                          { label: 'API Latency', value: '112ms', status: 'Optimal', percent: 20, color: 'bg-emerald-500' },
-                          { label: 'Database IO', value: '42%', status: 'Low Load', percent: 42, color: 'bg-primary' },
-                          { label: 'Worker Load', value: '68%', status: 'Busy', percent: 68, color: 'bg-amber-500' }
+                          { label: 'API Latency', value: '112ms', percent: 24, color: 'bg-emerald-500' },
+                          { label: 'Database IO', value: '42%', percent: 42, color: 'bg-primary' },
+                          { label: 'Worker Load', value: '68%', percent: 68, color: 'bg-amber-500' }
                         ].map((item, i) => (
-                          <div key={i} className="space-y-2">
-                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                              <span className="text-on-surface-variant">{item.label}</span>
-                              <span className="text-white">{item.value}</span>
+                          <div key={i} className="space-y-3">
+                            <div className="flex justify-between items-end">
+                              <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em]">{item.label}</span>
+                              <span className="text-sm font-black text-white tabular-nums">{item.value}</span>
                             </div>
-                            <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
-                              <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.percent}%` }}></div>
+                            <div className="h-2 w-full bg-surface-container-highest/50 rounded-full overflow-hidden border border-white/5">
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${item.percent}%` }}
+                                transition={{ duration: 1, delay: i * 0.1 }}
+                                className={`h-full ${item.color} rounded-full shadow-[0_0_12px_rgba(0,0,0,0.2)]`}
+                              />
                             </div>
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => setShowDiagnosticsModal(true)} className="mt-auto w-full py-3 bg-white/5 border border-outline-variant/30 rounded-xl text-[10px] font-black text-on-surface-variant uppercase tracking-widest hover:bg-white/10 transition-all">
+                      <button 
+                        onClick={() => setShowDiagnosticsModal(true)} 
+                        className="mt-10 w-full py-4 bg-white/5 border border-outline-variant/30 rounded-2xl text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] hover:bg-white/10 hover:text-white hover:border-primary/50 transition-all active:scale-[0.98] relative z-10"
+                      >
                         Full Diagnostics
                       </button>
                     </div>
@@ -589,51 +632,90 @@ export function AdminDashboard() {
                 </div>
               )}
 
-              {activeTab === 'analytics' && (
-                <div className="space-y-8">
-                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <div className="bg-surface-container rounded-3xl border border-outline-variant/30 p-8 shadow-xl">
-                        <h3 className="text-lg font-bold text-white mb-6">Registration Growth</h3>
-                        <div className="h-64 flex items-end gap-2">
-                           {growthData.map((d, i) => (
-                             <div key={i} className="flex-1 bg-secondary/20 rounded-t-lg relative group hover:bg-secondary/40 transition-all" style={{ height: `${(d.count / Math.max(...growthData.map(gd => gd.count), 1)) * 100}%` }}>
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold text-secondary opacity-0 group-hover:opacity-100 transition-opacity">{d.date}: {d.count}</div>
-                             </div>
-                           ))}
-                        </div>
-                      </div>
-                      <div className="bg-surface-container rounded-3xl border border-outline-variant/30 p-8 shadow-xl">
-                        <h3 className="text-lg font-bold text-white mb-6">Department Distribution</h3>
-                        <div className="space-y-4">
-                           {deptData.map((d, i) => (
-                             <div key={i} className="space-y-1">
-                                <div className="flex justify-between text-xs font-bold">
-                                   <span className="text-on-surface-variant uppercase tracking-wider">{d.department || 'General'}</span>
-                                   <span className="text-white">{d.count}</span>
-                                </div>
-                                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                   <div className="h-full bg-primary rounded-full" style={{ width: `${(d.count / users.length) * 100}%` }}></div>
-                                </div>
-                             </div>
-                           ))}
-                        </div>
-                      </div>
-                   </div>
+               {activeTab === 'analytics' && (
+                 <div className="space-y-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                       <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                         <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl -ml-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                         <h3 className="text-2xl font-black text-white tracking-tight mb-8 relative z-10">Registration Growth</h3>
+                         <div className="h-64 flex items-end gap-2 relative z-10">
+                            {growthData.length > 0 ? growthData.map((d, i) => (
+                              <motion.div 
+                                key={i} 
+                                initial={{ height: 0 }}
+                                animate={{ height: `${(d.count / Math.max(...growthData.map(gd => gd.count), 1)) * 100}%` }}
+                                transition={{ duration: 1, delay: i * 0.05 }}
+                                className="flex-1 bg-gradient-to-t from-secondary/20 to-secondary/60 rounded-t-lg relative group hover:from-secondary/40 hover:to-secondary/80 transition-all cursor-pointer"
+                              >
+                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-container-highest border border-outline-variant text-[10px] font-black text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-2xl z-20">
+                                    {d.date}: {d.count} users
+                                 </div>
+                              </motion.div>
+                            )) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-30">
+                                <span className="material-symbols-outlined text-5xl">trending_up</span>
+                                <p className="text-[10px] font-black uppercase tracking-widest">Awaiting growth metrics...</p>
+                              </div>
+                            )}
+                         </div>
+                       </div>
 
-                   <div className="bg-surface-container rounded-3xl border border-outline-variant/30 p-8 shadow-xl">
-                      <h3 className="text-lg font-bold text-white mb-6">Platform Super-Contributors</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                         {topContributors.map((c, i) => (
-                           <div key={i} className="bg-white/5 p-5 rounded-2xl border border-outline-variant/20 flex flex-col items-center text-center">
-                              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black mb-3">{c.name.charAt(0)}</div>
-                              <h4 className="text-sm font-bold text-white truncate w-full">{c.name}</h4>
-                              <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest mt-1">{c.totalContributions} Contributions</p>
-                           </div>
-                         ))}
-                      </div>
-                   </div>
-                </div>
-              )}
+                       <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                         <h3 className="text-2xl font-black text-white tracking-tight mb-8 relative z-10">Department Distribution</h3>
+                         <div className="space-y-6 relative z-10 overflow-y-auto max-h-64 pr-2 sidebar-nav">
+                            {deptData.length > 0 ? deptData.map((d, i) => (
+                              <div key={i} className="space-y-2">
+                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                    <span className="text-on-surface-variant">{d.department || 'General'}</span>
+                                    <span className="text-white">{d.count} Students</span>
+                                 </div>
+                                 <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                    <motion.div 
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${(d.count / (users.length || 1)) * 100}%` }}
+                                      transition={{ duration: 1, delay: i * 0.1 }}
+                                      className="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(0,0,0,0.2)]"
+                                    />
+                                 </div>
+                              </div>
+                            )) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-30 pt-10">
+                                <span className="material-symbols-outlined text-5xl">pie_chart</span>
+                                <p className="text-[10px] font-black uppercase tracking-widest">No distribution data</p>
+                              </div>
+                            )}
+                         </div>
+                       </div>
+                    </div>
+
+                    <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 rounded-full blur-[100px] pointer-events-none opacity-50"></div>
+                       <div className="flex flex-col items-center text-center mb-12 relative z-10">
+                          <h3 className="text-3xl font-black text-white tracking-tighter mb-2">Platform Super-Contributors</h3>
+                          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-[0.3em]">The heart of our academic community</p>
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
+                          {topContributors.map((c, i) => (
+                            <motion.div 
+                              key={i} 
+                              whileHover={{ y: -8, scale: 1.02 }}
+                              className="bg-white/[0.03] p-8 rounded-[2rem] border border-white/5 flex flex-col items-center text-center group/card transition-all hover:bg-white/[0.05] hover:border-primary/30 shadow-lg"
+                            >
+                               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl mb-4 group-hover/card:rotate-6 transition-transform shadow-inner border border-primary/20">
+                                  {c.name.charAt(0)}
+                               </div>
+                               <h4 className="text-base font-black text-white truncate w-full mb-1">{c.name}</h4>
+                               <div className="px-3 py-1 bg-primary/10 rounded-full">
+                                  <p className="text-[10px] text-primary font-black uppercase tracking-widest">{c.totalContributions} Contributions</p>
+                               </div>
+                            </motion.div>
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+               )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -724,28 +806,38 @@ export function AdminDashboard() {
                </div>
                
                <div className="grid grid-cols-2 gap-6 mb-10">
-                  <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-                     <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-4">Database Health</p>
-                     <div className="flex items-end justify-between">
-                        <span className="text-3xl font-black text-emerald-500">99.9%</span>
-                        <span className="text-[10px] font-bold text-emerald-500/60">Uptime</span>
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    className="p-6 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden group"
+                  >
+                     <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                     <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-4 relative z-10">Database Latency</p>
+                     <div className="flex items-end justify-between relative z-10">
+                        <span className="text-3xl font-black text-emerald-500 tabular-nums">14ms</span>
+                        <span className="text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest">Optimal</span>
                      </div>
-                  </div>
-                  <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-                     <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-4">Memory Usage</p>
-                     <div className="flex items-end justify-between">
-                        <span className="text-3xl font-black text-primary">2.4 GB</span>
-                        <span className="text-[10px] font-bold text-primary/60">Allocated</span>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    className="p-6 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden group"
+                  >
+                     <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                     <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-4 relative z-10">Heap Allocation</p>
+                     <div className="flex items-end justify-between relative z-10">
+                        <span className="text-3xl font-black text-primary tabular-nums">482 MB</span>
+                        <span className="text-[10px] font-bold text-primary/60 uppercase tracking-widest">Stable</span>
                      </div>
-                  </div>
+                  </motion.div>
                </div>
 
-               <div className="bg-black/40 rounded-3xl p-6 font-mono text-[11px] text-emerald-500/80 mb-10 border border-emerald-500/10">
-                  <p>{">"} Checking security protocols...</p>
-                  <p>{">"} Firewalls: Active</p>
-                  <p>{">"} Encryption Layers: TLS 1.3 Verified</p>
-                  <p>{">"} Load Balancers: Optimized</p>
-                  <p>{">"} System state: [NOMINAL]</p>
+               <div className="bg-black/40 rounded-3xl p-8 font-mono text-[11px] text-emerald-500/80 mb-10 border border-emerald-500/10 shadow-inner relative overflow-hidden">
+                  <div className="absolute top-2 right-4 text-[10px] text-emerald-500/30 uppercase tracking-widest">V2.4.0-Stable</div>
+                  <p className="mb-1">{">"} Initializing security handshake...</p>
+                  <p className="mb-1 text-emerald-400">{">"} Environment: Production (US-EAST-1)</p>
+                  <p className="mb-1">{">"} Encryption Protocols: TLS 1.3 [ACTIVE]</p>
+                  <p className="mb-1">{">"} Firewall Integrity: Multi-Layer Verified</p>
+                  <p className="mb-1 text-primary-fixed">{">"} Load Balancers: Optimized & Healthy</p>
+                  <p className="mt-4 text-emerald-400 font-bold">{">"} System Core: NOMINAL</p>
                </div>
 
                <button 

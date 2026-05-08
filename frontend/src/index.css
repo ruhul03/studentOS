@@ -6,56 +6,57 @@
 
 :root {
   /* Surface colors */
-  --surface: #13131b;
-  --surface-dim: #13131b;
-  --surface-bright: #393841;
-  --surface-container-lowest: #0d0d15;
-  --surface-container-low: #1b1b23;
-  --surface-container: #1f1f27;
-  --surface-container-high: #292932;
-  --surface-container-highest: #34343d;
+  --surface: #11141b;
+  --surface-dim: #0d0f14;
+  --surface-bright: #1f222c;
+  --surface-container-lowest: #07080a;
+  --surface-container-low: #11141b;
+  --surface-container: #151921;
+  --surface-container-high: #1c212b;
+  --surface-container-highest: #252a37;
   
   /* On-surface colors */
-  --on-surface: #e4e1ed;
-  --on-surface-variant: #c7c4d7;
-  --inverse-surface: #e4e1ed;
-  --inverse-on-surface: #303038;
+  --on-surface: #f1f5f9;
+  --on-surface-variant: #94a3b8;
+  --inverse-surface: #f1f5f9;
+  --inverse-on-surface: #0f172a;
   
   /* Outline */
-  --outline: #908fa0;
-  --outline-variant: #464554;
+  --outline: #475569;
+  --outline-variant: #1e293b;
   
-  /* Brand/Accent Colors from Markdown text description */
-  --accent-primary: #6366F1; /* Electric Indigo */
-  --accent-secondary: #10B981; /* Emerald Green */
+  /* Brand/Accent Colors */
+  --accent-primary: #818cf8; /* Vibrant Indigo */
+  --accent-secondary: #2dd4bf; /* Teal/Emerald */
+  --accent-tertiary: #c084fc; /* Purple/Violet */
   
-  /* Legacy/Generated Primary and Secondary */
-  --primary: #c0c1ff;
-  --on-primary: #1000a9;
-  --primary-container: #8083ff;
-  --on-primary-container: #0d0096;
-  --inverse-primary: #494bd6;
+  /* Main Colors */
+  --primary: #818cf8;
+  --on-primary: #ffffff;
+  --primary-container: #4f46e5;
+  --on-primary-container: #e0e7ff;
+  --inverse-primary: #4338ca;
   
-  --secondary: #4edea3;
-  --on-secondary: #003824;
-  --secondary-container: #00a572;
-  --on-secondary-container: #00311f;
+  --secondary: #2dd4bf;
+  --on-secondary: #042f2e;
+  --secondary-container: #0d9488;
+  --on-secondary-container: #ccfbf1;
   
-  --tertiary: #ffb783;
-  --on-tertiary: #4f2500;
-  --tertiary-container: #d97721;
-  --on-tertiary-container: #452000;
+  --tertiary: #c084fc;
+  --on-tertiary: #3b0764;
+  --tertiary-container: #9333ea;
+  --on-tertiary-container: #f5f3ff;
   
-  --error: #ffb4ab;
-  --on-error: #690005;
-  --error-container: #93000a;
-  --on-error-container: #ffdad6;
+  --error: #fb7185;
+  --on-error: #4c0519;
+  --error-container: #e11d48;
+  --on-error-container: #fff1f2;
   
   /* Background */
-  --background: #121212; /* Deep charcoal */
-  --bg-card: #1E1E1E; /* Slate gray */
-  --on-background: #FFFFFF; /* High-legibility white */
-  --text-dim: #B0B0B0; /* Soft gray */
+  --background: #09090b; /* True deep dark */
+  --bg-card: #11141d; 
+  --on-background: #ffffff; 
+  --text-dim: #94a3b8; 
   
   /* Spacing */
   --spacing-base: 4px;
