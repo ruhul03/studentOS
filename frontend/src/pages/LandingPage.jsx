@@ -22,14 +22,6 @@ export function LandingPage() {
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
           StudentOS
         </div>
-        
-        <div className="hidden md:flex items-center gap-6">
-          <button onClick={() => navigate('/dashboard?tab=resources')} className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Resources</button>
-          <button onClick={() => navigate('/dashboard?tab=services')} className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Services</button>
-          <button onClick={() => navigate('/dashboard?tab=planner')} className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Planner</button>
-          <button onClick={() => navigate('/dashboard?tab=market')} className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Marketplace</button>
-          <button onClick={() => navigate('/dashboard?tab=lostfound')} className="font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">Lost & Found</button>
-        </div>
 
         <div className="flex items-center gap-4">
           {user ? (

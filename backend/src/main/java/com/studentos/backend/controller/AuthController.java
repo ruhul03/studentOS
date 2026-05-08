@@ -57,12 +57,12 @@ public class AuthController {
                 .verificationCode(verificationCode)
                 .updateCount(0)
                 .build();
-        
+
         User savedUser = userRepository.save(user);
-        
+
         String token = jwtUtil.generateToken(savedUser.getUsername(), savedUser.getRole());
         savedUser.setToken(token);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
@@ -93,7 +93,7 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         String identifier = loginRequest.getEmail();
         Optional<User> userOptional;
-        
+
         if (identifier.contains("@")) {
             userOptional = userRepository.findByEmail(identifier);
         } else {
@@ -106,10 +106,10 @@ public class AuthController {
                 if (!user.isVerified()) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not verified. Please verify your email.");
                 }
-                
+
                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                 user.setToken(token);
-                
+
                 return ResponseEntity.ok(user);
             }
         }
@@ -156,7 +156,7 @@ public class AuthController {
             if (user.getVerificationCode() == null || !user.getVerificationCode().equals(request.getCode())) {
                  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired verification code.");
             }
-            
+
             user.setVerified(true);
             user.setVerificationCode(null);
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));

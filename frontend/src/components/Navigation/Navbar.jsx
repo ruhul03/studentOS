@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
 import { NewEntryModal } from './NewEntryModal';
@@ -28,17 +27,9 @@ export function Navbar({ activeTab, onNavigate, wsNotifications }) {
   return (
     <>
       {/* TopNavBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 grid grid-cols-3 items-center px-8 h-16 bg-background/95 backdrop-blur-md border-b border-surface-variant/30">
-        {/* Left: Brand */}
+      <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 h-16 bg-background/95 backdrop-blur-md border-b border-surface-variant/30">
         <div className="flex items-center gap-4">
           <span className="font-h2 text-xl font-black text-on-background tracking-tighter cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
-        </div>
-
-        {/* Center: Search */}
-        <div className="flex justify-center">
-          <div className="hidden lg:block w-full max-w-md">
-            <GlobalSearch onNavigate={onNavigate} />
-          </div>
         </div>
         
         {/* Right: Actions */}
@@ -88,16 +79,9 @@ export function Navbar({ activeTab, onNavigate, wsNotifications }) {
 
       {/* SideNavBar */}
       <aside className="hidden md:flex fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-surface-container border-r border-surface-variant flex-col py-8 z-40">
-        <div className="px-8 mb-8 flex items-center gap-4">
-          <div className="w-10 h-10 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg">
-            {user?.name ? user.name.charAt(0).toUpperCase() : (user?.username ? user.username.charAt(0).toUpperCase() : 'U')}
-          </div>
-          <div>
-            <h2 className="font-h3 text-sm font-bold text-on-surface m-0 leading-tight">Academic Year</h2>
-            <p className="font-body-sm text-xs text-on-surface-variant m-0">2025-2026</p>
-          </div>
+        <div className="px-6 mb-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Main Menu</p>
         </div>
-        
         <nav className="flex-1 px-4 flex flex-col gap-1 overflow-y-auto sidebar-nav">
           {navItems.map(item => {
             const isActive = activeTab === item.id;

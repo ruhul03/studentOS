@@ -15,7 +15,6 @@ public class ForgotRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
-    
     private String newPassword;
     private String code;
 }
