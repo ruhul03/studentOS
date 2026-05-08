@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
   const { user } = useAuth();
@@ -53,121 +54,131 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div style={styles.overlay} onClick={handleClose}>
-      <div style={styles.container} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
-          <h2 style={styles.headerTitle}>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--inverse-primary)' }}>add_task</span>
-            New Task
-          </h2>
-          <button style={styles.closeBtn} onClick={handleClose}>
-            <span className="material-symbols-outlined">close</span>
-          </button>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-background/80 backdrop-blur-md cursor-pointer"
+            onClick={handleClose}
+          />
+
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="relative z-10 w-full max-w-lg bg-surface-container rounded-[2.5rem] border border-outline-variant shadow-[0_32px_64px_rgba(0,0,0,0.5)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-8 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_task</span>
+                </div>
+                <h2 className="text-xl font-black text-on-surface tracking-tight">Create New Task</h2>
+              </div>
+              <button 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all" 
+                onClick={handleClose}
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              {error && (
+                <div className="flex items-center gap-2 p-4 bg-error/10 border border-error/20 text-error rounded-2xl text-xs font-bold uppercase tracking-widest">
+                  <span className="material-symbols-outlined text-[16px]">error</span>
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Task Title</label>
+                <input 
+                  className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/30" 
+                  placeholder="e.g., Complete Chapter 4 Reading" 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Course Code</label>
+                  <input 
+                    className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/30 uppercase font-bold" 
+                    placeholder="CSE 303" 
+                    value={courseCode} 
+                    onChange={(e) => setCourseCode(e.target.value)} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Task Type</label>
+                  <select 
+                    className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer" 
+                    value={type} 
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    {taskTypes.map(t => <option key={t} value={t} className="bg-surface-container">{t}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Due Date</label>
+                  <input 
+                    className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary transition-all color-scheme-dark" 
+                    type="date" 
+                    value={date} 
+                    onChange={(e) => setDate(e.target.value)} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Time</label>
+                  <input 
+                    className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary transition-all color-scheme-dark" 
+                    type="time" 
+                    value={time} 
+                    onChange={(e) => setTime(e.target.value)} 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 ml-1">Description</label>
+                <textarea 
+                  className="w-full bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary transition-all min-h-[100px] resize-none placeholder:text-on-surface-variant/30" 
+                  placeholder="Optional notes..." 
+                  value={description} 
+                  onChange={(e) => setDescription(e.target.value)} 
+                />
+              </div>
+
+              <div className="pt-4 flex gap-4">
+                <button 
+                  type="button" 
+                  className="flex-1 bg-surface-container-high text-on-surface font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl border border-outline-variant/50 hover:bg-surface-variant transition-all" 
+                  onClick={handleClose}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="flex-1 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all"
+                >
+                  {isSubmitting ? 'Processing...' : 'Create Task'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
-
-        <form onSubmit={handleSubmit} style={styles.body}>
-          {error && (
-            <div style={styles.error}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>error</span>
-              {error}
-            </div>
-          )}
-
-          <div style={styles.field}>
-            <label style={styles.label}>Title *</label>
-            <input style={styles.input} placeholder="e.g., Complete Chapter 4 Reading" value={title} onChange={(e) => setTitle(e.target.value)} />
-          </div>
-
-          <div style={styles.row}>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Course Code</label>
-              <input style={styles.input} placeholder="e.g., CSE 303" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
-            </div>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Type</label>
-              <select style={styles.input} value={type} onChange={(e) => setType(e.target.value)}>
-                {taskTypes.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div style={styles.row}>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Due Date *</label>
-              <input style={styles.input} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </div>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Time</label>
-              <input style={styles.input} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-            </div>
-          </div>
-
-          <div style={styles.field}>
-            <label style={styles.label}>Description</label>
-            <textarea style={{ ...styles.input, minHeight: 70, resize: 'vertical' }} placeholder="Optional notes..." value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-
-          <div style={styles.footer}>
-            <button type="button" style={styles.cancelBtn} onClick={handleClose}>Cancel</button>
-            <button type="submit" style={styles.submitBtn} disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Add Task'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center',
-    justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '1rem',
-  },
-  container: {
-    backgroundColor: 'var(--surface-container-high)', width: '100%', maxWidth: '480px',
-    borderRadius: '12px', border: '1px solid var(--outline-variant)',
-    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', overflow: 'hidden',
-    animation: 'zoomIn 0.2s ease-out forwards',
-  },
-  header: {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '16px 20px', borderBottom: '1px solid rgba(70,69,84,0.5)',
-    background: 'rgba(52,52,61,0.3)',
-  },
-  headerTitle: {
-    fontSize: '1.1rem', fontWeight: 600, color: 'var(--on-surface)', margin: 0,
-    display: 'flex', alignItems: 'center', gap: '8px',
-  },
-  closeBtn: {
-    color: 'var(--on-surface-variant)', background: 'transparent', border: 'none',
-    padding: '4px', borderRadius: '50%', cursor: 'pointer', display: 'flex',
-  },
-  body: { padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' },
-  field: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { fontSize: '0.8rem', color: 'var(--on-surface-variant)', fontWeight: 500 },
-  input: {
-    width: '100%', backgroundColor: 'var(--surface)', border: '1px solid var(--outline-variant)',
-    borderRadius: '8px', padding: '10px 12px', fontSize: '0.9rem', color: 'var(--on-surface)',
-    outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.2s',
-  },
-  row: { display: 'flex', gap: '12px' },
-  footer: { display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '6px' },
-  cancelBtn: {
-    padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500,
-    color: 'var(--on-surface-variant)', background: 'transparent', border: 'none', cursor: 'pointer',
-  },
-  submitBtn: {
-    padding: '8px 20px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600,
-    backgroundColor: 'var(--inverse-primary)', color: 'white', border: 'none', cursor: 'pointer',
-    boxShadow: '0 4px 6px -1px rgba(73,75,214,0.2)',
-  },
-  error: {
-    display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 12px',
-    borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500,
-    backgroundColor: 'rgba(239,68,68,0.12)', color: '#ffb4ab', border: '1px solid rgba(239,68,68,0.25)',
-  },
-};

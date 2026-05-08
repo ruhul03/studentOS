@@ -39,33 +39,32 @@ export function StudyPlanner() {
 
   // Week calculation
   const weekData = useMemo(() => {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    // Adjust to Monday. If Sunday (0), go back 6 days.
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const startOfWeek = new Date();
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
     startOfWeek.setDate(diff + weekOffset * 7);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    const days = [];
-    for (let i = 0; i < 7; i++) {
+    const days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(startOfWeek);
       d.setDate(startOfWeek.getDate() + i);
-      days.push(d);
-    }
+      return d;
+    });
+
     const endOfWeek = new Date(days[6]);
     endOfWeek.setHours(23, 59, 59, 999);
+
     return { days, start: startOfWeek, end: endOfWeek };
   }, [weekOffset]);
 
   const isToday = (d) => new Date().toDateString() === d.toDateString();
-  const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-  const timeSlots = ['8 AM', '10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'];
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const timeSlots = Array.from({ length: 15 }, (_, i) => i + 8); // 8 AM to 10 PM
 
   // Map tasks to calendar
   const calendarTasks = useMemo(() => {
     return tasks.filter(t => {
-      if (!t.dueDate) return false;
+      if (!t.dueDate || t.completed) return false;
       const d = new Date(t.dueDate);
       return d >= weekData.start && d <= weekData.end;
     });
@@ -76,37 +75,27 @@ export function StudyPlanner() {
     let dayIndex = d.getDay() - 1; // 0=Mon
     if (dayIndex === -1) dayIndex = 6; // Sunday
     
-    // We now show all 7 days in the grid
-    if (dayIndex < 0 || dayIndex > 6) return null; 
-
-    const hour = d.getHours();
-    const minutes = d.getMinutes();
-    const totalHours = hour + minutes / 60;
-    
-    // Map 8 AM - 10 PM (14 hours)
+    const hour = d.getHours() + d.getMinutes() / 60;
     const startHour = 8;
     const endHour = 22;
-    const topPct = Math.max(0, Math.min(95, ((totalHours - startHour) / (endHour - startHour)) * 100));
-    return { dayIndex, topPct };
+    const topPct = ((hour - startHour) / (endHour - startHour)) * 100;
+    
+    return { dayIndex, topPct: Math.max(0, Math.min(95, topPct)) };
   };
 
-  const colorClasses = [
-    { bg: 'rgba(78,222,163,0.12)', border: 'rgba(78,222,163,0.35)', text: '#4edea3' },
-    { bg: 'rgba(192,193,255,0.12)', border: 'rgba(192,193,255,0.35)', text: '#c0c1ff' },
-    { bg: 'rgba(255,183,131,0.12)', border: 'rgba(255,183,131,0.35)', text: '#ffb783' },
-    { bg: 'rgba(255,180,171,0.12)', border: 'rgba(255,180,171,0.35)', text: '#ffb4ab' },
-  ];
-
-  const getColor = (code) => {
+  const getCourseColor = (code) => {
+    const colors = [
+      'bg-primary/20 text-primary border-primary/30',
+      'bg-secondary/20 text-secondary border-secondary/30',
+      'bg-tertiary/20 text-tertiary border-tertiary/30',
+    ];
     const sum = (code || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    return colorClasses[sum % colorClasses.length];
+    return colors[sum % colors.length];
   };
 
   const formatWeekRange = () => {
-    const s = weekData.days[0];
-    const e = weekData.days[4];
-    const opts = { month: 'short', day: 'numeric', year: 'numeric' };
-    return `${s.toLocaleDateString('en-US', opts)} - ${e.toLocaleDateString('en-US', opts)}`;
+    const opts = { month: 'short', day: 'numeric' };
+    return `${weekData.start.toLocaleDateString('en-US', opts)} - ${weekData.end.toLocaleDateString('en-US', opts)}`;
   };
 
   // Sort tasks
@@ -136,83 +125,111 @@ export function StudyPlanner() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row gap-6">
+    <div className="w-full h-full flex flex-col lg:flex-row gap-8 animate-fade-in">
       {/* Left: Weekly Calendar */}
-      <section className="flex-[1.5] bg-surface-container-low border border-outline-variant rounded-xl p-6 flex flex-col min-h-[600px] relative">
-        <div className="flex items-center justify-between mb-6">
+      <section className="flex-[1.8] bg-surface-container-low border border-outline-variant rounded-3xl p-8 flex flex-col min-h-[700px] relative overflow-hidden group shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50"></div>
+        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 relative z-10">
           <div>
-            <h1 className="text-2xl font-bold text-on-background mb-1">Weekly Plan</h1>
-            <p className="text-sm text-on-surface-variant">{formatWeekRange()}</p>
+            <h1 className="text-3xl font-black text-on-surface tracking-tight mb-1">Academic Calendar</h1>
+            <p className="text-xs font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-60">{formatWeekRange()}</p>
           </div>
-          <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border border-outline-variant">
-            <button className="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors" onClick={() => setWeekOffset(w => w - 1)}>
-              <span className="material-symbols-outlined text-sm">chevron_left</span>
+          <div className="flex items-center gap-1 bg-surface-container-high/50 backdrop-blur-xl p-1.5 rounded-2xl border border-outline-variant/30 shadow-lg">
+            <button 
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95" 
+              onClick={() => setWeekOffset(w => w - 1)}
+            >
+              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
             </button>
-            <button className="px-3 py-1 text-sm text-on-surface font-medium" onClick={() => setWeekOffset(0)}>Today</button>
-            <button className="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors" onClick={() => setWeekOffset(w => w + 1)}>
-              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            <button 
+              className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors" 
+              onClick={() => setWeekOffset(0)}
+            >
+              Today
+            </button>
+            <button 
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95" 
+              onClick={() => setWeekOffset(w => w + 1)}
+            >
+              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar relative">
-          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 min-w-[800px]">
+        <div className="flex-1 overflow-x-auto custom-scrollbar relative z-10">
+          <div className="min-w-[800px] flex flex-col h-full">
             {/* Day Headers */}
-            <div className="col-start-2 col-span-7 grid grid-cols-7 gap-1 mb-4 border-b border-outline-variant pb-2">
+            <div className="grid grid-cols-7 gap-4 ml-16 mb-6">
               {weekData.days.map((d, i) => (
-                <div key={i} className="text-center">
-                  <span className={`text-xs font-bold tracking-wider uppercase ${isToday(d) ? 'text-inverse-primary relative' : 'text-on-surface-variant'}`}>
-                    {dayNames[i]} {d.getDate()}
-                    {isToday(d) && <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-inverse-primary"></div>}
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <span className={`text-[10px] font-black tracking-[0.2em] uppercase ${isToday(d) ? 'text-primary' : 'text-on-surface-variant opacity-40'}`}>
+                    {dayNames[i]}
                   </span>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black transition-all ${
+                    isToday(d) ? 'bg-primary text-on-primary shadow-lg shadow-primary/30' : 'text-on-surface'
+                  }`}>
+                    {d.getDate()}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Timeline */}
-            <div className="col-span-8 row-start-2 relative h-[700px] border-t border-outline-variant/30">
-              <div className="absolute left-0 top-0 w-12 flex flex-col h-full justify-between text-right pr-4 text-[10px] font-bold tracking-wider text-on-surface-variant/60">
-                {timeSlots.map(t => <span key={t} className="h-0 flex items-center justify-end">{t}</span>)}
-              </div>
-              <div className="absolute left-12 right-0 top-0 h-full flex flex-col justify-between">
-                {timeSlots.map((_, i) => <div key={i} className="border-b border-outline-variant/10 w-full h-0"></div>)}
+            {/* Time Grid */}
+            <div className="flex-1 relative border-t border-outline-variant/20 pt-4" style={{ height: '800px' }}>
+              {/* Time Slots Labels */}
+              <div className="absolute left-0 top-4 w-12 flex flex-col h-full justify-between pr-4">
+                {timeSlots.map(t => (
+                  <span key={t} className="text-[10px] font-black text-on-surface-variant/40 uppercase text-right h-0 flex items-center justify-end">
+                    {t > 12 ? t - 12 : t} {t >= 12 ? 'PM' : 'AM'}
+                  </span>
+                ))}
               </div>
 
-              {/* Task blocks */}
-              <div className="absolute left-12 right-0 top-0 h-full grid grid-cols-7 gap-1 px-1">
-                {[0, 1, 2, 3, 4, 5, 6].map(dayIdx => (
-                  <div key={dayIdx} className={`relative ${isToday(weekData.days[dayIdx]) ? 'bg-surface-variant/20 rounded-md' : ''}`}>
-                    {calendarTasks.filter(t => {
-                      const pos = getTaskPosition(t);
-                      return pos && pos.dayIndex === dayIdx;
-                    }).map(t => {
-                      const pos = getTaskPosition(t);
-                      const clr = getColor(t.courseCode);
-                      return (
-                        <div key={t.id} className="absolute left-0 w-full p-2 rounded cursor-pointer hover:brightness-125 transition-all" style={{
-                          top: `${pos.topPct}%`, backgroundColor: clr.bg, border: `1px solid ${clr.border}`, color: clr.text,
-                        }} title={`${t.title}\n${t.courseCode} · ${t.type}`}>
-                          <p className="text-[10px] font-bold tracking-wider uppercase mb-0.5 truncate">{t.courseCode}</p>
-                          <p className="text-xs leading-tight truncate">{t.title}</p>
-                        </div>
-                      );
-                    })}
+              {/* Grid Lines */}
+              <div className="absolute left-16 right-0 top-4 h-full flex flex-col justify-between pointer-events-none">
+                {timeSlots.map(t => (
+                  <div key={t} className="border-b border-outline-variant/10 w-full h-0"></div>
+                ))}
+              </div>
+
+              {/* Calendar Content Area */}
+              <div className="absolute left-16 right-0 top-4 h-full grid grid-cols-7 gap-4">
+                {weekData.days.map((d, dayIdx) => (
+                  <div key={dayIdx} className={`relative h-full ${isToday(d) ? 'bg-primary/5 rounded-2xl' : ''}`}>
+                    {calendarTasks
+                      .filter(t => getTaskPosition(t).dayIndex === dayIdx)
+                      .map(t => {
+                        const { topPct } = getTaskPosition(t);
+                        const colorCls = getCourseColor(t.courseCode);
+                        return (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            key={t.id} 
+                            className={`absolute left-0 w-full p-3 rounded-2xl border cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all z-10 ${colorCls}`}
+                            style={{ top: `${topPct}%` }}
+                            title={`${t.title} - ${t.courseCode}`}
+                          >
+                            <span className="block text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">{t.courseCode}</span>
+                            <p className="text-[11px] font-bold leading-tight line-clamp-2">{t.title}</p>
+                          </motion.div>
+                        );
+                      })}
                   </div>
                 ))}
               </div>
 
-              {/* Current time indicator */}
+              {/* Current Time Indicator */}
               {weekOffset === 0 && (() => {
                 const now = new Date();
-                let dayIdx = now.getDay() - 1;
-                if (dayIdx === -1) dayIdx = 6;
-                if (dayIdx < 0 || dayIdx > 6) return null;
                 const hour = now.getHours() + now.getMinutes() / 60;
-                const topPct = Math.max(0, Math.min(100, ((hour - 8) / 10) * 100));
+                if (hour < 8 || hour > 22) return null;
+                const topPct = ((hour - 8) / 14) * 100;
                 return (
-                  <div className="absolute left-12 right-0" style={{ top: `${topPct}%` }}>
-                    <div className="border-t border-inverse-primary z-10 relative">
-                      <div className="w-2 h-2 rounded-full bg-inverse-primary absolute -left-1 -top-1"></div>
+                  <div className="absolute left-16 right-0 z-20 pointer-events-none" style={{ top: `${topPct + 4}%` }}>
+                    <div className="relative w-full border-t-2 border-secondary shadow-[0_0_10px_rgba(var(--secondary-rgb),0.5)]">
+                      <div className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-secondary"></div>
                     </div>
                   </div>
                 );
@@ -223,54 +240,91 @@ export function StudyPlanner() {
       </section>
 
       {/* Right: Action Items */}
-      <section className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl flex flex-col h-full relative">
-        <div className="p-6 pb-4 border-b border-outline-variant/50 flex justify-between items-end shrink-0">
-          <div>
-            <h2 className="text-lg font-bold text-on-background">Action Items</h2>
-            <p className="text-sm text-on-surface-variant mt-1">{pendingTasks.length} pending</p>
+      {/* Right: Action Items */}
+      <section className="flex-1 bg-surface-container-low border border-outline-variant rounded-3xl flex flex-col h-full relative overflow-hidden shadow-2xl">
+        <div className="p-8 border-b border-outline-variant/30 bg-surface-container-high/30 backdrop-blur-md">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-xl font-black text-on-surface tracking-tight">Focus List</h2>
+              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-60 mt-1">{pendingTasks.length} PENDING TASKS</p>
+            </div>
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>list_alt</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
+          
+          <div className="flex items-center gap-1.5 p-1 bg-background/50 rounded-xl border border-outline-variant/30">
             {['date', 'course', 'type'].map(s => (
-              <button key={s} onClick={() => setSortBy(s)} className={`text-xs px-2 py-1 rounded transition-colors ${sortBy === s ? 'bg-inverse-primary/20 text-inverse-primary font-bold' : 'text-on-surface-variant hover:text-on-surface'}`}>
-                {s === 'date' ? 'Due' : s === 'course' ? 'Course' : 'Type'}
+              <button 
+                key={s} 
+                onClick={() => setSortBy(s)} 
+                className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all ${
+                  sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'
+                }`}
+              >
+                {s}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar">
-          <AnimatePresence>
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 custom-scrollbar bg-surface-container-low/50">
+          <AnimatePresence mode='popLayout'>
             {pendingTasks.map(task => {
               const dl = calcDaysLeft(task.dueDate);
               const isUrgent = dl !== null && dl <= 2 && dl >= 0;
               const isOverdue = dl !== null && dl < 0;
+              
               return (
-                <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} key={task.id}
-                  className={`group bg-surface rounded-lg border ${isOverdue ? 'border-error/70' : isUrgent ? 'border-error/50' : 'border-outline-variant'} p-3 flex gap-4 hover:border-inverse-primary/50 hover:bg-surface-variant/50 transition-all`}>
-                  <div className="pt-1">
-                    <div onClick={() => toggleTask(task.id)} className={`w-5 h-5 rounded border-2 ${isOverdue || isUrgent ? 'border-error' : 'border-outline-variant hover:border-inverse-primary'} cursor-pointer flex items-center justify-center transition-colors`}></div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="text-base font-normal text-on-background truncate">{task.title}</h4>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {(isUrgent || isOverdue) && <span className="material-symbols-outlined text-error text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>}
-                        <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-outline hover:text-error transition-all" title="Delete">
-                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                <motion.div 
+                  layout 
+                  initial={{ opacity: 0, scale: 0.9 }} 
+                  animate={{ opacity: 1, scale: 1 }} 
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }} 
+                  key={task.id}
+                  className={`group relative bg-surface-container-high/50 rounded-2xl border transition-all hover:bg-surface-container-high hover:scale-[1.02] active:scale-[0.98] ${
+                    isOverdue ? 'border-error/50' : isUrgent ? 'border-secondary/50' : 'border-outline-variant/30'
+                  }`}
+                >
+                  <div className="p-4 flex gap-4">
+                    <div className="pt-0.5">
+                      <motion.button 
+                        whileTap={{ scale: 0.8 }}
+                        onClick={() => toggleTask(task.id)} 
+                        className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                          isOverdue ? 'border-error bg-error/10' : isUrgent ? 'border-secondary bg-secondary/10' : 'border-outline-variant hover:border-primary'
+                        }`}
+                      >
+                        <div className="w-2 h-2 rounded-sm bg-primary opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                      </motion.button>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <h4 className="text-sm font-bold text-on-surface leading-tight">{task.title}</h4>
+                        <button 
+                          onClick={() => deleteTask(task.id)} 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error/10 transition-all shrink-0"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {task.courseCode && <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border ${getCourseColorClass(task.courseCode)}`}>{task.courseCode}</span>}
-                      {task.type && <span className="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[10px] uppercase font-bold tracking-wider">{task.type}</span>}
-                      {task.dueDate && (
-                        <span className={`text-xs flex items-center gap-1 ${isOverdue ? 'text-error font-bold' : isUrgent ? 'text-error' : 'text-on-surface-variant'}`}>
-                          <span className="material-symbols-outlined text-[14px]">schedule</span>
-                          {isOverdue ? 'Overdue' : dl === 0 ? 'Due Today' : `${dl}d left`}
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${getCourseColor(task.courseCode)}`}>
+                          {task.courseCode || 'GENERAL'}
                         </span>
-                      )}
+                        
+                        <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${
+                          isOverdue ? 'text-error' : isUrgent ? 'text-secondary' : 'text-on-surface-variant opacity-60'
+                        }`}>
+                          <span className="material-symbols-outlined text-[14px]">
+                            {isOverdue ? 'error' : 'schedule'}
+                          </span>
+                          {isOverdue ? 'Overdue' : dl === 0 ? 'Due Today' : `${dl} Days Left`}
+                        </div>
+                      </div>
                     </div>
-                    {task.description && <p className="text-xs text-on-surface-variant mt-1 truncate">{task.description}</p>}
                   </div>
                 </motion.div>
               );
@@ -278,44 +332,50 @@ export function StudyPlanner() {
           </AnimatePresence>
 
           {completedTasks.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-outline-variant/30">
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">Completed ({completedTasks.length})</p>
-              {completedTasks.map(task => (
-                <motion.div layout key={task.id} className="group bg-surface/50 rounded-lg border border-outline-variant/50 p-3 flex gap-4 opacity-60 mb-2">
-                  <div className="pt-1">
-                    <div onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded border-2 border-inverse-primary bg-inverse-primary cursor-pointer flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-[14px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0 flex justify-between items-center">
-                    <h4 className="text-base font-normal text-on-surface-variant line-through truncate">{task.title}</h4>
-                    <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-outline hover:text-error transition-all shrink-0" title="Delete">
+            <div className="mt-6 pt-6 border-t border-outline-variant/20">
+              <div className="flex items-center justify-between mb-4 px-2">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40">Completed ({completedTasks.length})</span>
+                <div className="w-8 h-[1px] bg-outline-variant/20 flex-1 ml-4"></div>
+              </div>
+              
+              <div className="space-y-2">
+                {completedTasks.slice(0, 5).map(task => (
+                  <motion.div layout key={task.id} className="group bg-surface-container/30 rounded-xl p-3 flex gap-4 opacity-50 hover:opacity-100 transition-opacity">
+                    <button onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-on-primary text-[14px] font-black">check</span>
+                    </button>
+                    <span className="text-xs font-medium text-on-surface line-through truncate flex-1">{task.title}</span>
+                    <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error transition-all">
                       <span className="material-symbols-outlined text-[16px]">delete</span>
                     </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           )}
 
           {tasks.length === 0 && (
-            <div className="p-6 text-center border border-outline-variant/30 rounded-lg bg-surface-container-highest mt-4">
-              <span className="material-symbols-outlined text-3xl text-outline mb-2">event_available</span>
-              <p className="text-sm text-on-surface-variant">No tasks yet. Click + to add one!</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 opacity-30">
+              <div className="w-20 h-20 rounded-[2.5rem] bg-surface-container-highest flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-4xl">task_alt</span>
+              </div>
+              <h3 className="text-lg font-black text-on-surface mb-2">Clean Slate!</h3>
+              <p className="text-xs font-medium">No pending tasks found. Enjoy your free time or add a new goal.</p>
             </div>
           )}
         </div>
-
       </section>
 
-      {/* FAB - Global to this tab */}
-      <button
-        className="fixed bottom-10 right-10 z-[60] bg-gradient-to-tr from-[#6366F1] to-[#A855F7] text-white rounded-2xl p-5 shadow-[0_12px_40px_rgba(99,102,241,0.4)] flex items-center justify-center transition-all hover:scale-110 active:scale-95 group hover:shadow-[0_15px_45px_rgba(99,102,241,0.6)]"
+      {/* Modern Floating Action Button */}
+      <motion.button
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-12 right-12 z-[60] w-16 h-16 bg-primary text-on-primary rounded-[2rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center transition-all group overflow-hidden"
         onClick={() => setShowModal(true)}
-        aria-label="Add New Task"
       >
-        <span className="material-symbols-outlined text-3xl transition-transform group-hover:rotate-180 duration-500">add</span>
-      </button>
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <span className="material-symbols-outlined text-[32px] group-hover:rotate-90 transition-transform duration-500">add</span>
+      </motion.button>
 
       <PlannerModal isOpen={showModal} onClose={() => setShowModal(false)} onTaskCreated={fetchTasks} />
 
