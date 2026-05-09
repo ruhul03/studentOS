@@ -43,7 +43,7 @@ public class CourseReview {
     @Column(length = 1000)
     private String reviewText;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

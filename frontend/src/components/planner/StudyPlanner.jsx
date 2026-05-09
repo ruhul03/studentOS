@@ -75,12 +75,12 @@ export function StudyPlanner() {
     const d = new Date(task.dueDate);
     let dayIndex = d.getDay() - 1; // 0=Mon
     if (dayIndex === -1) dayIndex = 6; // Sunday
-    
+
     const hour = d.getHours() + d.getMinutes() / 60;
     const startHour = 8;
     const endHour = 22;
     const topPct = ((hour - startHour) / (endHour - startHour)) * 100;
-    
+
     return { dayIndex, topPct: Math.max(0, Math.min(95, topPct)) };
   };
 
@@ -130,27 +130,27 @@ export function StudyPlanner() {
       {/* Left: Weekly Calendar */}
       <section className="flex-[1.8] bg-surface-container-low border border-outline-variant rounded-3xl p-8 flex flex-col min-h-[700px] relative overflow-hidden group shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50"></div>
-        
+
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 relative z-10">
           <div>
             <h1 className="text-3xl font-black text-on-surface tracking-tight mb-1">Academic Calendar</h1>
             <p className="text-xs font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-60">{formatWeekRange()}</p>
           </div>
           <div className="flex items-center gap-1 bg-surface-container-high/50 backdrop-blur-xl p-1.5 rounded-2xl border border-outline-variant/30 shadow-lg">
-            <button 
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95" 
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
               onClick={() => setWeekOffset(w => w - 1)}
             >
               <span className="material-symbols-outlined text-[20px]">chevron_left</span>
             </button>
-            <button 
-              className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors" 
+            <button
+              className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors"
               onClick={() => setWeekOffset(0)}
             >
               Today
             </button>
-            <button 
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95" 
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
               onClick={() => setWeekOffset(w => w + 1)}
             >
               <span className="material-symbols-outlined text-[20px]">chevron_right</span>
@@ -167,9 +167,8 @@ export function StudyPlanner() {
                   <span className={`text-[10px] font-black tracking-[0.2em] uppercase ${isToday(d) ? 'text-primary' : 'text-on-surface-variant opacity-40'}`}>
                     {dayNames[i]}
                   </span>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black transition-all ${
-                    isToday(d) ? 'bg-primary text-on-primary shadow-lg shadow-primary/30' : 'text-on-surface'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black transition-all ${isToday(d) ? 'bg-primary text-on-primary shadow-lg shadow-primary/30' : 'text-on-surface'
+                    }`}>
                     {d.getDate()}
                   </div>
                 </div>
@@ -204,10 +203,10 @@ export function StudyPlanner() {
                         const { topPct } = getTaskPosition(t);
                         const colorCls = getCourseColor(t.courseCode);
                         return (
-                          <motion.div 
+                          <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            key={t.id} 
+                            key={t.id}
                             className={`absolute left-0 w-full p-3 rounded-2xl border cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all z-10 ${colorCls}`}
                             style={{ top: `${topPct}%` }}
                             title={`${t.title} - ${t.courseCode}`}
@@ -253,15 +252,14 @@ export function StudyPlanner() {
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>list_alt</span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1.5 p-1 bg-background/50 rounded-xl border border-outline-variant/30">
             {['date', 'course', 'type'].map(s => (
-              <button 
-                key={s} 
-                onClick={() => setSortBy(s)} 
-                className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all ${
-                  sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'
-                }`}
+              <button
+                key={s}
+                onClick={() => setSortBy(s)}
+                className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all ${sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
               >
                 {s}
               </button>
@@ -275,26 +273,24 @@ export function StudyPlanner() {
               const dl = calcDaysLeft(task.dueDate);
               const isUrgent = dl !== null && dl <= 2 && dl >= 0;
               const isOverdue = dl !== null && dl < 0;
-              
+
               return (
-                <motion.div 
-                  layout 
-                  initial={{ opacity: 0, scale: 0.9 }} 
-                  animate={{ opacity: 1, scale: 1 }} 
-                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }} 
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                   key={task.id}
-                  className={`group relative bg-surface-container-high/50 rounded-2xl border transition-all hover:bg-surface-container-high hover:scale-[1.02] active:scale-[0.98] ${
-                    isOverdue ? 'border-error/50' : isUrgent ? 'border-secondary/50' : 'border-outline-variant/30'
-                  }`}
+                  className={`group relative bg-surface-container-high/50 rounded-2xl border transition-all hover:bg-surface-container-high hover:scale-[1.02] active:scale-[0.98] ${isOverdue ? 'border-error/50' : isUrgent ? 'border-secondary/50' : 'border-outline-variant/30'
+                    }`}
                 >
                   <div className="p-4 flex gap-4">
                     <div className="pt-0.5">
-                      <motion.button 
+                      <motion.button
                         whileTap={{ scale: 0.8 }}
-                        onClick={() => toggleTask(task.id)} 
-                        className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                          isOverdue ? 'border-error bg-error/10' : isUrgent ? 'border-secondary bg-secondary/10' : 'border-outline-variant hover:border-primary'
-                        }`}
+                        onClick={() => toggleTask(task.id)}
+                        className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isOverdue ? 'border-error bg-error/10' : isUrgent ? 'border-secondary bg-secondary/10' : 'border-outline-variant hover:border-primary'
+                          }`}
                       >
                         <div className="w-2 h-2 rounded-sm bg-primary opacity-0 group-hover:opacity-20 transition-opacity"></div>
                       </motion.button>
@@ -303,8 +299,8 @@ export function StudyPlanner() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2 mb-2">
                         <h4 className="text-sm font-bold text-on-surface leading-tight">{task.title}</h4>
-                        <button 
-                          onClick={() => deleteTask(task.id)} 
+                        <button
+                          onClick={() => deleteTask(task.id)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error/10 transition-all shrink-0"
                         >
                           <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -315,10 +311,9 @@ export function StudyPlanner() {
                         <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${getCourseColor(task.courseCode)}`}>
                           {task.courseCode || 'GENERAL'}
                         </span>
-                        
-                        <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${
-                          isOverdue ? 'text-error' : isUrgent ? 'text-secondary' : 'text-on-surface-variant opacity-60'
-                        }`}>
+
+                        <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${isOverdue ? 'text-error' : isUrgent ? 'text-secondary' : 'text-on-surface-variant opacity-60'
+                          }`}>
                           <span className="material-symbols-outlined text-[14px]">
                             {isOverdue ? 'error' : 'schedule'}
                           </span>
@@ -338,7 +333,7 @@ export function StudyPlanner() {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40">Completed ({completedTasks.length})</span>
                 <div className="w-8 h-[1px] bg-outline-variant/20 flex-1 ml-4"></div>
               </div>
-              
+
               <div className="space-y-2">
                 {completedTasks.slice(0, 5).map(task => (
                   <motion.div layout key={task.id} className="group bg-surface-container/30 rounded-xl p-3 flex gap-4 opacity-50 hover:opacity-100 transition-opacity">
@@ -380,7 +375,8 @@ export function StudyPlanner() {
 
       <PlannerModal isOpen={showModal} onClose={() => setShowModal(false)} onTaskCreated={fetchTasks} />
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #34343d; border-radius: 10px; }

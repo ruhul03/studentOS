@@ -36,7 +36,7 @@ public class LostFoundItem {
     @Column(nullable = false)
     private String contactInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
 

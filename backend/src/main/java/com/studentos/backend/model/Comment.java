@@ -27,11 +27,11 @@ public class Comment {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "commenter_id", nullable = false)
     private User commenter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "review_id", nullable = false)
     @JsonIgnore
     private CourseReview review;
