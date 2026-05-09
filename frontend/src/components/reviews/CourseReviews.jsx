@@ -5,6 +5,7 @@ import { fetchWithAuth } from '../../api';
 import { ReviewCard } from './ReviewCard';
 import { ReviewForm } from './ReviewForm';
 import { ReviewRequestForm } from './ReviewRequestForm';
+import { ReviewDetailModal } from './ReviewDetailModal';
 
 export function CourseReviews() {
   const [reviews, setReviews] = useState([]);
@@ -14,6 +15,8 @@ export function CourseReviews() {
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
   const [editingRequest, setEditingRequest] = useState(null);
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -111,6 +114,22 @@ export function CourseReviews() {
     }
   };
 
+  const handleHelpful = async (id) => {
+    try {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, {
+        method: 'POST'
+      });
+      if (response.ok) fetchReviews();
+    } catch (err) {
+      console.error('Failed to mark helpful', err);
+    }
+  };
+
+  const handleViewReview = (review) => {
+    setSelectedReview(review);
+    setShowDetail(true);
+  };
+
   const handleDeleteRequest = async (id) => {
     if (!window.confirm("Remove this request?")) return;
     try {
@@ -120,17 +139,6 @@ export function CourseReviews() {
       if (response.ok) fetchRequests();
     } catch (err) {
       console.error('Delete request failed', err);
-    }
-  };
-
-  const handleHelpful = async (id) => {
-    try {
-      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, { method: 'PUT' });
-      if (response.ok) {
-        setReviews(prev => prev.map(r => r.id === id ? { ...r, helpfulVotes: (r.helpfulVotes || 0) + 1, isHelpful: true } : r));
-      }
-    } catch (err) {
-      console.error('Failed to mark helpful', err);
     }
   };
 
@@ -237,6 +245,7 @@ export function CourseReviews() {
                     onEdit={(r) => { setEditingReview(r); setShowForm(true); }}
                     onDelete={handleDeleteReview}
                     onHelpful={handleHelpful}
+                    onView={() => handleViewReview(review)}
                   />
                 );
               })}
@@ -275,6 +284,13 @@ export function CourseReviews() {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #34343d; border-radius: 10px; }
       `}} />
+      <ReviewDetailModal 
+        isOpen={showDetail}
+        onClose={() => setShowDetail(false)}
+        review={selectedReview}
+        user={user}
+        onHelpful={handleHelpful}
+      />
     </div>
   );
 }
