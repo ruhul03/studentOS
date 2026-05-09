@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { CampusServiceModal } from './CampusServiceModal';
 import { CafeteriaMenuModal } from './CafeteriaMenuModal';
 
@@ -18,7 +19,7 @@ export function CampusServicesDirectory() {
         ? `${import.meta.env.VITE_API_URL}/api/services` 
         : `${import.meta.env.VITE_API_URL}/api/services?category=${activeCategory}`;
         
-      const response = await fetch(url);
+      const response = await fetchWithAuth(url);
       if (response.ok) {
         let data = await response.json();
         if (search) {

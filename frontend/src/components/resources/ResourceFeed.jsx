@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { ResourceModal } from './ResourceModal';
 
 export function ResourceFeed() {
@@ -27,7 +28,7 @@ export function ResourceFeed() {
     try {
       setLoading(true);
       const url = search ? `${import.meta.env.VITE_API_URL}/api/resources?query=${search}` : `${import.meta.env.VITE_API_URL}/api/resources`;
-      const response = await fetch(url);
+      const response = await fetchWithAuth(url);
       if (response.ok) {
         setResources(await response.json());
       }
@@ -48,7 +49,7 @@ export function ResourceFeed() {
   const handleDeleteResource = async (id) => {
     if (!window.confirm('Are you sure you want to delete this resource?')) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources/${id}`, {
         method: 'DELETE',
         headers: { 
           'X-User-Id': user.id, 
@@ -73,7 +74,7 @@ export function ResourceFeed() {
     localStorage.setItem('userUpvotes', JSON.stringify(newUpvotes));
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { 
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { 
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

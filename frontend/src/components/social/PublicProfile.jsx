@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../api';
 
 export function PublicProfile({ userId, onClose, onStartChat }) {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/${userId}`);
         if (response.ok) {
           setProfile(await response.json());
         }
