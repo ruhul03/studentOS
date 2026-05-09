@@ -90,7 +90,17 @@ export function AdminDashboard() {
     try {
       const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}${url}`, { method });
       if (res.ok) {
-        if (updateState) updateState(await res.json());
+        let data = null;
+        const text = await res.text();
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            data = text;
+          }
+        }
+        
+        if (updateState) updateState(data);
         setMessage({ type: 'success', text: successMsg });
         return true;
       }
