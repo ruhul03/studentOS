@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 
 export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
   const { user } = useAuth();
@@ -31,19 +32,21 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
     setError('');
     try {
       const dueDate = time ? `${date}T${time}:00` : `${date}T23:59:00`;
-      const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/planner`, {
+      const resp = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/planner`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim() || null,
           courseCode: courseCode.trim() || 'General',
           type,
           dueDate,
-          userId: user.id,
+          userId: user?.id,
         }),
       });
-      if (!resp.ok) throw new Error('Failed to create task');
+      if (!resp.ok) {
+        const errText = await resp.text();
+        throw new Error(errText || 'Failed to create task');
+      }
       resetForm();
       onClose();
       onTaskCreated?.();

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,24 +12,35 @@ export function ResourceFeed() {
   const [activeFilter, setActiveFilter] = useState('All Resources');
   const { user } = useAuth();
   
-  // Local upvote tracking
   const [userUpvotes, setUserUpvotes] = useState(() => {
-    const saved = localStorage.getItem('userUpvotes');
-    return saved ? JSON.parse(saved) : {};
+    try {
+      const saved = localStorage.getItem('userUpvotes');
+      if (!saved) return {};
+      const parsed = JSON.parse(saved);
+      return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) {
+      return {};
+    }
   });
 
   const canManageResource = (uploaderId) => {
-    if (!user) return false;
+    if (!user || !uploaderId) return false;
     return user.id === uploaderId || user.role?.toUpperCase() === 'ADMIN';
   };
 
   const fetchResources = async () => {
     try {
       setLoading(true);
-      const url = search ? `${import.meta.env.VITE_API_URL}/api/resources?query=${search}` : `${import.meta.env.VITE_API_URL}/api/resources`;
+      const url = search 
+        ? `${import.meta.env.VITE_API_URL}/api/resources?query=${encodeURIComponent(search)}` 
+        : `${import.meta.env.VITE_API_URL}/api/resources`;
+      
       const response = await fetchWithAuth(url);
       if (response.ok) {
-        setResources(await response.json());
+        const data = await response.json();
+        setResources(Array.isArray(data) ? data : []);
+      } else {
+        console.warn('Resources fetch returned status:', response.status, '- keeping existing data');
       }
     } catch (err) {
       console.error('Failed to fetch resources', err);
@@ -39,10 +49,15 @@ export function ResourceFeed() {
     }
   };
 
+  const handleResourceCreated = () => {
+    // Delay refresh slightly to give backend time to persist
+    setTimeout(() => fetchResources(), 600);
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
         fetchResources();
-    }, 300); // Debounce
+    }, 300);
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -52,8 +67,8 @@ export function ResourceFeed() {
       const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources/${id}`, {
         method: 'DELETE',
         headers: { 
-          'X-User-Id': user.id, 
-          'X-User-Role': user.role 
+          'X-User-Id': user?.id, 
+          'X-User-Role': user?.role 
         }
       });
       if (response.ok) fetchResources();
@@ -77,7 +92,6 @@ export function ResourceFeed() {
       const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources/${id}/upvote`, { 
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
           'X-User-Id': user.id,
           'X-User-Role': user.role
         }
@@ -91,7 +105,9 @@ export function ResourceFeed() {
   const filters = useMemo(() => ['All Resources', 'Lecture Notes', 'Exam Papers', 'Study Guides', 'Textbooks'], []);
 
   const filteredResources = useMemo(() => {
+    if (!Array.isArray(resources)) return [];
     return resources.filter(res => {
+      if (!res) return false;
       if (activeFilter === 'All Resources') return true;
       const typeMap = { 'Lecture Notes': 'Notes', 'Exam Papers': 'Exam Paper', 'Study Guides': 'Study Guide', 'Textbooks': 'Textbook' };
       return res.type === typeMap[activeFilter];
@@ -106,10 +122,18 @@ export function ResourceFeed() {
     'Link': { icon: 'link', color: 'text-secondary', bg: 'bg-secondary/10' }
   };
 
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    try {
+      return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    } catch (e) {
+      return 'U';
+    }
+  };
+
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar">
       <div className="max-w-6xl mx-auto space-y-12 pb-20">
-        {/* Header & Search Section */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
@@ -136,7 +160,6 @@ export function ResourceFeed() {
             />
           </div>
 
-          {/* Filter Chips */}
           <div className="flex flex-wrap gap-3">
             {filters.map(filter => (
               <button 
@@ -157,10 +180,9 @@ export function ResourceFeed() {
         <ResourceModal 
           isOpen={showModal} 
           onClose={() => setShowModal(false)} 
-          onResourceCreated={fetchResources} 
+          onResourceCreated={handleResourceCreated} 
         />
 
-        {/* Resource Grid Bento Style */}
         {loading && resources.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1,2,3,4,5,6].map(i => (
@@ -171,6 +193,7 @@ export function ResourceFeed() {
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode='popLayout'>
               {filteredResources.map((res, idx) => {
+                if (!res || !res.id) return null;
                 const config = typeConfig[res.type] || typeConfig['Notes'];
                 const isFeatured = idx % 5 === 0;
                 
@@ -185,7 +208,7 @@ export function ResourceFeed() {
                   >
                     <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-100 transition-opacity">
                        {canManageResource(res.uploader?.id) && (
-                         <button onClick={() => handleDeleteResource(res.id)} className="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-all">
+                         <button onClick={(e) => { e.stopPropagation(); handleDeleteResource(res.id); }} className="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-all">
                            <span className="material-symbols-outlined text-[20px]">delete</span>
                          </button>
                        )}
@@ -198,29 +221,29 @@ export function ResourceFeed() {
                       
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary opacity-80">
-                          {res.type}
+                          {res.type || 'Resource'}
                         </span>
                         <span className="w-1 h-1 rounded-full bg-on-surface-variant/20"></span>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/40">
-                          {res.courseCode}
+                          {res.courseCode || 'GENERAL'}
                         </span>
                       </div>
 
                       <h3 className="text-xl font-black text-on-surface mb-2 group-hover:text-primary transition-colors tracking-tight line-clamp-2">
-                        {res.title}
+                        {res.title || 'Untitled Resource'}
                       </h3>
                       <p className="text-sm text-on-surface-variant/60 leading-relaxed line-clamp-2">
-                        {res.description}
+                        {res.description || 'No description provided.'}
                       </p>
                     </div>
                     
                     <div className="flex items-center justify-between pt-6 border-t border-white/[0.03]">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-surface-container-highest flex items-center justify-center text-[10px] font-black text-primary border border-white/5">
-                          {res.anonymous ? '?' : (res.uploader?.name?.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() || 'U')}
+                          {res.anonymous ? '?' : getInitials(res.uploader?.name)}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-on-surface opacity-80">{res.anonymous ? 'Anonymous' : res.uploader?.name}</span>
+                          <span className="text-xs font-bold text-on-surface opacity-80">{res.anonymous ? 'Anonymous' : (res.uploader?.name || 'User')}</span>
                           <span className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/30">Contributor</span>
                         </div>
                       </div>
@@ -229,14 +252,14 @@ export function ResourceFeed() {
                         <button 
                           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all ${userUpvotes[res.id] ? 'bg-secondary text-on-secondary shadow-lg shadow-secondary/20' : 'bg-white/5 text-on-surface-variant hover:text-on-surface hover:bg-white/10'}`}
                           onClick={() => handleUpvote(res.id)}
-                          disabled={userUpvotes[res.id]}
+                          disabled={!!userUpvotes[res.id]}
                         >
                           <span className="material-symbols-outlined text-[18px]">thumb_up</span>
-                          {res.upvotes}
+                          {res.upvotes || 0}
                         </button>
                         
                         <a 
-                          href={res.fileUrl.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl}`} 
+                          href={res.fileUrl?.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl || ''}`} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-primary/20"

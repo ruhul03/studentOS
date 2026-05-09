@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { ReviewCard } from './ReviewCard';
 import { ReviewForm } from './ReviewForm';
 import { ReviewRequestForm } from './ReviewRequestForm';
@@ -18,7 +19,7 @@ export function CourseReviews() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews`);
       if (response.ok) setReviews(await response.json());
     } catch (err) {
       console.error('Failed to fetch reviews', err);
@@ -29,7 +30,7 @@ export function CourseReviews() {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/review-requests`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/review-requests`);
       if (response.ok) setReviewRequests(await response.json());
     } catch (err) {
       console.error('Failed to fetch requests', err);
@@ -57,15 +58,17 @@ export function CourseReviews() {
         ? `${import.meta.env.VITE_API_URL}/api/reviews/${editingReview.id}` 
         : `${import.meta.env.VITE_API_URL}/api/reviews`;
 
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, reviewerId: user.id })
+        body: JSON.stringify({ ...data, reviewerId: user?.id })
       });
 
       if (response.ok) {
         fetchReviews();
         setEditingReview(null);
+      } else {
+        const err = await response.text();
+        console.error('Review save failed:', response.status, err);
       }
     } catch (err) {
       console.error('Failed to save review', err);
@@ -79,15 +82,17 @@ export function CourseReviews() {
         ? `${import.meta.env.VITE_API_URL}/api/review-requests/${editingRequest.id}` 
         : `${import.meta.env.VITE_API_URL}/api/review-requests`;
 
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, requesterId: user.id })
+        body: JSON.stringify({ ...data, requesterId: user?.id })
       });
 
       if (response.ok) {
         fetchRequests();
         setEditingRequest(null);
+      } else {
+        const err = await response.text();
+        console.error('Request save failed:', response.status, err);
       }
     } catch (err) {
       console.error('Failed to save request', err);
@@ -97,7 +102,7 @@ export function CourseReviews() {
   const handleDeleteReview = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}?userId=${user.id}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}?userId=${user?.id}`, {
         method: 'DELETE'
       });
       if (response.ok) fetchReviews();
@@ -109,7 +114,7 @@ export function CourseReviews() {
   const handleDeleteRequest = async (id) => {
     if (!window.confirm("Remove this request?")) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/review-requests/${id}?userId=${user.id}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/review-requests/${id}?userId=${user?.id}`, {
         method: 'DELETE'
       });
       if (response.ok) fetchRequests();
@@ -120,7 +125,7 @@ export function CourseReviews() {
 
   const handleHelpful = async (id) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, { method: 'PUT' });
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, { method: 'PUT' });
       if (response.ok) {
         setReviews(prev => prev.map(r => r.id === id ? { ...r, helpfulVotes: (r.helpfulVotes || 0) + 1, isHelpful: true } : r));
       }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { fetchWithAuth } from '../../api';
 
 export function ChatModal({ otherUser, onClose }) {
   const { user } = useAuth();
@@ -14,7 +15,7 @@ export function ChatModal({ otherUser, onClose }) {
 
   const fetchConversation = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/conversation?user1=${user.id}&user2=${otherUser.id}`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/messages/conversation?user1=${user?.id}&user2=${otherUser?.id}`);
       if (response.ok) {
         setMessages(await response.json());
       }
@@ -36,12 +37,11 @@ export function ChatModal({ otherUser, onClose }) {
     if (!newMessage.trim()) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/send`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/messages/send`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderId: user.id,
-          receiverId: otherUser.id,
+          senderId: user?.id,
+          receiverId: otherUser?.id,
           content: newMessage
         })
       });

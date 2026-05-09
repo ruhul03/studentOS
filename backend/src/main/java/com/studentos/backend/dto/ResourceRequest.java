@@ -29,7 +29,6 @@ public class ResourceRequest {
     @NotBlank(message = "Resource type is required")
     private String type;
 
-    @NotNull(message = "Uploader ID is required")
     private Long uploaderId;
 
     private boolean anonymous;

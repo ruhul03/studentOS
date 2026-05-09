@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { LostFoundFiltersModal } from './LostFoundFiltersModal';
 import { LostFoundItemCard } from './LostFoundItemCard';
 import { LostFoundForm } from './LostFoundForm';
@@ -36,9 +37,7 @@ export function LostFoundBoard({ onProfileView }) {
     setLoading(true);
     try {
       const url = activeFilters.status === 'ALL' ? API : `${API}?type=${activeFilters.status}`;
-      const resp = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${user?.token}` }
-      });
+      const resp = await fetchWithAuth(url);
       if (resp.ok) {
         setItems(await resp.json());
       }
@@ -106,9 +105,8 @@ export function LostFoundBoard({ onProfileView }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this report?")) return;
     try {
-      const resp = await fetch(`${API}/${id}?userId=${user.id}`, { 
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${user?.token}` }
+      const resp = await fetchWithAuth(`${API}/${id}?userId=${user.id}`, { 
+        method: 'DELETE'
       });
       if (resp.ok) fetchItems();
     } catch (err) {
@@ -118,9 +116,8 @@ export function LostFoundBoard({ onProfileView }) {
 
   const handleResolve = async (id) => {
     try {
-      const resp = await fetch(`${API}/${id}/resolve`, { 
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${user?.token}` }
+      const resp = await fetchWithAuth(`${API}/${id}/resolve`, { 
+        method: 'PUT'
       });
       if (resp.ok) fetchItems();
     } catch (err) {
@@ -141,12 +138,8 @@ export function LostFoundBoard({ onProfileView }) {
     try {
       const isEdit = !!editingItem;
       const url = isEdit ? `${API}/${editingItem.id}` : API;
-      const resp = await fetch(url, {
+      const resp = await fetchWithAuth(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}`
-        },
         body: JSON.stringify(payload)
       });
 

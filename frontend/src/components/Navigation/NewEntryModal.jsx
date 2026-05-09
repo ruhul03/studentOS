@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 
 export function NewEntryModal({ isOpen, onClose, onNavigate }) {
   const { user } = useAuth();
@@ -71,16 +72,15 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
           dueDate = `${today}T23:59:00`;
         }
 
-        const resp = await fetch(`${API}/api/planner`, {
+        const resp = await fetchWithAuth(`${API}/api/planner`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             title: title.trim(),
             description: description.trim() || null,
             courseCode: course || 'General',
             type: priority === 'high' ? 'Assignment' : priority === 'medium' ? 'Project' : 'Reading',
             dueDate,
-            userId: user.id,
+            userId: user?.id,
           }),
         });
 
@@ -96,16 +96,15 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
           dueDate = `${today}T09:00:00`;
         }
 
-        const resp = await fetch(`${API}/api/planner`, {
+        const resp = await fetchWithAuth(`${API}/api/planner`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             title: title.trim(),
             description: description.trim() || null,
             courseCode: course || 'General',
             type: 'Schedule',
             dueDate,
-            userId: user.id,
+            userId: user?.id,
           }),
         });
 
@@ -127,7 +126,7 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
         const formData = new FormData();
         formData.append('resource', new Blob([JSON.stringify(resourceData)], { type: 'application/json' }));
 
-        const resp = await fetch(`${API}/api/resources`, {
+        const resp = await fetchWithAuth(`${API}/api/resources`, {
           method: 'POST',
           body: formData,
         });
@@ -144,16 +143,15 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
           eventDate = `${today}T12:00:00`;
         }
 
-        const resp = await fetch(`${API}/api/events`, {
+        const resp = await fetchWithAuth(`${API}/api/events`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             title: title.trim(),
             description: description.trim() || title.trim(),
             location: location.trim() || 'TBD',
             eventDate,
-            organizer: organizer.trim() || user.name || 'StudentOS User',
-            uploaderId: user.id,
+            organizer: organizer.trim() || user?.name || 'StudentOS User',
+            uploaderId: user?.id,
           }),
         });
 

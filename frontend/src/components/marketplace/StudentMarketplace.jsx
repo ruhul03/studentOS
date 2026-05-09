@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { MarketplaceItemCard } from './MarketplaceItemCard';
 import { MarketplaceItemModal } from './MarketplaceItemModal';
 import { MarketplaceForm } from './MarketplaceForm';
@@ -33,9 +34,7 @@ export function StudentMarketplace({ onProfileView }) {
     setLoading(true);
     try {
       const url = activeCategory === 'All' ? API : `${API}?category=${activeCategory}`;
-      const response = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${user?.token}` }
-      });
+      const response = await fetchWithAuth(url);
       if (response.ok) {
         setItems(await response.json());
       }
@@ -82,9 +81,8 @@ export function StudentMarketplace({ onProfileView }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this listing?")) return;
     try {
-      const resp = await fetch(`${API}/${id}?userId=${user.id}`, { 
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${user?.token}` }
+      const resp = await fetchWithAuth(`${API}/${id}?userId=${user.id}`, { 
+        method: 'DELETE'
       });
       if (resp.ok) fetchItems();
     } catch (err) {
@@ -94,9 +92,8 @@ export function StudentMarketplace({ onProfileView }) {
 
   const markAsSold = async (id) => {
     try {
-      const resp = await fetch(`${API}/${id}/sold`, { 
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${user?.token}` }
+      const resp = await fetchWithAuth(`${API}/${id}/sold`, { 
+        method: 'PUT'
       });
       if (resp.ok) fetchItems();
     } catch (err) {
@@ -121,12 +118,8 @@ export function StudentMarketplace({ onProfileView }) {
     try {
       const isEdit = !!editingItem;
       const url = isEdit ? `${API}/${editingItem.id}` : API;
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}`
-        },
         body: JSON.stringify(payload)
       });
 

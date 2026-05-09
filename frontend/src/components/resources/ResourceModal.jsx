@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 
 export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [courseCode, setCourseCode] = useState('');
+  const [courseTitle, setCourseTitle] = useState('');
   const [type, setType] = useState('Notes');
   const [fileUrl, setFileUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,6 +22,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
     setTitle('');
     setDescription('');
     setCourseCode('');
+    setCourseTitle('');
     setType('Notes');
     setFileUrl('');
     setSelectedFile(null);
@@ -38,7 +41,11 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !courseCode.trim()) { setError('Title and Course Code are required'); return; }
+    if (!user) { setError('You must be logged in to share resources'); return; }
+    if (!title.trim()) { setError('Title is required'); return; }
+    if (!courseCode.trim()) { setError('Course Code is required'); return; }
+    if (!courseTitle.trim()) { setError('Course Title is required'); return; }
+    if (!description.trim()) { setError('Description is required'); return; }
     if (!selectedFile && !fileUrl.trim()) { setError('Provide a file or external URL'); return; }
 
     setIsSubmitting(true);
@@ -49,27 +56,43 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
         title: title.trim(),
         description: description.trim(),
         courseCode: courseCode.trim().toUpperCase(),
+        courseTitle: courseTitle.trim(),
         fileUrl: fileUrl.trim(),
         type,
-        uploaderId: user.id,
+        uploaderId: Number(user?.id),
         anonymous: isAnonymous
       };
 
+      console.log('Preparing to share resource:', resourceRequest);
       const formData = new FormData();
       formData.append('resource', new Blob([JSON.stringify(resourceRequest)], { type: 'application/json' }));
-      if (selectedFile) formData.append('file', selectedFile);
+      if (selectedFile) {
+        console.log('Attaching file:', selectedFile.name);
+        formData.append('file', selectedFile);
+      }
 
-      const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
+      const resp = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources`, {
         method: 'POST',
         body: formData,
       });
 
-      if (!resp.ok) throw new Error(await resp.text() || 'Failed to share resource');
+      if (!resp.ok) {
+        const errorBody = await resp.text();
+        console.error('Resource upload failed:', resp.status, errorBody);
+        throw new Error(errorBody || `Upload failed with status ${resp.status}`);
+      }
 
-      handleClose();
+      console.log('Resource shared successfully!');
       onResourceCreated?.();
+      handleClose();
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      console.error('Submission error:', err);
+      let msg = err.message || 'Something went wrong';
+      try {
+        const parsed = JSON.parse(msg);
+        msg = parsed.message || (typeof parsed === 'object' ? Object.values(parsed).join(', ') : msg);
+      } catch (e) {}
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -123,6 +146,16 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
                 />
               </div>
 
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Title *</label>
+                <input 
+                  className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all"
+                  placeholder="e.g., Data Structures and Algorithms"
+                  value={courseTitle}
+                  onChange={(e) => setCourseTitle(e.target.value)}
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Code *</label>
@@ -143,6 +176,16 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
                     {resourceTypes.map(t => <option key={t} value={t} className="bg-surface-container-high">{t}</option>)}
                   </select>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Description *</label>
+                <textarea 
+                  className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all h-24 resize-none"
+                  placeholder="Briefly describe what this resource contains..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
               </div>
 
               <div className="space-y-4">

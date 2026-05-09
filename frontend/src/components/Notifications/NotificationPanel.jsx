@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { fetchWithAuth } from '../../api';
 
 export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigate }) {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
 
   const fetchAppNotifications = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${user.id}`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/notifications/${user?.id}`);
       if (response.ok) {
         const userNotifications = await response.json();
         setAppNotifications(userNotifications);
@@ -51,7 +52,7 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
   const markNotificationAsRead = (notificationId) => {
     try {
       try {
-        fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${notificationId}/read`, {
+      fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/notifications/${notificationId}/read`, {
           method: 'PUT'
         });
       } catch (apiErr) {

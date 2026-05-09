@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 
 export function ActivityHistory({ onBack, onNavigate }) {
   const { user } = useAuth();
@@ -9,12 +10,7 @@ export function ActivityHistory({ onBack, onNavigate }) {
   React.useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/activities`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/${user?.id}/activities`);
         if (response.ok) {
           const data = await response.json();
           setActivities(data);

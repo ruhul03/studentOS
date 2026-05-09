@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { EventCard } from './EventCard';
 import { EventModal } from './EventModal';
@@ -21,9 +22,7 @@ export function EventsAnnouncements() {
   const fetchEvents = useCallback(async () => {
     setLoading(true);
     try {
-      const resp = await fetch(API, {
-        headers: { 'Authorization': `Bearer ${user?.token}` }
-      });
+      const resp = await fetchWithAuth(API);
       if (resp.ok) {
         const data = await resp.json();
         const sortedData = data.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
@@ -72,10 +71,9 @@ export function EventsAnnouncements() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this event?')) return;
     try {
-      const resp = await fetch(`${API}/${id}`, {
+      const resp = await fetchWithAuth(`${API}/${id}`, {
         method: 'DELETE',
         headers: { 
-          'Authorization': `Bearer ${user?.token}`,
           'X-User-Id': user.id,
           'X-User-Role': user.role
         }
@@ -102,11 +100,9 @@ export function EventsAnnouncements() {
     try {
       const method = editingEvent ? 'PUT' : 'POST';
       const url = editingEvent ? `${API}/${editingEvent.id}` : API;
-      const resp = await fetch(url, {
+      const resp = await fetchWithAuth(url, {
         method,
         headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}`,
           'X-User-Id': user.id,
           'X-User-Role': user.role
         },

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 
 export function CommentSection({ reviewId, user, onUpdateCount }) {
   const [comments, setComments] = useState([]);
@@ -12,7 +13,7 @@ export function CommentSection({ reviewId, user, onUpdateCount }) {
 
   const fetchComments = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments`);
       if (response.ok) {
         const data = await response.json();
         setComments(data);
@@ -34,12 +35,11 @@ export function CommentSection({ reviewId, user, onUpdateCount }) {
     if (!commentText.trim()) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: commentText.trim(),
-          commenterId: user.id,
+          commenterId: user?.id,
           anonymous: isAnonymous
         })
       });
@@ -59,12 +59,11 @@ export function CommentSection({ reviewId, user, onUpdateCount }) {
     if (!replyText.trim()) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments/${commentId}/replies`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${reviewId}/comments/${commentId}/replies`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: replyText.trim(),
-          commenterId: user.id,
+          commenterId: user?.id,
           anonymous: isReplyAnonymous
         })
       });

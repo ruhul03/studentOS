@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { ChatModal } from './ChatModal';
 import { PublicProfile } from './PublicProfile';
 import { NotificationToast } from '../NotificationToast/NotificationToast';
+import { fetchWithAuth } from '../../api';
 
 export function ChatManager({ 
   wsNotifications, 
@@ -31,7 +32,7 @@ export function ChatManager({
     if (messageEvent) {
       const fetchSender = async () => {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${messageEvent.senderId}`);
+          const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/${messageEvent.senderId}`);
           if (res.ok) {
             const senderData = await res.json();
             if (!activeChatUser || activeChatUser.id !== messageEvent.senderId) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchWithAuth } from '../../api';
 import { PlannerModal } from './PlannerModal';
 
 export function StudyPlanner() {
@@ -14,7 +15,7 @@ export function StudyPlanner() {
   const fetchTasks = useCallback(async () => {
     if (!user) return;
     try {
-      const response = await fetch(`${API}/api/planner/user/${user.id}`);
+      const response = await fetchWithAuth(`${API}/api/planner/user/${user.id}`);
       if (response.ok) setTasks(await response.json());
     } catch (err) {
       console.error('Failed to fetch tasks', err);
@@ -25,14 +26,14 @@ export function StudyPlanner() {
 
   const toggleTask = async (id) => {
     try {
-      await fetch(`${API}/api/planner/${id}/toggle`, { method: 'PUT' });
+      await fetchWithAuth(`${API}/api/planner/${id}/toggle`, { method: 'PUT' });
       fetchTasks();
     } catch (err) { console.error('Failed to toggle task', err); }
   };
 
   const deleteTask = async (id) => {
     try {
-      await fetch(`${API}/api/planner/${id}`, { method: 'DELETE' });
+      await fetchWithAuth(`${API}/api/planner/${id}`, { method: 'DELETE' });
       fetchTasks();
     } catch (err) { console.error('Failed to delete task', err); }
   };

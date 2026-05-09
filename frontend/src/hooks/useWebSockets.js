@@ -24,7 +24,8 @@ export function useWebSockets(userId = null) {
         if (message.body) {
           try {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
-            setNotifications((prev) => [...prev, data]);
+            const notificationData = data.id ? data : { ...data, id: `global-${Date.now()}-${Math.random()}` };
+            setNotifications((prev) => [...prev, notificationData]);
           } catch (e) {
             setNotifications((prev) => [...prev, { message: message.body, type: 'broadcast', title: 'Announcement', id: Date.now() }]);
           }
@@ -36,7 +37,8 @@ export function useWebSockets(userId = null) {
         if (message.body) {
           try {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
-            setNotifications((prev) => [...prev, data]);
+            const notificationData = data.id ? data : { ...data, id: `private-${Date.now()}-${Math.random()}` };
+            setNotifications((prev) => [...prev, notificationData]);
           } catch (e) {
             console.error('Failed to parse private notification', e);
           }

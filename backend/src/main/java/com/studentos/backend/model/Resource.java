@@ -39,7 +39,7 @@ public class Resource {
     @Column(nullable = false)
     private String type; // "Notes", "Exam Paper", "Study Guide", etc.
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "uploader_id", nullable = false)
     private User uploader;
 
