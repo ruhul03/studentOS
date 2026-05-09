@@ -35,10 +35,10 @@ public class CourseReview {
     private String professor;
 
     @Column(nullable = false)
-    private int difficultyRating; // 1 to 5
+    private int difficultyRating; // 1 to 5 stars
 
     @Column(nullable = false)
-    private int qualityRating; // 1 to 5
+    private int qualityRating; // 1 to 5 stars
 
     @Column(length = 1000)
     private String reviewText;
