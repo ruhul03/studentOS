@@ -56,7 +56,12 @@ export function ForgotCredentials() {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(data.message || 'Reset code sent!');
+        if (data.code) {
+          setMessage(`Reset code generated! For demo purposes, your code is: ${data.code}`);
+          setCode(data.code);
+        } else {
+          setMessage(data.message || 'Reset code sent!');
+        }
         setResetStep(2);
       } else {
         const errText = await response.text();

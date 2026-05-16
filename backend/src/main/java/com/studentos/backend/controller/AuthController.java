@@ -139,8 +139,10 @@ public class AuthController {
             log.warn("PASSWORD RESET CODE FOR {}: {}", user.getEmail(), verificationCode);
             user.setVerificationCode(verificationCode);
             userRepository.save(user);
-            return ResponseEntity.ok(java.util.Collections.singletonMap("message",
-                    "Reset code generated. Please check your email/console."));
+            java.util.Map<String, String> response = new java.util.HashMap<>();
+            response.put("message", "Reset code generated. Please check your email/console.");
+            response.put("code", verificationCode);
+            return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email.");
     }
