@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export function SettingsPage() {
-  const { user, updateUserData } = useAuth();
+  const { user, updateUserData, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('account');
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.settings?.twoFactorEnabled || false);
 
   // Local state for settings
   const [accountInfo, setAccountInfo] = useState({
@@ -22,10 +25,7 @@ export function SettingsPage() {
     push_resources: true
   });
 
-  const [appearance, setAppearance] = useState(user?.settings?.appearance || {
-    mode: 'dark',
-    accent: '#818cf8'
-  });
+
 
   const [privacy, setPrivacy] = useState(user?.settings?.privacy || {
     publicProfile: true,
@@ -36,31 +36,11 @@ export function SettingsPage() {
   const sections = [
     { id: 'account', label: 'Account', icon: 'person' },
     { id: 'notifications', label: 'Notifications', icon: 'notifications' },
-    { id: 'appearance', label: 'Appearance', icon: 'palette' },
     { id: 'security', label: 'Security', icon: 'security' },
     { id: 'privacy', label: 'Privacy', icon: 'lock' }
   ];
 
-  // Apply appearance changes globally
-  useEffect(() => {
-    const root = document.documentElement;
-    if (appearance.mode === 'light') {
-      root.classList.add('light-theme');
-      root.classList.remove('dark-theme');
-    } else {
-      root.classList.add('dark-theme');
-      root.classList.remove('light-theme');
-    }
 
-    // Update primary color
-    root.style.setProperty('--primary', appearance.accent);
-    // Rough RGB extraction for shadows/opacities
-    const hex = appearance.accent.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    root.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
-  }, [appearance]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -72,8 +52,8 @@ export function SettingsPage() {
         ...accountInfo,
         settings: {
           notifications,
-          appearance,
-          privacy
+          privacy,
+          twoFactorEnabled
         }
       });
       setSaveStatus('success');
@@ -249,66 +229,7 @@ export function SettingsPage() {
                   </div>
                 )}
 
-                {activeSection === 'appearance' && (
-                  <div className="space-y-10">
-                    <div>
-                      <h2 className="text-2xl font-black text-on-surface tracking-tight mb-2">Visual Experience</h2>
-                      <p className="text-sm text-on-surface-variant font-medium opacity-70">Customize the interface mode and brand accent.</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-6">
-                      <motion.div 
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setAppearance({...appearance, mode: 'dark'})}
-                        className={`p-8 rounded-[2rem] flex flex-col items-center gap-4 cursor-pointer transition-all border-2 ${
-                          appearance.mode === 'dark' 
-                            ? 'bg-[#09090b] border-primary shadow-2xl shadow-primary/10' 
-                            : 'bg-surface-container border-transparent hover:border-outline-variant'
-                        }`}
-                      >
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${appearance.mode === 'dark' ? 'bg-primary/20 text-primary' : 'bg-white/5 text-on-surface-variant'}`}>
-                          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: appearance.mode === 'dark' ? "'FILL' 1" : "'FILL' 0" }}>dark_mode</span>
-                        </div>
-                        <p className={`text-xs font-black tracking-[0.2em] uppercase ${appearance.mode === 'dark' ? 'text-primary' : 'text-on-surface-variant'}`}>Dark Mode</p>
-                      </motion.div>
 
-                      <motion.div 
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setAppearance({...appearance, mode: 'light'})}
-                        className={`p-8 rounded-[2rem] flex flex-col items-center gap-4 cursor-pointer transition-all border-2 ${
-                          appearance.mode === 'light' 
-                            ? 'bg-white border-primary shadow-2xl shadow-primary/10' 
-                            : 'bg-surface-container border-transparent hover:border-outline-variant'
-                        }`}
-                      >
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${appearance.mode === 'light' ? 'bg-primary/20 text-primary' : 'bg-black/5 text-on-surface-variant'}`}>
-                          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: appearance.mode === 'light' ? "'FILL' 1" : "'FILL' 0" }}>light_mode</span>
-                        </div>
-                        <p className={`text-xs font-black tracking-[0.2em] uppercase ${appearance.mode === 'light' ? 'text-primary' : 'text-on-surface-variant'}`}>Light Mode</p>
-                      </motion.div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <h3 className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] ml-1">Global Accent Color</h3>
-                      <div className="flex flex-wrap gap-5">
-                        {['#818cf8', '#ec4899', '#2dd4bf', '#fbbf24', '#f87171', '#c084fc'].map((color) => (
-                          <motion.button 
-                            key={color} 
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => setAppearance({...appearance, accent: color})}
-                            className="w-12 h-12 rounded-2xl cursor-pointer transition-all shadow-xl relative flex items-center justify-center"
-                            style={{ backgroundColor: color }}
-                          >
-                            {appearance.accent === color && (
-                              <motion.span layoutId="accent-check" className="material-symbols-outlined text-white font-black text-2xl">check</motion.span>
-                            )}
-                          </motion.button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {activeSection === 'security' && (
                   <div className="space-y-8">
@@ -329,7 +250,7 @@ export function SettingsPage() {
                               <p className="text-xs text-on-surface-variant font-medium">Update your account authentication credentials.</p>
                             </div>
                           </div>
-                          <button className="px-5 py-2.5 bg-white/5 border border-outline-variant/30 rounded-xl text-xs font-bold text-on-surface hover:bg-white/10 transition-all">Update</button>
+                          <button onClick={() => navigate('/forgot-credentials')} className="px-5 py-2.5 bg-white/5 border border-outline-variant/30 rounded-xl text-xs font-bold text-on-surface hover:bg-white/10 transition-all">Update</button>
                         </div>
                         
                         <div className="border-t border-outline-variant/10 pt-6 flex items-center justify-between">
@@ -342,7 +263,12 @@ export function SettingsPage() {
                               <p className="text-xs text-on-surface-variant font-medium">Add an extra layer of security to your account.</p>
                             </div>
                           </div>
-                          <button className="px-5 py-2.5 bg-emerald-500 text-on-primary rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 hover:opacity-90 transition-all">Enable</button>
+                          <button 
+                            onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
+                            className={`px-5 py-2.5 ${twoFactorEnabled ? 'bg-error text-on-error shadow-error/20' : 'bg-emerald-500 text-on-primary shadow-emerald-500/20'} rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-all`}
+                          >
+                            {twoFactorEnabled ? 'Disable' : 'Enable'}
+                          </button>
                         </div>
                       </div>
 
@@ -356,7 +282,15 @@ export function SettingsPage() {
                               <p className="text-xs text-error/60 font-medium">Force logout from all other devices and browsers.</p>
                             </div>
                           </div>
-                          <button className="px-5 py-2.5 bg-error text-on-error rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-lg shadow-error/20">Purge Sessions</button>
+                          <button 
+                            onClick={() => {
+                               logout();
+                               navigate('/login');
+                            }}
+                            className="px-5 py-2.5 bg-error text-on-error rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-lg shadow-error/20"
+                          >
+                            Purge Sessions
+                          </button>
                       </div>
                     </div>
                   </div>

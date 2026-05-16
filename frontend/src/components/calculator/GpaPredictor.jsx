@@ -185,10 +185,10 @@ export function GpaPredictor({ onCalculate }) {
 
       <button 
         onClick={handleCalculate}
-        className="w-full py-5 bg-primary text-on-primary rounded-3xl font-black text-sm uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+        className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-sm tracking-wide hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
       >
-        Predict Academic Performance
-        <span className="material-symbols-outlined text-xl">rocket_launch</span>
+        <span className="material-symbols-outlined text-xl">calculate</span>
+        Predict GPA
       </button>
     </div>
   );
