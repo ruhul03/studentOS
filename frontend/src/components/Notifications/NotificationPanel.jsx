@@ -5,6 +5,7 @@ import { fetchWithAuth } from '../../api';
 export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigate, onMessageClick }) {
   const { user } = useAuth();
   const [appNotifications, setAppNotifications] = useState([]);
+  const [showAll, setShowAll] = useState(false);
   const [isMuted, setIsMuted] = useState(() => {
     return localStorage.getItem('notificationsMuted') === 'true';
   });
@@ -113,10 +114,10 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
             </div>
           </div>
 
-          <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+          <div className={`${showAll ? 'max-h-[70vh]' : 'max-h-[400px]'} overflow-y-auto custom-scrollbar transition-all duration-300`}>
             {appNotifications.length > 0 ? (
               <div className="p-2 space-y-1">
-                {appNotifications.slice(0, 15).map(notification => (
+                {(showAll ? appNotifications : appNotifications.slice(0, 10)).map(notification => (
                   <div
                     key={notification.id}
                     className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all group relative ${notification.read ? 'opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100' : 'bg-primary/5 hover:bg-primary/10'}`}
@@ -173,9 +174,12 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
             )}
           </div>
 
-          {appNotifications.length > 0 && (
-            <button className="w-full p-4 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors border-t border-outline-variant">
-              View All Notifications
+          {appNotifications.length > 10 && (
+            <button 
+              onClick={() => setShowAll(!showAll)}
+              className="w-full p-4 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors border-t border-outline-variant"
+            >
+              {showAll ? 'Show Less' : `View All Notifications (${appNotifications.length})`}
             </button>
           )}
         </div>

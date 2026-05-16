@@ -54,7 +54,14 @@ export function ChatManager({
       {!isMuted && (
         <NotificationToast 
           notifications={wsNotifications} 
-          onClear={clearNotification} 
+          onClear={clearNotification}
+          onClick={(note) => {
+            if (note.type === 'direct_message' && note.sender?.id) {
+              setChatOpenUserId(note.sender.id);
+            } else if (note.senderId) {
+              setChatOpenUserId(note.senderId);
+            }
+          }}
         />
       )}
 

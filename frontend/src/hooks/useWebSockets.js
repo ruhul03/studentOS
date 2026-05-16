@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { playNotificationSound } from '../utils/notificationSound';
 
 export function useWebSockets(userId = null) {
   const [notifications, setNotifications] = useState([]);
@@ -26,6 +27,7 @@ export function useWebSockets(userId = null) {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             const notificationData = data.id ? data : { ...data, id: `global-${Date.now()}-${Math.random()}` };
             setNotifications((prev) => [...prev, notificationData]);
+            if (localStorage.getItem('notificationsMuted') !== 'true') playNotificationSound();
           } catch (e) {
             setNotifications((prev) => [...prev, { message: message.body, type: 'broadcast', title: 'Announcement', id: Date.now() }]);
           }
@@ -39,6 +41,7 @@ export function useWebSockets(userId = null) {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             const notificationData = data.id ? data : { ...data, id: `private-${Date.now()}-${Math.random()}` };
             setNotifications((prev) => [...prev, notificationData]);
+            if (localStorage.getItem('notificationsMuted') !== 'true') playNotificationSound();
           } catch (e) {
             console.error('Failed to parse private notification', e);
           }
@@ -51,6 +54,7 @@ export function useWebSockets(userId = null) {
           try {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             setMessageEvent(data);
+            if (localStorage.getItem('notificationsMuted') !== 'true') playNotificationSound();
           } catch (e) {
           }
         }
