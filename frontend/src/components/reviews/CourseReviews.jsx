@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
+import { playSuccessSound, playDeleteSound, playErrorSound } from '../../utils/notificationSound';
 import { ReviewCard } from './ReviewCard';
 import { ReviewForm } from './ReviewForm';
 import { ReviewRequestForm } from './ReviewRequestForm';
@@ -67,13 +68,16 @@ export function CourseReviews() {
       });
 
       if (response.ok) {
+        playSuccessSound();
         fetchReviews();
         setEditingReview(null);
       } else {
         const err = await response.text();
+        playErrorSound();
         console.error('Review save failed:', response.status, err);
       }
     } catch (err) {
+      playErrorSound();
       console.error('Failed to save review', err);
     }
   };
@@ -91,13 +95,16 @@ export function CourseReviews() {
       });
 
       if (response.ok) {
+        playSuccessSound();
         fetchRequests();
         setEditingRequest(null);
       } else {
         const err = await response.text();
+        playErrorSound();
         console.error('Request save failed:', response.status, err);
       }
     } catch (err) {
+      playErrorSound();
       console.error('Failed to save request', err);
     }
   };
@@ -108,7 +115,10 @@ export function CourseReviews() {
       const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}?userId=${user?.id}`, {
         method: 'DELETE'
       });
-      if (response.ok) fetchReviews();
+      if (response.ok) {
+        playDeleteSound();
+        fetchReviews();
+      }
     } catch (err) {
       console.error('Delete failed', err);
     }
@@ -119,7 +129,10 @@ export function CourseReviews() {
       const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/reviews/${id}/helpful`, {
         method: 'POST'
       });
-      if (response.ok) fetchReviews();
+      if (response.ok) {
+        playSuccessSound();
+        fetchReviews();
+      }
     } catch (err) {
       console.error('Failed to mark helpful', err);
     }
@@ -136,7 +149,10 @@ export function CourseReviews() {
       const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/review-requests/${id}?userId=${user?.id}`, {
         method: 'DELETE'
       });
-      if (response.ok) fetchRequests();
+      if (response.ok) {
+        playDeleteSound();
+        fetchRequests();
+      }
     } catch (err) {
       console.error('Delete request failed', err);
     }

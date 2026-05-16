@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { PlannerModal } from './PlannerModal';
+import { playToggleSound, playDeleteSound, playTabSound } from '../../utils/notificationSound';
 
 export function StudyPlanner() {
   const [tasks, setTasks] = useState([]);
@@ -27,6 +28,7 @@ export function StudyPlanner() {
   const toggleTask = async (id) => {
     try {
       await fetchWithAuth(`${API}/api/planner/${id}/toggle`, { method: 'PUT' });
+      playToggleSound();
       fetchTasks();
     } catch (err) { console.error('Failed to toggle task', err); }
   };
@@ -34,6 +36,7 @@ export function StudyPlanner() {
   const deleteTask = async (id) => {
     try {
       await fetchWithAuth(`${API}/api/planner/${id}`, { method: 'DELETE' });
+      playDeleteSound();
       fetchTasks();
     } catch (err) { console.error('Failed to delete task', err); }
   };
@@ -139,19 +142,19 @@ export function StudyPlanner() {
           <div className="flex items-center gap-1 bg-surface-container-high/50 backdrop-blur-xl p-1.5 rounded-2xl border border-outline-variant/30 shadow-lg">
             <button
               className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
-              onClick={() => setWeekOffset(w => w - 1)}
+              onClick={() => { setWeekOffset(w => w - 1); playTabSound(); }}
             >
               <span className="material-symbols-outlined text-[20px]">chevron_left</span>
             </button>
             <button
               className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors"
-              onClick={() => setWeekOffset(0)}
+              onClick={() => { setWeekOffset(0); playTabSound(); }}
             >
               Today
             </button>
             <button
               className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
-              onClick={() => setWeekOffset(w => w + 1)}
+              onClick={() => { setWeekOffset(w => w + 1); playTabSound(); }}
             >
               <span className="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
@@ -257,7 +260,7 @@ export function StudyPlanner() {
             {['date', 'course', 'type'].map(s => (
               <button
                 key={s}
-                onClick={() => setSortBy(s)}
+                onClick={() => { setSortBy(s); playTabSound(); }}
                 className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all ${sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'
                   }`}
               >

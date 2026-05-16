@@ -5,6 +5,7 @@ import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
 import { NewEntryModal } from './NewEntryModal';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
+import { playTabSound, playDeleteSound } from '../../utils/notificationSound';
 
 export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick }) {
   const { user, logout } = useAuth();
@@ -99,7 +100,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
                     ? 'bg-primary/10 text-primary border-r-4 border-r-primary border-t-transparent border-b-transparent border-l-transparent rounded-r-none' 
                     : 'text-on-surface-variant bg-transparent border-transparent hover:bg-surface-container-high hover:text-on-surface'
                 }`}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => { onNavigate(item.id); playTabSound(); }}
               >
                 <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{item.icon}</span>
                 {item.label}
@@ -128,7 +129,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
               whileTap={{ scale: 0.98 }}
               id="global-new-entry-btn" 
               className="w-full bg-gradient-to-tr from-primary to-[#A855F7] text-on-primary py-3 px-4 border-none rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all" 
-              onClick={() => setIsNewEntryOpen(true)}
+              onClick={() => { setIsNewEntryOpen(true); playTabSound(); }}
             >
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
               New Entry
@@ -136,7 +137,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
           )}
           <button 
             className="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded cursor-pointer transition-all border border-transparent text-on-surface-variant bg-transparent hover:bg-surface-container-high hover:text-on-surface w-full text-left" 
-            onClick={logout}
+            onClick={() => { logout(); playDeleteSound(); }}
           >
             <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>logout</span>
             Log Out

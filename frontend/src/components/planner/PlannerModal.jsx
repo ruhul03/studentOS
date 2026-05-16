@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
+import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 
 export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
   const { user } = useAuth();
@@ -44,10 +45,12 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
         }),
       });
       if (!resp.ok) throw new Error('Failed to create task');
+      playSuccessSound();
       resetForm();
       onClose();
       onTaskCreated?.();
     } catch (err) {
+      playErrorSound();
       setError(err.message || 'Something went wrong');
     } finally {
       setIsSubmitting(false);

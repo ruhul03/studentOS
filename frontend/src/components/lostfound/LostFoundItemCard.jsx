@@ -97,15 +97,6 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
 
             {canManage && (
               <div className="flex gap-1 bg-surface-container-high/50 p-1 rounded-lg">
-                {!item.resolved && (
-                  <button 
-                    className="w-7 h-7 rounded-md flex items-center justify-center text-secondary hover:bg-secondary/10 transition-colors"
-                    onClick={() => onResolve(item.id)}
-                    title="Resolve"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                  </button>
-                )}
                 <button 
                   className="w-7 h-7 rounded-md flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
                   onClick={() => onEdit(item)}
@@ -123,6 +114,18 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
               </div>
             )}
           </div>
+
+          {canManage && !item.resolved && (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onResolve(item.id)}
+              className="mt-4 w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-on-secondary rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-secondary/20"
+            >
+              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              Mark as Resolved
+            </motion.button>
+          )}
         </div>
       </div>
     </motion.div>

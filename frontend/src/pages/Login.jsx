@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { playSuccessSound, playErrorSound } from '../utils/notificationSound';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -40,10 +41,12 @@ export function Login() {
             localStorage.setItem('token', data.token);
         }
         login(data);
+        playSuccessSound();
         navigate('/dashboard');
       } else {
         const errorText = await response.text();
         setError(errorText || 'Login failed. Please check your credentials.');
+        playErrorSound();
       }
     } catch (err) {
       setError('Network error. Is the server running?');

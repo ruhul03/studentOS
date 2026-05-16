@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { playNotificationSound } from '../utils/notificationSound';
+import { playNotificationSound, playMessageReceivedSound } from '../utils/notificationSound';
 
 export function useWebSockets(userId = null) {
   const [notifications, setNotifications] = useState([]);
@@ -54,7 +54,7 @@ export function useWebSockets(userId = null) {
           try {
             const data = typeof message.body === 'string' ? JSON.parse(message.body) : message.body;
             setMessageEvent(data);
-            if (localStorage.getItem('notificationsMuted') !== 'true') playNotificationSound();
+            if (localStorage.getItem('notificationsMuted') !== 'true') playMessageReceivedSound();
           } catch (e) {
           }
         }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { fetchWithAuth } from '../../api';
+import { playMessageSentSound } from '../../utils/notificationSound';
 
 export function ChatModal({ otherUser, onClose, incomingMessage }) {
   const { user } = useAuth();
@@ -56,6 +57,7 @@ export function ChatModal({ otherUser, onClose, incomingMessage }) {
       if (response.ok) {
         const savedMessage = await response.json();
         setNewMessage('');
+        playMessageSentSound();
         setMessages(prev => {
           if (prev.some(m => m.id === savedMessage.id)) return prev;
           return [...prev, savedMessage];

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
+import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 
 export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   const { user } = useAuth();
@@ -83,6 +84,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
       }
 
       console.log('Resource shared successfully!');
+      playSuccessSound();
       onResourceCreated?.();
       handleClose();
     } catch (err) {
@@ -92,6 +94,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
         const parsed = JSON.parse(msg);
         msg = parsed.message || (typeof parsed === 'object' ? Object.values(parsed).join(', ') : msg);
       } catch (e) {}
+      playErrorSound();
       setError(msg);
     } finally {
       setIsSubmitting(false);

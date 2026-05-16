@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { playToggleSound, playSuccessSound, playErrorSound, playTabSound } from '../../utils/notificationSound';
 
 export function SettingsPage() {
   const { user, updateUserData, logout } = useAuth();
@@ -57,9 +58,11 @@ export function SettingsPage() {
         }
       });
       setSaveStatus('success');
+      playSuccessSound();
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (err) {
       setSaveStatus('error');
+      playErrorSound();
     } finally {
       setIsSaving(false);
     }
@@ -94,7 +97,7 @@ export function SettingsPage() {
           {sections.map((section) => (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id)}
+              onClick={() => { setActiveSection(section.id); playTabSound(); }}
               className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${
                 activeSection === section.id 
                   ? 'bg-primary text-on-primary shadow-xl shadow-primary/30' 
@@ -213,7 +216,7 @@ export function SettingsPage() {
                             <p className="text-xs text-on-surface-variant font-medium opacity-80">{item.desc}</p>
                           </div>
                           <button 
-                            onClick={() => setNotifications({...notifications, [item.id]: !notifications[item.id]})}
+                            onClick={() => { setNotifications({...notifications, [item.id]: !notifications[item.id]}); playToggleSound(); }}
                             className={`w-12 h-7 rounded-full relative p-1 transition-all flex items-center ${
                               notifications[item.id] ? 'bg-primary' : 'bg-surface-container-highest border border-outline-variant/30'
                             }`}
@@ -315,7 +318,7 @@ export function SettingsPage() {
                              <p className="text-xs text-on-surface-variant font-medium opacity-80">{item.desc}</p>
                            </div>
                            <button 
-                             onClick={() => setPrivacy({...privacy, [item.id]: !item.state})}
+                             onClick={() => { setPrivacy({...privacy, [item.id]: !item.state}); playToggleSound(); }}
                              className={`w-12 h-7 rounded-full relative p-1 transition-all flex items-center ${
                                item.state ? 'bg-primary' : 'bg-surface-container-highest border border-outline-variant/30'
                              }`}

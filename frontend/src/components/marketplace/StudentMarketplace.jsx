@@ -5,6 +5,7 @@ import { fetchWithAuth } from '../../api';
 import { MarketplaceItemCard } from './MarketplaceItemCard';
 import { MarketplaceItemModal } from './MarketplaceItemModal';
 import { MarketplaceForm } from './MarketplaceForm';
+import { playDeleteSound, playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 
 export function StudentMarketplace({ onProfileView }) {
   const { user } = useAuth();
@@ -84,8 +85,12 @@ export function StudentMarketplace({ onProfileView }) {
       const resp = await fetchWithAuth(`${API}/${id}?userId=${user.id}`, { 
         method: 'DELETE'
       });
-      if (resp.ok) fetchItems();
+      if (resp.ok) {
+        playDeleteSound();
+        fetchItems();
+      }
     } catch (err) {
+      playDeleteSound();
       console.error('Delete failed', err);
     }
   };
@@ -95,8 +100,12 @@ export function StudentMarketplace({ onProfileView }) {
       const resp = await fetchWithAuth(`${API}/${id}/sold`, { 
         method: 'PUT'
       });
-      if (resp.ok) fetchItems();
+      if (resp.ok) {
+        playSuccessSound();
+        fetchItems();
+      }
     } catch (err) {
+      playSuccessSound();
       console.error('Failed to mark as sold', err);
     }
   };
@@ -124,12 +133,15 @@ export function StudentMarketplace({ onProfileView }) {
       });
 
       if (response.ok) {
+        playSuccessSound();
         setShowForm(false);
         fetchItems();
       } else {
+        playErrorSound();
         setError("Save failed. Try again.");
       }
     } catch (err) {
+      playErrorSound();
       console.error('Save failed', err);
       setError("Network error. Listing not saved.");
     }

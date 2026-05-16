@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { ResourceModal } from './ResourceModal';
+import { playDeleteSound, playSuccessSound } from '../../utils/notificationSound';
 
 export function ResourceFeed() {
   const [resources, setResources] = useState([]);
@@ -65,7 +66,10 @@ export function ResourceFeed() {
         method: 'DELETE',
         headers: { 'X-User-Id': user?.id, 'X-User-Role': user?.role }
       });
-      if (response.ok) fetchResources();
+      if (response.ok) {
+        playDeleteSound();
+        fetchResources();
+      }
     } catch (err) {
       console.error('Delete failed', err);
     }
@@ -84,7 +88,10 @@ export function ResourceFeed() {
         method: 'POST',
         headers: { 'X-User-Id': user.id, 'X-User-Role': user.role }
       });
-      if (response.ok) fetchResources();
+      if (response.ok) {
+        playSuccessSound();
+        fetchResources();
+      }
     } catch (err) {
       console.error('Upvote error:', err);
     }

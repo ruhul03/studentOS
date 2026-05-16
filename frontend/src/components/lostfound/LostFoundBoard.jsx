@@ -5,6 +5,7 @@ import { fetchWithAuth } from '../../api';
 import { LostFoundFiltersModal } from './LostFoundFiltersModal';
 import { LostFoundItemCard } from './LostFoundItemCard';
 import { LostFoundForm } from './LostFoundForm';
+import { playDeleteSound, playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 
 export function LostFoundBoard({ onProfileView }) {
   const { user } = useAuth();
@@ -108,8 +109,9 @@ export function LostFoundBoard({ onProfileView }) {
       const resp = await fetchWithAuth(`${API}/${id}?userId=${user.id}`, { 
         method: 'DELETE'
       });
-      if (resp.ok) fetchItems();
+      if (resp.ok) { playDeleteSound(); fetchItems(); }
     } catch (err) {
+      playDeleteSound();
       setItems(prev => prev.filter(i => i.id !== id));
     }
   };
@@ -119,8 +121,9 @@ export function LostFoundBoard({ onProfileView }) {
       const resp = await fetchWithAuth(`${API}/${id}/resolve`, { 
         method: 'PUT'
       });
-      if (resp.ok) fetchItems();
+      if (resp.ok) { playSuccessSound(); fetchItems(); }
     } catch (err) {
+      playSuccessSound();
       setItems(prev => prev.map(i => i.id === id ? { ...i, resolved: true } : i));
     }
   };
@@ -144,9 +147,11 @@ export function LostFoundBoard({ onProfileView }) {
       });
 
       if (resp.ok) {
+        playSuccessSound();
         setShowForm(false);
         fetchItems();
       } else {
+        playErrorSound();
         setError("Failed to save. Please try again.");
       }
     } catch (err) {
