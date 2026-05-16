@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { NewEntryModal } from './NewEntryModal';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 
-export function Navbar({ activeTab, onNavigate, wsNotifications }) {
+export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
@@ -45,6 +45,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications }) {
               toggleShow={() => setShowNotificationPanel(!showNotificationPanel)} 
               wsNotifications={wsNotifications} 
               onNavigate={onNavigate} 
+              onMessageClick={onMessageClick}
             />
             <motion.button 
               whileHover={{ scale: 1.1, backgroundColor: 'rgba(var(--primary-rgb), 0.1)' }}

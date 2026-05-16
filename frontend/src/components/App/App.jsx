@@ -53,6 +53,7 @@ function Dashboard() {
         activeTab={activeTab} 
         onNavigate={handleTabChange} 
         wsNotifications={wsNotifications} 
+        onMessageClick={(senderId) => setMessageEvent({ senderId })}
       />
       <MobileNav 
         activeTab={activeTab} 

@@ -15,8 +15,13 @@ export function NotificationToast({ notifications, onClear }) {
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/10 shrink-0">
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>notifications</span>
             </div>
-            <div className="flex-1 text-sm font-bold text-on-surface leading-tight">
-              {note}
+            <div className="flex-1 flex flex-col gap-1">
+              <div className="text-sm font-bold text-on-surface leading-tight">
+                {note.title || 'Notification'}
+              </div>
+              <div className="text-xs font-normal text-on-surface-variant line-clamp-2 leading-relaxed">
+                {note.message}
+              </div>
             </div>
             <button
               className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all shrink-0"

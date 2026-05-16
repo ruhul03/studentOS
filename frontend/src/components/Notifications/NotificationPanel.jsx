@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchWithAuth } from '../../api';
 
-export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigate }) {
+export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigate, onMessageClick }) {
   const { user } = useAuth();
   const [appNotifications, setAppNotifications] = useState([]);
   const [isMuted, setIsMuted] = useState(() => {
@@ -127,7 +127,11 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
                       } else if (notification.type === 'resource_uploaded') {
                         onNavigate('resources');
                       } else if (notification.type === 'direct_message') {
-                        onNavigate('home');
+                        if (onMessageClick && notification.sender) {
+                          onMessageClick(notification.sender.id);
+                        } else {
+                          onNavigate('home');
+                        }
                       }
                       toggleShow();
                     }}
