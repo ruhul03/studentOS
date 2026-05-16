@@ -37,6 +37,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const { notifications: wsNotifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  const [chatOpenUserId, setChatOpenUserId] = useState(null);
 
   // Derive activeTab solely from URL
   const queryParams = new URLSearchParams(location.search);
@@ -53,7 +54,7 @@ function Dashboard() {
         activeTab={activeTab} 
         onNavigate={handleTabChange} 
         wsNotifications={wsNotifications} 
-        onMessageClick={(senderId) => setMessageEvent({ senderId })}
+        onMessageClick={setChatOpenUserId}
       />
       <MobileNav 
         activeTab={activeTab} 
@@ -100,6 +101,8 @@ function Dashboard() {
         setMessageEvent={setMessageEvent}
         selectedUserProfile={selectedUserProfile}
         setSelectedUserProfile={setSelectedUserProfile}
+        chatOpenUserId={chatOpenUserId}
+        setChatOpenUserId={setChatOpenUserId}
       />
     </DashboardLayout>
   );

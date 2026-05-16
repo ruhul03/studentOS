@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { fetchWithAuth } from '../../api';
 
-export function ChatModal({ otherUser, onClose }) {
+export function ChatModal({ otherUser, onClose, incomingMessage }) {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -26,9 +26,16 @@ export function ChatModal({ otherUser, onClose }) {
 
   useEffect(() => {
     fetchConversation();
-    const interval = setInterval(fetchConversation, 3000);
-    return () => clearInterval(interval);
   }, [otherUser.id]);
+
+  useEffect(() => {
+    if (incomingMessage && (incomingMessage.senderId === otherUser.id || incomingMessage.receiverId === otherUser.id)) {
+      setMessages(prev => {
+        if (prev.some(m => m.id === incomingMessage.id)) return prev;
+        return [...prev, incomingMessage];
+      });
+    }
+  }, [incomingMessage, otherUser.id]);
 
   useEffect(scrollToBottom, [messages]);
 
@@ -47,8 +54,12 @@ export function ChatModal({ otherUser, onClose }) {
       });
 
       if (response.ok) {
+        const savedMessage = await response.json();
         setNewMessage('');
-        fetchConversation();
+        setMessages(prev => {
+          if (prev.some(m => m.id === savedMessage.id)) return prev;
+          return [...prev, savedMessage];
+        });
       }
     } catch (err) {
       console.error('Send failed', err);

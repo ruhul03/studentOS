@@ -11,7 +11,9 @@ export function ChatManager({
   clearNotification, 
   setMessageEvent,
   selectedUserProfile,
-  setSelectedUserProfile 
+  setSelectedUserProfile,
+  chatOpenUserId,
+  setChatOpenUserId
 }) {
   const [activeChatUser, setActiveChatUser] = useState(null);
   
@@ -29,15 +31,13 @@ export function ChatManager({
   }, []);
 
   useEffect(() => {
-    if (messageEvent) {
+    if (chatOpenUserId) {
       const fetchSender = async () => {
         try {
-          const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/${messageEvent.senderId}`);
+          const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/${chatOpenUserId}`);
           if (res.ok) {
             const senderData = await res.json();
-            if (!activeChatUser || activeChatUser.id !== messageEvent.senderId) {
-              setActiveChatUser(senderData);
-            }
+            setActiveChatUser(senderData);
           }
         } catch (err) {
           console.error(err);
@@ -45,9 +45,9 @@ export function ChatManager({
       };
       
       fetchSender();
-      setMessageEvent(null);
+      setChatOpenUserId(null);
     }
-  }, [messageEvent, activeChatUser, setMessageEvent]);
+  }, [chatOpenUserId, setChatOpenUserId]);
 
   return (
     <>
@@ -76,6 +76,7 @@ export function ChatManager({
           <ChatModal 
             otherUser={activeChatUser} 
             onClose={() => setActiveChatUser(null)} 
+            incomingMessage={messageEvent}
           />
         )}
       </AnimatePresence>
