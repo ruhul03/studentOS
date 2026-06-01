@@ -14,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "course_reviews")
+@Table(name = "course_reviews", indexes = {
+    @Index(name = "idx_review_course", columnList = "courseCode"),
+    @Index(name = "idx_review_reviewer", columnList = "reviewer_id")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -43,7 +46,7 @@ public class CourseReview {
     @Column(length = 1000)
     private String reviewText;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

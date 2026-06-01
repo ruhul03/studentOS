@@ -10,7 +10,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "lost_found_items")
+@Table(name = "lost_found_items", indexes = {
+    @Index(name = "idx_lf_reporter", columnList = "reporter_id"),
+    @Index(name = "idx_lf_resolved", columnList = "resolved")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -36,7 +39,7 @@ public class LostFoundItem {
     @Column(nullable = false)
     private String contactInfo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
 

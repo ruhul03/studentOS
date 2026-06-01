@@ -10,7 +10,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "resources")
+@Table(name = "resources", indexes = {
+    @Index(name = "idx_resource_uploader", columnList = "uploader_id"),
+    @Index(name = "idx_resource_course", columnList = "courseCode")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -39,7 +42,7 @@ public class Resource {
     @Column(nullable = false)
     private String type; // "Notes", "Exam Paper", "Study Guide", etc.
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id", nullable = false)
     private User uploader;
 

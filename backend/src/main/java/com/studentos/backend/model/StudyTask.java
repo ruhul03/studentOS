@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "study_tasks")
+@Table(name = "study_tasks", indexes = {
+    @Index(name = "idx_task_user", columnList = "user_id"),
+    @Index(name = "idx_task_completed", columnList = "completed")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -36,7 +39,7 @@ public class StudyTask {
     @Builder.Default
     private boolean completed = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

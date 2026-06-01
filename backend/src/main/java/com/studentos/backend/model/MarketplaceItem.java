@@ -11,7 +11,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "marketplace_items")
+@Table(name = "marketplace_items", indexes = {
+    @Index(name = "idx_market_seller", columnList = "seller_id"),
+    @Index(name = "idx_market_sold", columnList = "sold")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -40,7 +43,7 @@ public class MarketplaceItem {
     @Column(nullable = false)
     private String contactInfo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
