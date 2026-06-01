@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../api';
+import { useAdminStats } from '../hooks/useAdminStats';
+import LoadingState from '../components/ui/LoadingState';
+import ErrorState from '../components/ui/ErrorState';
 
 // Sub-components
 import { TabOverview } from '../components/admin/TabOverview';
@@ -18,7 +21,6 @@ import { DiagnosticsModal } from '../components/admin/DiagnosticsModal';
 export function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('stats');
   const [message, setMessage] = useState(null);
   
@@ -45,44 +47,31 @@ export function AdminDashboard() {
     name: '', description: '', category: 'General', location: '', operatingHours: '08:00 AM - 05:00 PM', contactInfo: ''
   });
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const endpoints = [
-        { url: '/api/admin/stats', setter: setStats },
-        { url: '/api/admin/health', setter: setHealth },
-        { url: '/api/admin/users', setter: setUsers },
-        { url: '/api/admin/resources', setter: setResources },
-        { url: '/api/admin/marketplace', setter: setMarketItems },
-        { url: '/api/admin/events', setter: setEvents },
-        { url: '/api/services', setter: setServices },
-        { url: '/api/admin/analytics/growth', setter: (data) => setAnalytics(prev => ({ ...prev, growth: data })) },
-        { url: '/api/admin/analytics/departments', setter: (data) => setAnalytics(prev => ({ ...prev, departments: data })) },
-        { url: '/api/admin/analytics/contributors', setter: (data) => setAnalytics(prev => ({ ...prev, contributors: data })) }
-      ];
-
-      await Promise.all(endpoints.map(async ({ url, setter }) => {
-        try {
-          const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}${url}`);
-          if (res.ok) setter(await res.json());
-        } catch (err) {
-          console.error(`Failed to fetch from ${url}`, err);
-        }
-      }));
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Critical system synchronization failure' });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { data, isLoading, isError, error, refetch } = useAdminStats(user);
 
   useEffect(() => {
     if (!user || user.role !== 'ADMIN') {
       navigate('/dashboard');
       return;
     }
-    fetchData();
-  }, [user, navigate, fetchData]);
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (data) {
+      setStats(data.stats || null);
+      setUsers(data.users || []);
+      setResources(data.resources || []);
+      setMarketItems(data.marketItems || []);
+      setEvents(data.events || []);
+      setServices(data.services || []);
+      setHealth(data.health || null);
+      setAnalytics({
+        growth: data.growth || [],
+        departments: data.departments || [],
+        contributors: data.contributors || []
+      });
+    }
+  }, [data]);
 
   // Generic Action Handler
   const handleAction = async (confirmMsg, url, method, successMsg, updateState) => {
@@ -160,16 +149,14 @@ export function AdminDashboard() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
+    return <LoadingState message="Syncing Core Modules" fullScreen={true} />;
+  }
+
+  if (isError) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0c]">
-        <div className="flex flex-col items-center gap-6">
-          <div className="relative w-16 h-16">
-            <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <p className="text-on-surface-variant font-black tracking-widest uppercase text-[10px]">Syncing Core Modules</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0c] p-8">
+        <ErrorState error={error} onRetry={refetch} title="System Synchronization Failed" />
       </div>
     );
   }

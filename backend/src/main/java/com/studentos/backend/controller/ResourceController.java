@@ -4,227 +4,64 @@ import com.studentos.backend.dto.ResourceRequest;
 import jakarta.validation.Valid;
 import com.studentos.backend.model.Resource;
 import com.studentos.backend.model.User;
-import com.studentos.backend.repository.ResourceRepository;
-import com.studentos.backend.service.ActivityService;
-import com.studentos.backend.service.AsyncService;
-import com.studentos.backend.service.FileStorageService;
-import com.studentos.backend.service.NotificationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.studentos.backend.service.ResourceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resources")
 @SuppressWarnings("null")
 public class ResourceController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
+    private final ResourceService resourceService;
 
-    private final ResourceRepository resourceRepository;
-    private final AsyncService asyncService;
-    private final ActivityService activityService;
-    private final FileStorageService fileStorageService;
-    private final NotificationService notificationService;
-
-    public ResourceController(ResourceRepository resourceRepository, 
-                              AsyncService asyncService,
-                              ActivityService activityService,
-                              FileStorageService fileStorageService,
-                              NotificationService notificationService) {
-        this.resourceRepository = resourceRepository;
-        this.asyncService = asyncService;
-        this.activityService = activityService;
-        this.fileStorageService = fileStorageService;
-        this.notificationService = notificationService;
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
     }
 
     @GetMapping
-    public List<Resource> getAllResources(@RequestParam(required = false) String query) {
-        logger.debug("Fetching all resources, query: {}", query);
-        if (query != null && !query.trim().isEmpty()) {
-            return resourceRepository.findByCourseCodeIgnoreCaseContainingOrTitleIgnoreCaseContaining(query, query);
-        }
-        return resourceRepository.findAllByOrderByUpvotesDesc();
+    public ResponseEntity<List<Resource>> getAllResources(@RequestParam(required = false) String query) {
+        return ResponseEntity.ok(resourceService.getAllResources(query));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getResourceById(@PathVariable Long id) {
-        logger.debug("Fetching resource by ID: {}", id);
-        Optional<Resource> resourceOpt = resourceRepository.findById(id);
-        if (resourceOpt.isPresent()) {
-            return ResponseEntity.ok(resourceOpt.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
+    public ResponseEntity<Resource> getResourceById(@PathVariable Long id) {
+        return ResponseEntity.ok(resourceService.getResourceById(id));
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
-    @Transactional
     public ResponseEntity<Resource> uploadResource(
             @Valid @RequestPart("resource") ResourceRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal User currentUser) {
-        
-        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        try {
-            String fileUrl = request.getFileUrl();
-
-            // Handle file upload if present
-            if (file != null && !file.isEmpty()) {
-                logger.info("Storing uploaded file for resource: {}", request.getTitle());
-                fileUrl = fileStorageService.storeFile(file);
-            }
-
-            if (fileUrl == null || fileUrl.trim().isEmpty()) {
-                logger.warn("No file or URL provided for resource: {}", request.getTitle());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-
-            Resource resource = Resource.builder()
-                    .title(request.getTitle())
-                    .description(request.getDescription())
-                    .courseCode(request.getCourseCode())
-                    .courseTitle(request.getCourseTitle())
-                    .fileUrl(fileUrl)
-                    .type(request.getType())
-                    .uploader(currentUser)
-                    .upvotes(0)
-                    .anonymous(request.isAnonymous())
-                    .build();
-
-            Resource savedResource = resourceRepository.save(resource);
-            
-            // Trigger background processing
-            asyncService.processResourceBackground(savedResource.getTitle());
-
-            // Log Activity
-            activityService.logActivity(
-                currentUser.getId(),
-                savedResource.getTitle() + " uploaded",
-                "You shared \"" + savedResource.getTitle() + "\" in Resource Sharing.",
-                "resources",
-                "success"
-            );
-
-            // Global Notification
-            java.util.Map<String, Object> notification = new java.util.HashMap<>();
-            notification.put("type", "resource_uploaded");
-            notification.put("title", "New Resource Uploaded");
-            String senderName = savedResource.isAnonymous() ? "Someone" : currentUser.getName();
-            notification.put("message", senderName + " shared a new resource: " + savedResource.getTitle());
-            notification.put("relatedEntityId", savedResource.getId());
-            notification.put("createdAt", java.time.LocalDateTime.now());
-            
-            notificationService.sendGlobalNotification(notification);
-
-            logger.info("Successfully uploaded resource: {}", savedResource.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
-        } catch (Exception e) {
-            logger.error("Error uploading resource", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Resource savedResource = resourceService.uploadResource(request, file, currentUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
     }
 
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    @Transactional
-    public ResponseEntity<?> updateResource(
+    public ResponseEntity<Resource> updateResource(
             @PathVariable Long id, 
             @Valid @RequestPart("resource") ResourceRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal User currentUser) {
-        
-        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        logger.info("Updating resource ID: {}", id);
-        try {
-            Optional<Resource> resourceOpt = resourceRepository.findById(id);
-            if (resourceOpt.isPresent()) {
-                Resource resource = resourceOpt.get();
-                
-                // Security Check: Ownership or Admin
-                if (!resource.getUploader().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-                }
-
-                // Track old file for conditional deletion
-                String oldFileUrl = resource.getFileUrl();
-                
-                resource.setTitle(request.getTitle());
-                resource.setDescription(request.getDescription());
-                resource.setCourseCode(request.getCourseCode());
-                resource.setCourseTitle(request.getCourseTitle());
-                resource.setType(request.getType());
-                
-                if (request.getFileUrl() != null && !request.getFileUrl().isEmpty()) {
-                    resource.setFileUrl(request.getFileUrl());
-                }
-                
-                if (file != null && !file.isEmpty()) {
-                    logger.info("Storing new file for update of resource: {}", id);
-                    String newFileUrl = fileStorageService.storeFile(file);
-                    resource.setFileUrl(newFileUrl);
-                    
-                    if (oldFileUrl != null && oldFileUrl.startsWith("/uploads/") && !oldFileUrl.equals(newFileUrl)) {
-                        fileStorageService.deleteFile(oldFileUrl);
-                    }
-                }
-                
-                Resource updated = resourceRepository.save(resource);
-                logger.info("Successfully updated resource: {}", id);
-                return ResponseEntity.ok(updated);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
-            }
-        } catch (Exception e) {
-            logger.error("Error updating resource ID: " + id, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Resource updated = resourceService.updateResource(id, request, file, currentUser);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> deleteResource(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
-        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        logger.info("Deleting resource ID: {}", id);
-        Optional<Resource> resourceOpt = resourceRepository.findById(id);
-        if (resourceOpt.isPresent()) {
-            Resource resource = resourceOpt.get();
-            
-            // Security Check: Ownership or Admin
-            if (!resource.getUploader().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            if (resource.getFileUrl() != null && resource.getFileUrl().startsWith("/uploads/")) {
-                fileStorageService.deleteFile(resource.getFileUrl());
-            }
-            resourceRepository.delete(resource);
-            logger.info("Successfully deleted resource: {}", id);
-            return ResponseEntity.ok("Resource deleted successfully.");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource " + id + " not found.");
+    public ResponseEntity<String> deleteResource(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        resourceService.deleteResource(id, currentUser);
+        return ResponseEntity.ok("Resource deleted successfully.");
     }
 
     @PostMapping("/{id}/upvote")
-    @Transactional
     public ResponseEntity<Resource> upvoteResource(@PathVariable Long id) {
-        logger.info("Upvoting resource ID: {}", id);
-        Optional<Resource> resourceOpt = resourceRepository.findById(id);
-        if (resourceOpt.isPresent()) {
-            Resource resource = resourceOpt.get();
-            resource.setUpvotes(resource.getUpvotes() + 1);
-            return ResponseEntity.ok(resourceRepository.save(resource));
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(resourceService.upvoteResource(id));
     }
-
 }
+

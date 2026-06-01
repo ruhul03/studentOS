@@ -60,7 +60,7 @@ function Dashboard() {
         activeTab={activeTab} 
         onNavigate={handleTabChange} 
       />
-      
+
       <main className="flex-1 md:ml-64 pt-16 min-h-screen w-full md:w-[calc(100%-256px)] pb-20 md:pb-0">
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8">
           <AnimatePresence mode="wait" initial={false}>

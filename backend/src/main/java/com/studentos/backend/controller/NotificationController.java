@@ -2,9 +2,6 @@ package com.studentos.backend.controller;
 
 import com.studentos.backend.dto.NotificationRequest;
 import com.studentos.backend.model.Notification;
-import com.studentos.backend.model.User;
-import com.studentos.backend.repository.NotificationRepository;
-import com.studentos.backend.repository.UserRepository;
 import com.studentos.backend.service.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -20,35 +16,20 @@ import java.util.Optional;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
 
-    public NotificationController(NotificationService notificationService, 
-                                  NotificationRepository notificationRepository,
-                                  UserRepository userRepository) {
+    public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
-        this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
     }
 
     @PostMapping("/broadcast")
     @Transactional
     public void broadcast(@RequestBody String message) {
-        java.util.Map<String, Object> payload = new java.util.HashMap<>();
-        payload.put("type", "broadcast");
-        payload.put("title", "Admin Broadcast");
-        payload.put("message", message);
-        payload.put("createdAt", java.time.LocalDateTime.now());
-        notificationService.sendGlobalNotification(payload);
+        notificationService.broadcastMessage(message);
     }
 
     @GetMapping("/{userId}")
-    public List<Notification> getNotifications(@PathVariable Long userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isPresent()) {
-            return notificationRepository.findByRecipientOrderByCreatedAtDesc(userOpt.get());
-        }
-        return List.of();
+    public ResponseEntity<List<Notification>> getNotifications(@PathVariable Long userId) {
+        return ResponseEntity.ok(notificationService.getNotifications(userId));
     }
 
     @PostMapping
@@ -71,13 +52,7 @@ public class NotificationController {
     @PutMapping("/{id}/read")
     @Transactional
     public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
-        Optional<Notification> notifOpt = notificationRepository.findById(id);
-        if (notifOpt.isPresent()) {
-            Notification notification = notifOpt.get();
-            notification.setRead(true);
-            notificationRepository.save(notification);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        notificationService.markAsRead(id);
+        return ResponseEntity.ok().build();
     }
 }

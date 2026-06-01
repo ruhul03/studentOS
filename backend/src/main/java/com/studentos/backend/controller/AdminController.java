@@ -1,237 +1,120 @@
 package com.studentos.backend.controller;
 
 import com.studentos.backend.model.*;
-import com.studentos.backend.repository.*;
+import com.studentos.backend.service.AdminService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
-@SuppressWarnings("null")
 public class AdminController {
 
-    private final UserRepository userRepository;
-    private final ResourceRepository resourceRepository;
-    private final MarketplaceItemRepository marketplaceRepository;
-    private final CampusEventRepository eventRepository;
-    private final LostFoundItemRepository lostFoundRepository;
-    private final TrafficRepository trafficRepository;
-    private final ActivityRepository activityRepository;
-    private final CommentRepository commentRepository;
-    private final CourseReviewRepository reviewRepository;
-    private final NotificationRepository notificationRepository;
-    private final MessageRepository messageRepository;
-    private final StudyTaskRepository taskRepository;
-    private final ReviewRequestRepository reviewRequestRepository;
-    private final TuitionFeeRepository tuitionFeeRepository;
+    private final AdminService adminService;
 
-    public AdminController(UserRepository userRepository, 
-                           ResourceRepository resourceRepository,
-                           MarketplaceItemRepository marketplaceRepository,
-                           CampusEventRepository eventRepository,
-                           LostFoundItemRepository lostFoundRepository,
-                           TrafficRepository trafficRepository,
-                           ActivityRepository activityRepository,
-                           CommentRepository commentRepository,
-                           CourseReviewRepository reviewRepository,
-                           NotificationRepository notificationRepository,
-                           MessageRepository messageRepository,
-                           StudyTaskRepository taskRepository,
-                           ReviewRequestRepository reviewRequestRepository,
-                           TuitionFeeRepository tuitionFeeRepository) {
-        this.userRepository = userRepository;
-        this.resourceRepository = resourceRepository;
-        this.marketplaceRepository = marketplaceRepository;
-        this.eventRepository = eventRepository;
-        this.lostFoundRepository = lostFoundRepository;
-        this.trafficRepository = trafficRepository;
-        this.activityRepository = activityRepository;
-        this.commentRepository = commentRepository;
-        this.reviewRepository = reviewRepository;
-        this.notificationRepository = notificationRepository;
-        this.messageRepository = messageRepository;
-        this.taskRepository = taskRepository;
-        this.reviewRequestRepository = reviewRequestRepository;
-        this.tuitionFeeRepository = tuitionFeeRepository;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Long>> getStats() {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("totalUsers", userRepository.count());
-        stats.put("totalResources", resourceRepository.count());
-        stats.put("totalMarketplaceItems", marketplaceRepository.count());
-        stats.put("totalEvents", eventRepository.count());
-        stats.put("totalLostFoundItems", lostFoundRepository.count());
-        return ResponseEntity.ok(stats);
+        return ResponseEntity.ok(adminService.getSystemStats());
     }
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> getHealth() {
-        Map<String, Object> health = new HashMap<>();
-        Runtime runtime = Runtime.getRuntime();
-        
-        long totalMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
-        long usedMemory = totalMemory - freeMemory;
-        double memoryUsage = (double) usedMemory / totalMemory * 100;
-
-        health.put("memoryUsage", Math.round(memoryUsage * 100.0) / 100.0);
-        health.put("totalMemory", totalMemory / (1024 * 1024)); // MB
-        health.put("usedMemory", usedMemory / (1024 * 1024)); // MB
-        health.put("uptime", java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime());
-        health.put("dbStatus", "CONNECTED");
-        health.put("activeSessions", userRepository.count()); // Simple proxy for now
-        health.put("cpuLoad", 15.5); // Placeholder if real CPU not easily available without extra libs
-        
-        return ResponseEntity.ok(health);
+        return ResponseEntity.ok(adminService.getSystemHealth());
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+        return ResponseEntity.ok(adminService.getAllUsers());
     }
 
     @DeleteMapping("/users/{id}")
-    @Transactional
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    // Manual cascade for administrative safety - Purge all user footprints
-                    
-                    // 1. Handle indirect dependencies for CourseReviews (Purge via JPA cascade)
-                    List<CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
-                    userReviews.forEach(review -> {
-                        notificationRepository.deleteByRelatedEntityId(review.getId());
-                        reviewRepository.delete(review);
-                    });
-                    
-                    // 2. Clear sent notifications (where user is sender)
-                    notificationRepository.deleteBySender(user);
-                    
-                    // 3. Normal cascading deletes
-                    resourceRepository.deleteByUploader(user);
-                    marketplaceRepository.deleteBySeller(user);
-                    lostFoundRepository.deleteByReporter(user);
-                    eventRepository.deleteByUploaderId(id);
-                    activityRepository.deleteByUserId(id);
-                    commentRepository.deleteByCommenter(user);
-                    notificationRepository.deleteByRecipient(user);
-                    messageRepository.deleteBySenderIdOrReceiverId(id, id);
-                    taskRepository.deleteByUserId(id);
-                    reviewRequestRepository.deleteByRequester(user);
-                    tuitionFeeRepository.deleteByUserId(id);
-                    
-                    userRepository.delete(user);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (adminService.deleteUser(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/users/{id}/role")
     public ResponseEntity<User> toggleUserRole(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    String currentRole = user.getRole();
-                    user.setRole("ADMIN".equals(currentRole) ? "STUDENT" : "ADMIN");
-                    return ResponseEntity.ok(userRepository.save(user));
-                })
+        return adminService.toggleUserRole(id)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Resource Management
     @GetMapping("/resources")
-    public ResponseEntity<?> getAllResources() {
-        return ResponseEntity.ok(resourceRepository.findAll());
+    public ResponseEntity<List<Resource>> getAllResources() {
+        return ResponseEntity.ok(adminService.getAllResources());
     }
 
     @DeleteMapping("/resources/{id}")
     public ResponseEntity<?> deleteResource(@PathVariable Long id) {
-        if (!resourceRepository.existsById(id)) return ResponseEntity.notFound().build();
-        resourceRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        if (adminService.deleteResource(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Marketplace Management
     @GetMapping("/marketplace")
-    public ResponseEntity<?> getAllMarketplaceItems() {
-        return ResponseEntity.ok(marketplaceRepository.findAll());
+    public ResponseEntity<List<MarketplaceItem>> getAllMarketplaceItems() {
+        return ResponseEntity.ok(adminService.getAllMarketplaceItems());
     }
 
     @DeleteMapping("/marketplace/{id}")
     public ResponseEntity<?> deleteMarketplaceItem(@PathVariable Long id) {
-        if (!marketplaceRepository.existsById(id)) return ResponseEntity.notFound().build();
-        marketplaceRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        if (adminService.deleteMarketplaceItem(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Event Management
     @GetMapping("/events")
-    public ResponseEntity<?> getAllEvents() {
-        return ResponseEntity.ok(eventRepository.findAll());
+    public ResponseEntity<List<CampusEvent>> getAllEvents() {
+        return ResponseEntity.ok(adminService.getAllEvents());
     }
 
     @DeleteMapping("/events/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
-        if (!eventRepository.existsById(id)) return ResponseEntity.notFound().build();
-        eventRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        if (adminService.deleteEvent(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // User Insights & Activity
     @GetMapping("/users/{id}/activity")
-    public ResponseEntity<?> getUserActivity(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    Map<String, Object> activity = new HashMap<>();
-                    activity.put("user", user);
-                    activity.put("resources", resourceRepository.findAllByUploader(user));
-                    activity.put("marketplace", marketplaceRepository.findAllBySeller(user));
-                    activity.put("events", eventRepository.findAllByUploaderId(id));
-                    activity.put("lostFound", lostFoundRepository.findAllByReporter(user));
-                    return ResponseEntity.ok(activity);
-                })
+    public ResponseEntity<Map<String, Object>> getUserActivity(@PathVariable Long id) {
+        return adminService.getUserActivity(id)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/traffic")
     public ResponseEntity<List<Map<String, Object>>> getTrafficStats() {
-        return ResponseEntity.ok(trafficRepository.getDailyTrafficLast7Days());
+        return ResponseEntity.ok(adminService.getDailyTrafficLast7Days());
     }
 
     @GetMapping("/analytics/growth")
     public ResponseEntity<List<Map<String, Object>>> getGrowthStats() {
-        return ResponseEntity.ok(userRepository.getRegistrationGrowth());
+        return ResponseEntity.ok(adminService.getRegistrationGrowth());
     }
 
     @GetMapping("/analytics/departments")
     public ResponseEntity<List<Map<String, Object>>> getDepartmentStats() {
-        return ResponseEntity.ok(userRepository.getDepartmentDistribution());
+        return ResponseEntity.ok(adminService.getDepartmentDistribution());
     }
 
     @GetMapping("/analytics/contributors")
     public ResponseEntity<List<Map<String, Object>>> getTopContributors() {
-        List<User> users = userRepository.findAll();
-        List<Map<String, Object>> contributors = users.stream()
-                .map(user -> {
-                    long total = resourceRepository.countByUploader(user) +
-                                 marketplaceRepository.countBySeller(user) +
-                                 eventRepository.countByUploaderId(user.getId()) +
-                                 lostFoundRepository.countByReporter(user);
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("name", user.getName());
-                    map.put("username", user.getUsername());
-                    map.put("totalContributions", total);
-                    return map;
-                })
-                .sorted((a, b) -> Long.compare((long)b.get("totalContributions"), (long)a.get("totalContributions")))
-                .limit(5)
-                .toList();
-        return ResponseEntity.ok(contributors);
+        return ResponseEntity.ok(adminService.getTopContributors());
     }
 }

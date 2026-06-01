@@ -55,7 +55,7 @@ public class User implements UserDetails {
     private String studentId;
 
     private String dateOfBirth;
-    
+
     private String phoneNumber;
 
     @Builder.Default

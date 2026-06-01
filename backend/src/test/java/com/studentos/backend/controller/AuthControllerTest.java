@@ -3,6 +3,7 @@ package com.studentos.backend.controller;
 import com.studentos.backend.dto.LoginRequest;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,13 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class AuthControllerTest {
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private JwtUtil jwtUtil;
+    private AuthService authService;
 
     @InjectMocks
     private AuthController authController;
@@ -48,9 +43,7 @@ public class AuthControllerTest {
         mockUser.setRole("STUDENT");
         mockUser.setVerified(true);
 
-        Mockito.when(userRepository.findByEmail("test@student.com")).thenReturn(Optional.of(mockUser));
-        Mockito.when(passwordEncoder.matches("password123", "password123")).thenReturn(true);
-        Mockito.when(jwtUtil.generateToken(Mockito.anyString(), Mockito.anyString())).thenReturn("mocked-jwt-token");
+        Mockito.when(authService.loginUser(Mockito.any(LoginRequest.class))).thenReturn(mockUser);
 
         LoginRequest req = new LoginRequest();
         req.setEmail("test@student.com");
@@ -64,7 +57,8 @@ public class AuthControllerTest {
 
     @Test
     public void testLoginFailure() {
-        Mockito.when(userRepository.findByEmail("wrong@student.com")).thenReturn(Optional.empty());
+        Mockito.when(authService.loginUser(Mockito.any(LoginRequest.class)))
+               .thenThrow(new IllegalArgumentException("Invalid email/username or password."));
 
         LoginRequest req = new LoginRequest();
         req.setEmail("wrong@student.com");

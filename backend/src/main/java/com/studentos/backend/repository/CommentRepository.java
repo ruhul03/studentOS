@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByReviewIdOrderByCreatedAtAsc(Long reviewId);
-    
+
     @org.springframework.transaction.annotation.Transactional
     void deleteByCommenter(com.studentos.backend.model.User commenter);
 

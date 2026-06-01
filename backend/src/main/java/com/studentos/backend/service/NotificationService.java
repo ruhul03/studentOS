@@ -1,11 +1,14 @@
 package com.studentos.backend.service;
 
+import com.studentos.backend.exception.ResourceNotFoundException;
 import com.studentos.backend.model.Notification;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @SuppressWarnings("null")
@@ -57,5 +60,27 @@ public class NotificationService {
         sendPrivateNotification(recipientId, saved);
         
         return saved;
+    }
+
+    public void broadcastMessage(String message) {
+        java.util.Map<String, Object> payload = new java.util.HashMap<>();
+        payload.put("type", "broadcast");
+        payload.put("title", "Admin Broadcast");
+        payload.put("message", message);
+        payload.put("createdAt", java.time.LocalDateTime.now());
+        sendGlobalNotification(payload);
+    }
+
+    public List<Notification> getNotifications(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return notificationRepository.findByRecipientOrderByCreatedAtDesc(user);
+    }
+
+    public void markAsRead(Long id) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 }

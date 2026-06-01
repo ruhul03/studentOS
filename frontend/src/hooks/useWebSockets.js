@@ -56,6 +56,7 @@ export function useWebSockets(userId = null) {
             setMessageEvent(data);
             if (localStorage.getItem('notificationsMuted') !== 'true') playMessageReceivedSound();
           } catch (e) {
+            console.error('Failed to parse private message', e);
           }
         }
       });

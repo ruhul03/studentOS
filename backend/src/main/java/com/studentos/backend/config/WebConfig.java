@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final TrafficInterceptor trafficInterceptor;
-    
+
     @Value("${app.cors.allowed-origins:http://localhost:5174}")
     private String allowedOrigins;
 

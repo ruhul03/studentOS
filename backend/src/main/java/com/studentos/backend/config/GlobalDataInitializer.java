@@ -32,8 +32,8 @@ public class GlobalDataInitializer {
                     .password(passwordEncoder.encode("password123"))
                     .role("STUDENT")
                     .isVerified(true)
-                    .build());
-            
+                                .build());
+
             userRepository.save(User.builder()
                     .name("Admin User")
                     .username("admin")
@@ -51,7 +51,7 @@ public class GlobalDataInitializer {
                     .eventDate(LocalDateTime.now().plusDays(5))
                     .organizer("UIU Computer Club")
                     .build());
-            
+
             eventRepository.save(CampusEvent.builder()
                     .title("Career Fair @ Madani")
                     .description("Meet top recruiters at the UIU permanent campus.")

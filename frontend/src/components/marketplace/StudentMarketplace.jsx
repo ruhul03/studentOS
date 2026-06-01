@@ -1,57 +1,33 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchWithAuth } from '../../api';
 import { MarketplaceItemCard } from './MarketplaceItemCard';
 import { MarketplaceItemModal } from './MarketplaceItemModal';
 import { MarketplaceForm } from './MarketplaceForm';
-import { playDeleteSound, playSuccessSound, playErrorSound } from '../../utils/notificationSound';
+import { useMarketplace } from '../../hooks/useMarketplace';
+import LoadingState from '../ui/LoadingState';
+import ErrorState from '../ui/ErrorState';
 
 export function StudentMarketplace({ onProfileView }) {
   const { user } = useAuth();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [error, setError] = useState(null);
 
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    price: '',
-    condition: 'Good',
-    category: 'Books',
-    contactInfo: '',
-    itemPhotos: [],
-    photoPreviews: []
-  });
-
-  const API = `${import.meta.env.VITE_API_URL}/api/marketplace`;
-
-  const fetchItems = useCallback(async () => {
-    setLoading(true);
-    try {
-      const url = activeCategory === 'All' ? API : `${API}?category=${activeCategory}`;
-      const response = await fetchWithAuth(url);
-      if (response.ok) {
-        setItems(await response.json());
-      }
-    } catch (err) {
-      console.error('Failed to fetch items', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [API, activeCategory, user?.token]);
-
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+  const { 
+    items, 
+    isLoading, 
+    error, 
+    saveListing, 
+    deleteListing, 
+    markAsSold, 
+    refetch 
+  } = useMarketplace(activeCategory);
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => 
+    return (items || []).filter(item => 
       !search || 
       item.title.toLowerCase().includes(search.toLowerCase()) || 
       item.description.toLowerCase().includes(search.toLowerCase())
@@ -60,94 +36,23 @@ export function StudentMarketplace({ onProfileView }) {
 
   const handleOpenCreate = () => {
     setEditingItem(null);
-    setForm({ title: '', description: '', price: '', condition: 'Good', category: 'Books', contactInfo: '', itemPhotos: [], photoPreviews: [] });
     setShowForm(true);
   };
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
-    setForm({
-      title: item.title,
-      description: item.description,
-      price: item.price,
-      condition: item.condition,
-      category: item.category,
-      contactInfo: item.contactInfo,
-      itemPhotos: [],
-      photoPreviews: item.photosJson ? JSON.parse(item.photosJson) : []
-    });
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this listing?")) return;
-    try {
-      const resp = await fetchWithAuth(`${API}/${id}?userId=${user.id}`, { 
-        method: 'DELETE'
-      });
-      if (resp.ok) {
-        playDeleteSound();
-        fetchItems();
-      }
-    } catch (err) {
-      playDeleteSound();
-      console.error('Delete failed', err);
-    }
-  };
-
-  const markAsSold = async (id) => {
-    try {
-      const resp = await fetchWithAuth(`${API}/${id}/sold`, { 
-        method: 'PUT'
-      });
-      if (resp.ok) {
-        playSuccessSound();
-        fetchItems();
-      }
-    } catch (err) {
-      playSuccessSound();
-      console.error('Failed to mark as sold', err);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) return setError("Login required");
-    
-    setError(null);
-    const payload = {
-      ...form,
-      price: parseFloat(form.price),
-      sellerId: user.id,
-      photosJson: JSON.stringify(form.photoPreviews)
-    };
-    delete payload.itemPhotos;
-    delete payload.photoPreviews;
-
-    try {
-      const isEdit = !!editingItem;
-      const url = isEdit ? `${API}/${editingItem.id}` : API;
-      const response = await fetchWithAuth(url, {
-        method: isEdit ? 'PUT' : 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        playSuccessSound();
-        setShowForm(false);
-        fetchItems();
-      } else {
-        playErrorSound();
-        setError("Save failed. Try again.");
-      }
-    } catch (err) {
-      playErrorSound();
-      console.error('Save failed', err);
-      setError("Network error. Listing not saved.");
-    }
+    deleteListing({ id, userId: user.id });
   };
 
   const categories = ['All', 'Books', 'Electronics', 'Furniture', 'Clothing', 'Other'];
+
+  if (isLoading) return <LoadingState message="Loading campus marketplace..." />;
+  if (error) return <ErrorState message="Failed to load marketplace listings." onRetry={refetch} />;
 
   return (
     <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 animate-fade-in overflow-y-auto custom-scrollbar overflow-x-hidden">
@@ -208,13 +113,7 @@ export function StudentMarketplace({ onProfileView }) {
 
       {/* Grid */}
       <div className="flex-1 min-h-0">
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="h-80 bg-surface-container-low rounded-2xl animate-pulse border border-outline-variant/20"></div>
-            ))}
-          </div>
-        ) : filteredItems.length > 0 ? (
+        {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-24">
             <AnimatePresence mode="popLayout">
               {filteredItems.map(item => (
@@ -248,11 +147,8 @@ export function StudentMarketplace({ onProfileView }) {
       <MarketplaceForm 
         show={showForm}
         onClose={() => setShowForm(false)}
-        onSubmit={handleSubmit}
+        onSave={saveListing}
         editingItem={editingItem}
-        form={form}
-        setForm={setForm}
-        error={error}
       />
 
       <MarketplaceItemModal 

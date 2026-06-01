@@ -153,6 +153,22 @@ body {
   scrollbar-color: var(--outline-variant) var(--surface-container-lowest);
 }
 
+/* Custom Component Specific Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { 
+  width: 6px; 
+  height: 6px; 
+}
+.custom-scrollbar::-webkit-scrollbar-track { 
+  background: transparent; 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+  background-color: var(--outline-variant); 
+  border-radius: 10px; 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+  background-color: var(--primary); 
+}
+
 /* Typography styles */
 h1, .h1 {
   font-family: 'Inter', sans-serif;

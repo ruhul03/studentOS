@@ -1,6 +1,47 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 
-export function MarketplaceForm({ show, onClose, onSubmit, editingItem, form, setForm, error }) {
+export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
+  const { user } = useAuth();
+  const [error, setError] = useState(null);
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    price: '',
+    condition: 'Good',
+    category: 'Books',
+    contactInfo: '',
+    itemPhotos: [],
+    photoPreviews: []
+  });
+
+  useEffect(() => {
+    if (editingItem) {
+      setForm({
+        title: editingItem.title,
+        description: editingItem.description,
+        price: editingItem.price,
+        condition: editingItem.condition,
+        category: editingItem.category,
+        contactInfo: editingItem.contactInfo,
+        itemPhotos: [],
+        photoPreviews: editingItem.photosJson ? JSON.parse(editingItem.photosJson) : []
+      });
+    } else {
+      setForm({
+        title: '',
+        description: '',
+        price: '',
+        condition: 'Good',
+        category: 'Books',
+        contactInfo: '',
+        itemPhotos: [],
+        photoPreviews: []
+      });
+    }
+  }, [editingItem, show]);
+
   if (!show) return null;
 
   const handlePhotoUpload = (e) => {
@@ -24,6 +65,32 @@ export function MarketplaceForm({ show, onClose, onSubmit, editingItem, form, se
       photoPreviews: prev.photoPreviews.filter((_, i) => i !== index),
       itemPhotos: prev.itemPhotos.filter((_, i) => i !== index)
     }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) return setError("Login required");
+    
+    setError(null);
+    const payload = {
+      ...form,
+      price: parseFloat(form.price),
+      sellerId: user.id,
+      photosJson: JSON.stringify(form.photoPreviews)
+    };
+    delete payload.itemPhotos;
+    delete payload.photoPreviews;
+
+    try {
+      await onSave({
+        payload,
+        isEdit: !!editingItem,
+        itemId: editingItem?.id
+      });
+      onClose();
+    } catch (err) {
+      setError("Failed to save. Try again.");
+    }
   };
 
   return (
@@ -55,6 +122,7 @@ export function MarketplaceForm({ show, onClose, onSubmit, editingItem, form, se
             </p>
           </div>
           <button 
+            type="button"
             className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant w-12 h-12 flex items-center justify-center rounded-2xl transition-all"
             onClick={onClose}
           >
@@ -71,7 +139,7 @@ export function MarketplaceForm({ show, onClose, onSubmit, editingItem, form, se
             </div>
           )}
 
-          <form id="marketplace-form" onSubmit={onSubmit} className="space-y-8">
+          <form id="marketplace-form" onSubmit={handleSubmit} className="space-y-8">
             {/* Photo Section */}
             <div className="space-y-4">
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-70">Visual Assets</label>

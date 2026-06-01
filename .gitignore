@@ -29,3 +29,6 @@ mvnw.cmd
 # OS
 .DS_Store
 Thumbs.db
+
+.agents 
+skills-lock.json

@@ -23,22 +23,22 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserProfile(@PathVariable Long id) {
+    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
         return userService.getUserProfile(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable Long id,
+    public ResponseEntity<User> updateProfile(@PathVariable Long id,
                                          @Valid @RequestBody ProfileUpdateRequest profileUpdate,
                                          @AuthenticationPrincipal User currentUser) {
-        return userService.updateProfile(id, profileUpdate, currentUser);
+        return ResponseEntity.ok(userService.updateProfile(id, profileUpdate, currentUser));
     }
 
     @GetMapping("/{id}/stats")
     public ResponseEntity<?> getDashboardStats(@PathVariable Long id) {
-        return userService.getDashboardStats(id);
+        return ResponseEntity.ok(userService.getDashboardStats(id));
     }
 
     @GetMapping("/{id}/activities")
@@ -47,7 +47,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProfile(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
-        return userService.deleteProfile(id, currentUser);
+    public ResponseEntity<String> deleteProfile(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        userService.deleteProfile(id, currentUser);
+        return ResponseEntity.ok("Profile and all associated data deleted successfully.");
     }
 }

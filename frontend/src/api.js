@@ -22,13 +22,26 @@ export const fetchWithAuth = async (url, options = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(url, { ...options, headers });
-  
-  console.log(`API [${options.method || 'GET'}] ${url} -> ${response.status}`);
-  
-  if (response.status === 401) {
-    console.warn('Unauthorized request - check token');
-  }
+  try {
+    const response = await fetch(url, { ...options, headers });
+    
+    // Only log in development to prevent information leakage in production
+    if (import.meta.env.DEV) {
+      console.log(`API [${options.method || 'GET'}] ${url} -> ${response.status}`);
+    }
+    
+    if (response.status === 401) {
+      console.warn('Unauthorized request - check token');
+    }
 
-  return response;
+    return response;
+  } catch (error) {
+    console.error(`Network Error on [${options.method || 'GET'}] ${url}:`, error);
+    // Return a synthesized response object so the app doesn't crash on network failures
+    return {
+      ok: false,
+      status: 503,
+      json: async () => ({ message: 'Network error. Please check your connection.' })
+    };
+  }
 };

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { UsernameRecoveryForm } from './auth/UsernameRecoveryForm';
+import { PasswordCodeRequestForm } from './auth/PasswordCodeRequestForm';
+import { PasswordResetForm } from './auth/PasswordResetForm';
 
 export function ForgotCredentials() {
   const [activeTab, setActiveTab] = useState('username'); // 'username' or 'password'
@@ -107,6 +110,23 @@ export function ForgotCredentials() {
     }
   };
 
+  const renderActiveForm = () => {
+    if (activeTab === 'username') {
+      return <UsernameRecoveryForm email={email} setEmail={setEmail} handleForgotUsername={handleForgotUsername} loading={loading} />;
+    }
+
+    if (activeTab === 'password') {
+      if (resetStep === 1) {
+        return <PasswordCodeRequestForm email={email} setEmail={setEmail} handleRequestResetCode={handleRequestResetCode} loading={loading} />;
+      }
+      if (resetStep === 2) {
+        return <PasswordResetForm code={code} setCode={setCode} newPassword={newPassword} setNewPassword={setNewPassword} confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword} handleResetPassword={handleResetPassword} setResetStep={setResetStep} loading={loading} />;
+      }
+    }
+    
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col font-body-lg text-on-surface">
       {/* Top Header */}
@@ -115,9 +135,6 @@ export function ForgotCredentials() {
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
           StudentOS
         </div>
-        <nav>
-          {/* Support link removed as route doesn't exist */}
-        </nav>
       </header>
 
       {/* Main Content */}
@@ -185,144 +202,7 @@ export function ForgotCredentials() {
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
-            {activeTab === 'username' ? (
-              <motion.form 
-                key="username-form"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleForgotUsername}
-                className="flex flex-col gap-6"
-              >
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-caps text-xs text-on-surface-variant">Recovery Email</label>
-                  <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">mail</span>
-                    <input 
-                      type="email" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      placeholder="e.g. student@uiu.ac.bd"
-                      className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
-                    />
-                  </div>
-                </div>
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed mt-2"
-                >
-                  {loading ? 'RECOVERING...' : 'SHOW USERNAME'}
-                </button>
-              </motion.form>
-            ) : (
-              resetStep === 1 ? (
-                <motion.form 
-                  key="password-step-1"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  onSubmit={handleRequestResetCode}
-                  className="flex flex-col gap-6"
-                >
-                  <div className="flex flex-col gap-2">
-                    <label className="font-label-caps text-xs text-on-surface-variant">Recovery Email</label>
-                    <div className="relative flex items-center">
-                      <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">mail</span>
-                      <input 
-                        type="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        placeholder="e.g. student@uiu.ac.bd"
-                        className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
-                      />
-                    </div>
-                  </div>
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed mt-2"
-                  >
-                    {loading ? 'SENDING CODE...' : 'SEND RESET CODE'}
-                  </button>
-                </motion.form>
-              ) : (
-                <motion.form 
-                  key="password-step-2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  onSubmit={handleResetPassword}
-                  className="flex flex-col gap-5"
-                >
-                  <div className="flex flex-col gap-2">
-                    <label className="font-label-caps text-xs text-on-surface-variant">Verification Code</label>
-                    <div className="relative flex items-center">
-                      <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">pin</span>
-                      <input 
-                        type="text" 
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        required
-                        placeholder="6-digit code"
-                        className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="font-label-caps text-xs text-on-surface-variant">New Password</label>
-                    <div className="relative flex items-center">
-                      <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
-                      <input 
-                        type="password" 
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                        placeholder="••••••••"
-                        className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="font-label-caps text-xs text-on-surface-variant">Confirm New Password</label>
-                    <div className="relative flex items-center">
-                      <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
-                      <input 
-                        type="password" 
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        placeholder="••••••••"
-                        className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="pt-2">
-                    <button 
-                      type="submit" 
-                      disabled={loading}
-                      className="w-full py-3 bg-secondary text-on-secondary rounded-lg font-label-caps text-sm tracking-wider hover:bg-secondary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(78,222,163,0.1)] disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                      {loading ? 'RESETTING...' : 'RESET PASSWORD'}
-                    </button>
-                    <div className="text-center mt-4">
-                      <button 
-                        type="button" 
-                        onClick={() => setResetStep(1)} 
-                        className="font-body-sm text-sm text-primary hover:text-primary-fixed transition-colors font-medium bg-transparent border-none cursor-pointer"
-                      >
-                        Back to request code
-                      </button>
-                    </div>
-                  </div>
-                </motion.form>
-              )
-            )}
+            {renderActiveForm()}
           </AnimatePresence>
         </motion.div>
       </main>

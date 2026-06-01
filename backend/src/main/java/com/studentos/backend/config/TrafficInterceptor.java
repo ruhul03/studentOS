@@ -18,14 +18,14 @@ public class TrafficInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(@NonNull HttpServletRequest request, 
-                                @NonNull HttpServletResponse response, 
-                                @NonNull Object handler, 
+    public void afterCompletion(@NonNull HttpServletRequest request,
+                                @NonNull HttpServletResponse response,
+                                @NonNull Object handler,
                                 @Nullable Exception ex) {
         // Log API traffic asynchronously
         trafficService.logTraffic(
-            request.getRequestURI(), 
-            request.getMethod(), 
+            request.getRequestURI(),
+            request.getMethod(),
             getClientIp(request)
         );
     }

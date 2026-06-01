@@ -6,8 +6,8 @@ import com.studentos.backend.model.Activity;
 import com.studentos.backend.model.User;
 import com.studentos.backend.repository.*;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.studentos.backend.exception.ResourceNotFoundException;
+import com.studentos.backend.exception.UnauthorizedActionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,17 +66,13 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public ResponseEntity<?> updateProfile(Long id, ProfileUpdateRequest profileUpdate, User currentUser) {
+    public User updateProfile(Long id, ProfileUpdateRequest profileUpdate, User currentUser) {
         if (currentUser == null || (!currentUser.getId().equals(id) && !"ADMIN".equals(currentUser.getRole()))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only update your own profile.");
+            throw new UnauthorizedActionException("You can only update your own profile.");
         }
 
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-
-        User user = userOptional.get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         if (!"ADMIN".equals(currentUser.getRole()) && user.getUpdateCount() >= 2) {
             if (user.getLastUpdateAt() != null) {
@@ -84,24 +80,25 @@ public class UserService {
                 if (user.getLastUpdateAt().isBefore(lastMonth)) {
                     user.setUpdateCount(0);
                 } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You can only change your profile info twice a month.");
+                    throw new IllegalArgumentException("You can only change your profile info twice a month.");
                 }
             }
         }
 
         if (profileUpdate.getUsername() != null && !profileUpdate.getUsername().isEmpty() && !profileUpdate.getUsername().equals(user.getUsername())) {
             if (userRepository.existsByUsername(profileUpdate.getUsername())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
+                throw new IllegalArgumentException("Username is already taken.");
             }
             user.setUsername(profileUpdate.getUsername());
         }
 
         if (profileUpdate.getEmail() != null && !profileUpdate.getEmail().isEmpty() && !profileUpdate.getEmail().equals(user.getEmail())) {
-            if (!profileUpdate.getEmail().contains("@") || !profileUpdate.getEmail().contains(".")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format.");
+            String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+            if (!profileUpdate.getEmail().matches(emailRegex)) {
+                throw new IllegalArgumentException("Invalid email format.");
             }
             if (userRepository.existsByEmail(profileUpdate.getEmail())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already in use.");
+                throw new IllegalArgumentException("Email is already in use.");
             }
             user.setEmail(profileUpdate.getEmail());
         }
@@ -127,16 +124,12 @@ public class UserService {
                 .build();
         activityRepository.save(activity);
 
-        return ResponseEntity.ok(savedUser);
+        return savedUser;
     }
 
-    public ResponseEntity<?> getDashboardStats(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        User user = userOptional.get();
+    public UserStatsDTO getDashboardStats(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         UserStatsDTO stats = UserStatsDTO.builder()
                 .totalCourses(resourceRepository.countUniqueCoursesByUploader(user))
@@ -146,7 +139,7 @@ public class UserService {
                 .completedTasks(studyTaskRepository.countByUserIdAndCompletedTrue(id))
                 .build();
 
-        return ResponseEntity.ok(stats);
+        return stats;
     }
 
     public List<Activity> getActivities(Long id, Integer limit) {
@@ -156,35 +149,34 @@ public class UserService {
         return activityRepository.findByUserIdOrderByTimestampDesc(id);
     }
 
-    public ResponseEntity<?> deleteProfile(Long id, User currentUser) {
+    public void deleteProfile(Long id, User currentUser) {
         if (currentUser == null || (!currentUser.getId().equals(id) && !"ADMIN".equals(currentUser.getRole()))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own profile.");
+            throw new UnauthorizedActionException("You can only delete your own profile.");
         }
 
-        return userRepository.findById(id)
-                .map(user -> {
-                    List<com.studentos.backend.model.CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
-                    userReviews.forEach(review -> {
-                        notificationRepository.deleteByRelatedEntityId(review.getId());
-                        reviewRepository.delete(review);
-                    });
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                    notificationRepository.deleteBySender(user);
-                    resourceRepository.deleteByUploader(user);
-                    marketplaceItemRepository.deleteBySeller(user);
-                    lostFoundRepository.deleteByReporter(user);
-                    eventRepository.deleteByUploaderId(id);
-                    activityRepository.deleteByUserId(id);
-                    commentRepository.deleteByCommenter(user);
-                    notificationRepository.deleteByRecipient(user);
-                    messageRepository.deleteBySenderIdOrReceiverId(id, id);
-                    studyTaskRepository.deleteByUserId(id);
-                    reviewRequestRepository.deleteByRequester(user);
-                    tuitionFeeRepository.deleteByUserId(id);
+        List<com.studentos.backend.model.CourseReview> userReviews = reviewRepository.findAllByReviewer(user);
+        if (!userReviews.isEmpty()) {
+            List<Long> reviewIds = userReviews.stream().map(com.studentos.backend.model.CourseReview::getId).toList();
+            notificationRepository.deleteByRelatedEntityIdIn(reviewIds);
+            reviewRepository.deleteAll(userReviews);
+        }
 
-                    userRepository.delete(user);
-                    return ResponseEntity.ok("Profile and all associated data deleted successfully.");
-                })
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."));
+        notificationRepository.deleteBySender(user);
+        resourceRepository.deleteByUploader(user);
+        marketplaceItemRepository.deleteBySeller(user);
+        lostFoundRepository.deleteByReporter(user);
+        eventRepository.deleteByUploaderId(id);
+        activityRepository.deleteByUserId(id);
+        commentRepository.deleteByCommenter(user);
+        notificationRepository.deleteByRecipient(user);
+        messageRepository.deleteBySenderIdOrReceiverId(id, id);
+        studyTaskRepository.deleteByUserId(id);
+        reviewRequestRepository.deleteByRequester(user);
+        tuitionFeeRepository.deleteByUserId(id);
+
+        userRepository.delete(user);
     }
 }

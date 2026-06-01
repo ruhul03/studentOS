@@ -21,7 +21,7 @@ export function Register() {
 
   const isValidEmail = (email) => {
     // Restrict to *.uiu.ac.bd domains
-    const regex = /^[\w-\.]+@([\w-]+\.)?uiu\.ac\.bd$/;
+    const regex = /^[\w-.]+@([\w-]+\.)?uiu\.ac\.bd$/;
     return regex.test(email);
   };
 
