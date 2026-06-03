@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, X } from 'lucide-react';
 
 export function ReviewRequestForm({ isOpen, onClose, onSubmit, initialData = null }) {
   const [courseCode, setCourseCode] = useState(initialData?.courseCode || '');
+  const [courseName, setCourseName] = useState(initialData?.courseName || '');
   const [professor, setProfessor] = useState(initialData?.professor || '');
   const [isAnonymous, setIsAnonymous] = useState(initialData?.anonymous || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      setCourseCode(initialData?.courseCode || '');
+      setCourseName(initialData?.courseName || '');
+      setProfessor(initialData?.professor || '');
+      setIsAnonymous(initialData?.anonymous || false);
+    }
+  }, [isOpen, initialData]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await onSubmit({ courseCode, professor, anonymous: isAnonymous });
+    await onSubmit({ courseCode, courseName, professor, anonymous: isAnonymous });
     setIsSubmitting(false);
     onClose();
   };
@@ -52,15 +62,27 @@ export function ReviewRequestForm({ isOpen, onClose, onSubmit, initialData = nul
                 Can't find a review for a course? Ask your fellow students! They'll be notified when someone shares their experience.
               </p>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Code *</label>
-                <input 
-                  className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all uppercase"
-                  placeholder="e.g., CSE 422"
-                  value={courseCode}
-                  onChange={e => setCourseCode(e.target.value)}
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Code *</label>
+                  <input 
+                    className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all uppercase"
+                    placeholder="e.g., CSE 422"
+                    value={courseCode}
+                    onChange={e => setCourseCode(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Course Title (Optional)</label>
+                  <input 
+                    className="w-full bg-surface border border-white/5 rounded-2xl p-4 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all"
+                    placeholder="e.g., Artificial Intelligence"
+                    value={courseName}
+                    onChange={e => setCourseName(e.target.value)}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

@@ -11,6 +11,9 @@ public class ReviewRequestSubmit {
     @Size(max = 20, message = "Course code too long")
     private String courseCode;
 
+    @Size(max = 100, message = "Course name too long")
+    private String courseName;
+
     @Size(max = 100, message = "Professor name too long")
     private String professor;
 

@@ -239,6 +239,9 @@ erDiagram
   - `Centralized Inbox`: Built `Inbox.jsx` providing a full-screen, two-pane layout for all Direct Messages, fully integrated with real-time WebSockets and reachable via the main sidebar.
   - `Resource Interaction`: Added inline "Edit" controls for resource authors and a "Message" button on `ResourceCard` enabling direct user-to-author communication.
   - `Admin Course Reviews`: Added full management of `CourseReview` entities into the Admin Dashboard, introducing `TabReviews.jsx` and new robust backend administrative endpoints for review monitoring and secure deletion.
+  - `Review Requests`: Expanded the `ReviewRequest` entity and forms to support `courseName` (Course Title), allowing students to request reviews for specific course titles, and seamlessly pre-filling this data when fulfilling a request.
+  - `Marketplace Branding`: Converted marketplace pricing indicators globally from Dollars ($) to the Bangladeshi Taka (৳) symbol.
+  - `Lost & Found UX`: Overhauled the "Mark as Resolved" action on `LostFoundItemCard` with a smooth loading state and dynamic text transitions during API calls.
 - **DevOps & Scripting**:
   - `Run Script Architecture`: Rebuilt `run-all.bat` with a robust, interactive TUI (Text User Interface) for managing the Node and Java development servers, integrating strict taskkill procedures and resolving CRLF batch script parsing faults.
 

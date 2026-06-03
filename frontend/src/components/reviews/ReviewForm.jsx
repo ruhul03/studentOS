@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Star, Zap } from 'lucide-react';
 
@@ -11,6 +11,20 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
   const [reviewText, setReviewText] = useState(initialData?.reviewText || '');
   const [isAnonymous, setIsAnonymous] = useState(initialData?.anonymous || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isEdit = initialData && !initialData.requestId;
+
+  useEffect(() => {
+    if (isOpen) {
+      setCourseCode(initialData?.courseCode || '');
+      setCourseName(initialData?.courseName || '');
+      setProfessor(initialData?.professor || '');
+      setDifficultyRating(initialData?.difficultyRating || 3);
+      setQualityRating(initialData?.qualityRating || 3);
+      setReviewText(initialData?.reviewText || '');
+      setIsAnonymous(initialData?.anonymous || false);
+    }
+  }, [isOpen, initialData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +59,7 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
                   <MessageSquare size={24} />
                 </div>
                 <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">
-                  {initialData ? 'Edit Review' : 'Write a Review'}
+                  {isEdit ? 'Edit Review' : 'Write a Review'}
                 </h2>
               </div>
               <button onClick={onClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
@@ -158,7 +172,7 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
                   disabled={isSubmitting}
                   className="flex-[2] py-4 rounded-2xl bg-primary text-on-primary text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all"
                 >
-                  {isSubmitting ? 'Syncing...' : (initialData ? 'Update Review' : 'Publish Review')}
+                  {isSubmitting ? 'Syncing...' : (isEdit ? 'Update Review' : 'Publish Review')}
                 </button>
               </div>
             </form>

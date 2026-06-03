@@ -39,6 +39,7 @@ public class ReviewRequestService {
 
         ReviewRequest reviewRequest = ReviewRequest.builder()
                 .courseCode(request.getCourseCode())
+                .courseName(request.getCourseName())
                 .professor(request.getProfessor())
                 .requester(user)
                 .anonymous(request.isAnonymous())
@@ -69,6 +70,7 @@ public class ReviewRequestService {
         }
 
         reviewRequest.setCourseCode(request.getCourseCode());
+        reviewRequest.setCourseName(request.getCourseName());
         reviewRequest.setProfessor(request.getProfessor());
         reviewRequest.setAnonymous(request.isAnonymous());
 

@@ -24,6 +24,9 @@ public class ReviewRequest {
     @Column(nullable = false)
     private String courseCode;
 
+    @Column
+    private String courseName;
+
     @Column(nullable = false)
     private String professor;
 

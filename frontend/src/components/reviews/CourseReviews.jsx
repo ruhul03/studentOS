@@ -224,7 +224,7 @@ export function CourseReviews() {
                     </div>
                     <button 
                       onClick={() => {
-                        setEditingReview({ courseCode: req.courseCode, professor: req.professor || '', requestId: req.id });
+                        setEditingReview({ courseCode: req.courseCode, courseName: req.courseName || '', professor: req.professor || '', requestId: req.id });
                         setShowForm(true);
                       }}
                       className="mt-2 w-full py-2 bg-white/5 hover:bg-primary hover:text-on-primary rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all"
