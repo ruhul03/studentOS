@@ -215,19 +215,23 @@ erDiagram
 
 ### 6. Code Review & Performance Optimizations (Recent)
 - **Backend Optimizations**:
+  - `Lazy Loading Safety`: Fixed severe server crashes (`LazyInitializationException`) occurring during Jackson serialization of relationships on `Resource`, `MarketplaceItem`, `CourseReview`, and `ReviewRequest` endpoints. Replaced problematic `LAZY` fetch configurations globally with optimized `@EntityGraph` annotations in Spring Data Repositories for eager fetching on specific queries, preventing N+1 issues while ensuring serialization safety.
   - `AuthService`: Upgraded verification code generator to use `SecureRandom` (CWE-330 fix).
   - `UserService` & `AdminService`: Resolved N+1 query bottlenecks during user deletion by leveraging bulk delete queries in `NotificationRepository` (`deleteByRelatedEntityIdIn`).
   - `AdminService`: Removed `parallelStream()` anti-pattern in `getTopContributors` to prevent JVM ForkJoin pool exhaustion, replacing it with a standard stream.
-  - `Controllers`: Fixed Spring Boot 3.2 explicit parameter names issue globally by configuring `maven-compiler-plugin` and explicitly adding parameter names to `@PathVariable` and `@RequestParam` annotations (e.g. `UserController`, `MarketplaceController`, `StudyPlannerController`, `AdminController`) to prevent 500 runtime errors before a clean compile.
+  - `Controllers`: Fixed Spring Boot 3.2 explicit parameter names issue globally by configuring `maven-compiler-plugin` and explicitly adding parameter names to `@PathVariable` and `@RequestParam` annotations.
   - `MessageRepository`: Implemented an optimized native SQL query with a self-join to efficiently fetch the latest message per conversation, powering the centralized Inbox.
-  - `ResourceController`: Added `PUT /api/resources/{id}` allowing authors to edit resources securely. Fixed `LazyInitializationException` via `@EntityGraph(attributePaths = {"author"})`.
+  - `ResourceController`: Added `PUT /api/resources/{id}` allowing authors to edit resources securely.
+- **Database Architecture Updates**:
+  - `MySQL Schema Adjustments`: Diagnosed and resolved fatal `Data truncation` errors on photo uploads by forcefully altering the schema for `marketplace_items` and `lost_found_items` to upgrade the `photos_json` column type from `TEXT` to `LONGTEXT`. Added `@Column(columnDefinition = "LONGTEXT")` mappings to JPA entities.
 - **Frontend Optimizations**:
   - `React Query`: Upgraded deprecated v4 query invalidation syntax (`queryClient.invalidateQueries([...])`) to v5 object syntax (`{ queryKey: [...] }`) in hooks like `useStudyTasks.js` to fix silent failures.
   - `Error Handling`: Hardened component renders (`StudyPlanner`, `StudentMarketplace`) against `Null Pointer Exceptions` and `TypeError` crashes by enforcing `Array.isArray()` fallbacks and optional chaining (`?.`) when parsing dynamic backend payloads, preventing white-screen fatal errors during empty states or backend anomalies.
 - **UI & Design System Overhaul**:
-  - `Design System`: Completely overhauled the UI to an Apple-style aesthetic using pure Tailwind CSS variables in `index.css` supporting dynamic Light/Dark mode via a new `ThemeContext`. This semantic token system ensures dark and light themes apply automatically to every page in the application.
-  - `Iconography`: Deprecated error-prone `material-symbols-outlined` in favor of reliable, vector-based `lucide-react` icons. All frontend components (Auth, Dashboard, Planner, Social, Market, LostFound, Events, Admin, profile, Help, Diagnostics) are fully migrated, and the build succeeds flawlessly.
-  - `Mobile Responsiveness`: Built a `MobileNav.jsx` bottom-tab bar for mobile layouts and applied `md:` and `lg:` Tailwind breakpoints across all grid and flex components to guarantee total responsiveness across desktop, tablet, and mobile views.
+  - `Study Planner UI Refinement`: Ensured task card action buttons (edit, complete, delete) are universally visible (especially on touch devices) by removing strict hover-based opacity gates from the `TaskCard` component within the Focus List.
+  - `Design System`: Completely overhauled the UI to an Apple-style aesthetic using pure Tailwind CSS variables in `index.css` supporting dynamic Light/Dark mode via a new `ThemeContext`.
+  - `Iconography`: Deprecated error-prone `material-symbols-outlined` in favor of reliable, vector-based `lucide-react` icons.
+  - `Mobile Responsiveness`: Built a `MobileNav.jsx` bottom-tab bar for mobile layouts and applied `md:` and `lg:` Tailwind breakpoints across all grid and flex components.
   - `Study Planner Fix`: Rewrote and fixed rendering bugs in the planner modules (`StudyPlanner`, `FocusList`, `WeeklyCalendarView`, `PlannerModal`, `TaskCard`) matching the new responsive design.
 - **New Features (Recent)**:
   - `Centralized Inbox`: Built `Inbox.jsx` providing a full-screen, two-pane layout for all Direct Messages, fully integrated with real-time WebSockets and reachable via the main sidebar.
