@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Users, Target, ShieldCheck } from 'lucide-react';
 
 export function About() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function About() {
           className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-semibold transition-colors group" 
           onClick={() => navigate(-1)}
         >
-          <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+          <ArrowLeft size={24} className="transition-transform group-hover:-translate-x-1" />
           Back
         </button>
         <div 
@@ -26,7 +27,7 @@ export function About() {
         {/* Header */}
         <header className="text-center mb-16 md:mb-24">
           <div className="w-20 h-20 rounded-[2rem] bg-primary/10 flex items-center justify-center mx-auto mb-8 border border-primary/20 shadow-lg shadow-primary/5">
-            <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>group</span>
+            <Users size={40} className="text-primary fill-current" />
           </div>
           <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight leading-tight">About StudentOS</h1>
           <p className="text-xl md:text-2xl text-on-surface-variant leading-relaxed max-w-3xl mx-auto">
@@ -57,7 +58,7 @@ export function About() {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           <div className="p-8 bg-surface-container-low border border-outline-variant rounded-3xl hover:bg-surface-container-high transition-all group">
             <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>target</span>
+              <Target size={24} className="text-secondary fill-current" />
             </div>
             <h3 className="text-xl font-bold mb-4">Focus</h3>
             <p className="text-on-surface-variant leading-relaxed">
@@ -67,7 +68,7 @@ export function About() {
           
           <div className="p-8 bg-surface-container-low border border-outline-variant rounded-3xl hover:bg-surface-container-high transition-all group">
             <div className="w-12 h-12 rounded-2xl bg-tertiary/10 flex items-center justify-center mb-6 border border-tertiary/20 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+              <ShieldCheck size={24} className="text-tertiary fill-current" />
             </div>
             <h3 className="text-xl font-bold mb-4">Trust</h3>
             <p className="text-on-surface-variant leading-relaxed">

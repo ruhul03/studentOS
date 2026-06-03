@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { CampusServiceModal } from './CampusServiceModal';
 import { CafeteriaMenuModal } from './CafeteriaMenuModal';
+import { Search, Library, HeartPulse, Utensils, Bus, Building2, Clock, MapPin, SearchX } from 'lucide-react';
 
 export function CampusServicesDirectory() {
   const [services, setServices] = useState([]);
@@ -59,11 +60,11 @@ export function CampusServicesDirectory() {
 
   const getIconForCategory = (cat) => {
     switch (cat?.toLowerCase()) {
-      case 'library': return { icon: 'local_library', colorClass: 'text-primary', bgClass: 'bg-primary/10' };
-      case 'medical': return { icon: 'medical_services', colorClass: 'text-error', bgClass: 'bg-error/10' };
-      case 'food': return { icon: 'restaurant', colorClass: 'text-tertiary', bgClass: 'bg-tertiary/10' };
-      case 'transport': return { icon: 'directions_bus', colorClass: 'text-secondary', bgClass: 'bg-secondary/10' };
-      default: return { icon: 'business', colorClass: 'text-primary', bgClass: 'bg-primary/10' };
+      case 'library': return { icon: Library, colorClass: 'text-primary', bgClass: 'bg-primary/10' };
+      case 'medical': return { icon: HeartPulse, colorClass: 'text-error', bgClass: 'bg-error/10' };
+      case 'food': return { icon: Utensils, colorClass: 'text-tertiary', bgClass: 'bg-tertiary/10' };
+      case 'transport': return { icon: Bus, colorClass: 'text-secondary', bgClass: 'bg-secondary/10' };
+      default: return { icon: Building2, colorClass: 'text-primary', bgClass: 'bg-primary/10' };
     }
   };
 
@@ -78,7 +79,7 @@ export function CampusServicesDirectory() {
           </div>
           
           <div className="relative max-w-2xl">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" size={20} />
             <input 
               className="w-full bg-surface-container-high border border-outline-variant rounded-full py-3 pl-12 pr-4 text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm shadow-sm" 
               placeholder="Search campus services..." 
@@ -117,7 +118,7 @@ export function CampusServicesDirectory() {
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
               {services.map((service) => {
-                const { icon, colorClass, bgClass } = getIconForCategory(service.category);
+                const serviceIcon = getIconForCategory(service.category);
                 const isOpen = service.status === 'Open' || service.status === 'Running';
                 
                 return (
@@ -132,7 +133,7 @@ export function CampusServicesDirectory() {
                     <div className="flex justify-between items-start mb-6">
                       <div className="flex items-center gap-4">
                         <div className={`p-3 rounded-lg ${bgClass} ${colorClass}`}>
-                          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
+                          <serviceIcon.icon size={24} strokeWidth={2.5} />
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-on-surface leading-tight group-hover:text-primary transition-colors">
@@ -156,14 +157,14 @@ export function CampusServicesDirectory() {
                     
                     <div className="space-y-4 mb-6">
                       <div className="flex items-start gap-3">
-                        <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">schedule</span>
+                        <Clock size={18} className="text-outline mt-0.5" />
                         <span className="text-sm font-medium text-on-surface-variant">
                           {service.operatingHours}
                         </span>
                       </div>
                       
                       <div className="flex items-start gap-3">
-                        <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">location_on</span>
+                        <MapPin size={18} className="text-outline mt-0.5" />
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-on-surface-variant">
                             {service.location}
@@ -203,7 +204,7 @@ export function CampusServicesDirectory() {
 
         {services.length === 0 && !loading && (
           <div className="text-center p-12 border border-outline-variant/30 rounded-xl bg-surface-container-lowest">
-            <span className="material-symbols-outlined text-[48px] text-outline mb-4">search_off</span>
+            <SearchX size={48} className="text-outline mb-4 mx-auto" strokeWidth={1.5} />
             <h3 className="text-xl font-bold text-on-surface mb-2">No services found</h3>
             <p className="text-on-surface-variant">
               We couldn't find any campus services matching your criteria.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, X } from 'lucide-react';
 
 export function ReviewRequestForm({ isOpen, onClose, onSubmit, initialData = null }) {
   const [courseCode, setCourseCode] = useState(initialData?.courseCode || '');
@@ -35,14 +36,14 @@ export function ReviewRequestForm({ isOpen, onClose, onSubmit, initialData = nul
             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
-                  <span className="material-symbols-outlined text-[24px]">mail</span>
+                  <Mail size={24} />
                 </div>
                 <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">
                   {initialData ? 'Edit Request' : 'Ask for Review'}
                 </h2>
               </div>
               <button onClick={onClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
-                <span className="material-symbols-outlined">close</span>
+                <X size={20} />
               </button>
             </div>
 

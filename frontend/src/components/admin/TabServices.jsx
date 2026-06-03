@@ -1,4 +1,5 @@
 import { AdminTable } from './AdminTable';
+import { Plus, Edit3, Trash2 } from 'lucide-react';
 
 export function TabServices({ services, onAddService, onEditService, onDeleteService }) {
   const addAction = (
@@ -6,7 +7,7 @@ export function TabServices({ services, onAddService, onEditService, onDeleteSer
       onClick={onAddService}
       className="px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-primary-fixed transition-all"
     >
-      <span className="material-symbols-outlined text-[18px]">add</span> Add Service
+      <Plus size={18} /> Add Service
     </button>
   );
 
@@ -31,10 +32,10 @@ export function TabServices({ services, onAddService, onEditService, onDeleteSer
                 className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all shadow-sm"
                 title="Edit Service"
               >
-                <span className="material-symbols-outlined text-[18px]">edit</span>
+                <Edit3 size={18} />
               </button>
               <button onClick={() => onDeleteService(s.id)} className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-error/20 hover:text-error transition-all shadow-sm" title="Decommission">
-                <span className="material-symbols-outlined text-[18px]">delete</span>
+                <Trash2 size={18} />
               </button>
             </div>
           </td>

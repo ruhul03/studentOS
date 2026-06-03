@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function WeeklyCalendarView({
   weekData,
@@ -24,22 +25,22 @@ export function WeeklyCalendarView({
         </div>
         <div className="flex items-center gap-1 bg-surface-container-high/50 backdrop-blur-xl p-1.5 rounded-2xl border border-outline-variant/30 shadow-lg">
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95 cursor-pointer"
             onClick={() => { setWeekOffset(w => w - 1); playTabSound(); }}
           >
-            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+            <ChevronLeft size={20} />
           </button>
           <button
-            className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors"
+            className="px-5 py-2 text-xs font-black uppercase tracking-widest text-on-surface hover:text-primary transition-colors cursor-pointer"
             onClick={() => { setWeekOffset(0); playTabSound(); }}
           >
             Today
           </button>
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all active:scale-95 cursor-pointer"
             onClick={() => { setWeekOffset(w => w + 1); playTabSound(); }}
           >
-            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+            <ChevronRight size={20} />
           </button>
         </div>
       </div>

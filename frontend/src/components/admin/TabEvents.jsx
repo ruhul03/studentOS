@@ -1,4 +1,5 @@
 import { AdminTable } from './AdminTable';
+import { Trash2 } from 'lucide-react';
 
 export function TabEvents({ events, onDeleteEvent }) {
   return (
@@ -18,7 +19,7 @@ export function TabEvents({ events, onDeleteEvent }) {
           </td>
           <td className="py-5 px-8 text-right">
             <button onClick={() => onDeleteEvent(e.id)} className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-error/20 hover:text-error transition-all ml-auto">
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <Trash2 size={18} />
             </button>
           </td>
         </tr>

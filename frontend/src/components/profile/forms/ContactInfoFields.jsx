@@ -1,15 +1,17 @@
+import { Contact, Mail, Calendar, Phone } from 'lucide-react';
+
 export function ContactInfoFields({ formData, setFormData }) {
   return (
     <section className="space-y-4">
       <h3 className="font-label-caps text-xs font-semibold tracking-wider text-secondary border-b border-outline-variant/30 pb-2 flex items-center gap-2">
-        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>contact_mail</span>
+        <Contact size={16} />
         CONTACT INFORMATION
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">University Email</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
+            <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="email" 
               value={formData.email} 
@@ -23,7 +25,7 @@ export function ContactInfoFields({ formData, setFormData }) {
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">Date of Birth</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">calendar_month</span>
+            <Calendar size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="date" 
               value={formData.dateOfBirth} 
@@ -35,7 +37,7 @@ export function ContactInfoFields({ formData, setFormData }) {
         <div className="space-y-1 md:col-span-2">
           <label className="font-body-sm text-sm text-on-surface-variant block">Phone / WhatsApp</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">call</span>
+            <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="tel" 
               value={formData.phoneNumber} 

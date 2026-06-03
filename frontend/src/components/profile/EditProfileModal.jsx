@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AcademicIdentityFields } from './forms/AcademicIdentityFields';
 import { ContactInfoFields } from './forms/ContactInfoFields';
+import { X, User as UserIcon, Camera, FileText } from 'lucide-react';
 
 export function EditProfileModal({ isOpen, onClose, onSave, initialData, isUpdating }) {
   const fileInputRef = useRef(null);
@@ -82,8 +83,8 @@ export function EditProfileModal({ isOpen, onClose, onSave, initialData, isUpdat
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high/50 shrink-0">
           <h2 className="font-h2 text-h2 text-on-surface">Edit Profile</h2>
-          <button type="button" className="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container-highest" onClick={onClose}>
-            <span className="material-symbols-outlined">close</span>
+          <button type="button" className="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container-highest cursor-pointer" onClick={onClose}>
+            <X size={24} />
           </button>
         </div>
 
@@ -100,11 +101,11 @@ export function EditProfileModal({ isOpen, onClose, onSave, initialData, isUpdat
                   <img src={formData.profilePicture} alt="Profile" className="w-24 h-24 rounded-full object-cover border-2 border-primary/20" />
                 ) : (
                   <div className="w-24 h-24 rounded-full flex items-center justify-center bg-surface-container-highest border-2 border-outline-variant text-outline">
-                    <span className="material-symbols-outlined text-4xl">person</span>
+                    <UserIcon size={36} strokeWidth={1} />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-background/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="material-symbols-outlined text-on-surface">photo_camera</span>
+                  <Camera size={24} className="text-on-surface" />
                 </div>
                 <input 
                   type="file" 
@@ -145,7 +146,7 @@ export function EditProfileModal({ isOpen, onClose, onSave, initialData, isUpdat
             {/* Section: Bio */}
             <section className="space-y-4">
               <h3 className="font-label-caps text-xs font-semibold tracking-wider text-tertiary border-b border-outline-variant/30 pb-2 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>description</span>
+                <FileText size={16} />
                 SHORT BIO
               </h3>
               <div className="space-y-1">

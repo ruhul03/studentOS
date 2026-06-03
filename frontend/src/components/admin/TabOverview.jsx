@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { StatCard } from './StatCard';
+import { Users, Calendar, BookOpen, Banknote } from 'lucide-react';
 
 export function TabOverview({ stats, health, onShowDiagnostics }) {
   if (!stats) {
@@ -23,28 +24,28 @@ export function TabOverview({ stats, health, onShowDiagnostics }) {
         <StatCard 
           label="Total Students" 
           value={stats.totalUsers} 
-          icon="groups" 
+          icon={<Users size={20} />} 
           color="from-blue-500/20 to-indigo-600/20" 
           textColor="text-indigo-400" 
         />
         <StatCard 
           label="Active Events" 
           value={stats.totalEvents} 
-          icon="event" 
+          icon={<Calendar size={20} />} 
           color="from-pink-500/20 to-rose-600/20" 
           textColor="text-rose-400" 
         />
         <StatCard 
           label="Resource Assets" 
           value={stats.totalResources} 
-          icon="auto_stories" 
+          icon={<BookOpen size={20} />} 
           color="from-emerald-500/20 to-teal-600/20" 
           textColor="text-emerald-400" 
         />
         <StatCard 
           label="Market Volume" 
           value={stats.totalMarketplaceItems} 
-          icon="payments" 
+          icon={<Banknote size={20} />} 
           color="from-amber-500/20 to-orange-600/20" 
           textColor="text-amber-400" 
         />

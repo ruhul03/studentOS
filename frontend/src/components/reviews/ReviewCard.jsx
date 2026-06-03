@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CommentSection } from './CommentSection';
+import { Star, Sparkles, ThumbsUp, MessageSquare, Pencil, Trash2 } from 'lucide-react';
 
 export function ReviewCard({ review, user, onEdit, onDelete, onHelpful, onView }) {
   const [showComments, setShowComments] = useState(false);
@@ -20,13 +21,12 @@ export function ReviewCard({ review, user, onEdit, onDelete, onHelpful, onView }
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
-      <span 
+      <Star
         key={i} 
-        className={`material-symbols-outlined text-[12px] ${i < rating ? 'text-amber-500' : 'text-on-surface-variant/10'}`}
-        style={{ fontVariationSettings: i < rating ? "'FILL' 1" : "'FILL' 0" }}
-      >
-        star
-      </span>
+        size={12}
+        strokeWidth={2.5}
+        className={i < rating ? 'text-amber-500 fill-amber-500' : 'text-on-surface-variant/20'}
+      />
     ));
   };
 
@@ -59,7 +59,7 @@ export function ReviewCard({ review, user, onEdit, onDelete, onHelpful, onView }
           <span className="text-lg font-black text-on-surface leading-none">
             {review.qualityRating?.toFixed(1)}
           </span>
-          <span className="material-symbols-outlined text-amber-500 text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+          <Sparkles className="text-amber-500" size={20} strokeWidth={2.5} />
         </div>
       </div>
 
@@ -104,23 +104,23 @@ export function ReviewCard({ review, user, onEdit, onDelete, onHelpful, onView }
 
           <div className="flex items-center gap-1.5 bg-surface-container-high/50 p-1 rounded-2xl border border-outline-variant/30">
             <button 
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                 review.isHelpful ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:text-on-surface hover:bg-white/5'
               }`}
               onClick={() => onHelpful(review.id)}
               disabled={review.isHelpful}
             >
-              <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: review.isHelpful ? "'FILL' 1" : "'FILL' 0" }}>thumb_up</span>
+              <ThumbsUp size={16} className={review.isHelpful ? 'fill-current' : ''} />
               {review.helpfulVotes || 0}
             </button>
             
             <button 
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                 showComments ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:text-on-surface hover:bg-white/5'
               }`}
               onClick={() => setShowComments(!showComments)}
             >
-              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: showComments ? "'FILL' 1" : "'FILL' 0" }}>chat_bubble</span>
+              <MessageSquare size={18} className={showComments ? 'fill-current' : ''} />
             </button>
           </div>
         </div>
@@ -137,16 +137,16 @@ export function ReviewCard({ review, user, onEdit, onDelete, onHelpful, onView }
            {canManage && (
             <div className="flex gap-2">
               <button 
-                className="w-8 h-8 rounded-lg text-on-surface-variant/40 hover:text-primary hover:bg-primary/10 transition-all flex items-center justify-center"
+                className="w-8 h-8 rounded-lg text-on-surface-variant/40 hover:text-primary hover:bg-primary/10 transition-all flex items-center justify-center cursor-pointer"
                 onClick={() => onEdit(review)}
               >
-                <span className="material-symbols-outlined text-[16px]">edit</span>
+                <Pencil size={16} />
               </button>
               <button 
-                className="w-8 h-8 rounded-lg text-on-surface-variant/40 hover:text-error hover:bg-error/10 transition-all flex items-center justify-center"
+                className="w-8 h-8 rounded-lg text-on-surface-variant/40 hover:text-error hover:bg-error/10 transition-all flex items-center justify-center cursor-pointer"
                 onClick={() => onDelete(review.id)}
               >
-                <span className="material-symbols-outlined text-[16px]">delete</span>
+                <Trash2 size={16} />
               </button>
             </div>
            )}

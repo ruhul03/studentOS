@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, Workflow, ShoppingBag, MessageSquareQuote, Loader2, Search, X, ArrowRight, Frown } from 'lucide-react';
 
 const CATEGORIES = {
-  resource: { icon: 'description', color: 'text-primary', label: 'Resource' },
-  service: { icon: 'hub', color: 'text-secondary', label: 'Service' },
-  marketplace: { icon: 'shopping_bag', color: 'text-tertiary', label: 'Market' },
-  review: { icon: 'reviews', color: 'text-on-surface-variant', label: 'Review' }
+  resource: { icon: FileText, color: 'text-primary', label: 'Resource' },
+  service: { icon: Workflow, color: 'text-secondary', label: 'Service' },
+  marketplace: { icon: ShoppingBag, color: 'text-tertiary', label: 'Market' },
+  review: { icon: MessageSquareQuote, color: 'text-on-surface-variant', label: 'Review' }
 };
 
 export function GlobalSearch({ onNavigate }) {
@@ -129,9 +130,9 @@ export function GlobalSearch({ onNavigate }) {
       <div className={`group flex items-center bg-surface-container border rounded-2xl px-4 py-2.5 transition-all duration-500 ${
         isOpen ? 'border-primary ring-4 ring-primary/10 shadow-2xl bg-surface-container-high' : 'border-outline-variant hover:border-outline/50'
       }`}>
-        <span className={`material-symbols-outlined text-[20px] mr-3 transition-colors ${isOpen ? 'text-primary' : 'text-on-surface-variant'}`}>
-          {isLoading ? 'progress_activity' : 'search'}
-        </span>
+        <div className={`mr-3 transition-colors ${isOpen ? 'text-primary' : 'text-on-surface-variant'}`}>
+          {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
+        </div>
         <input
           type="text"
           placeholder="Search campus resources, services, reviews..."
@@ -146,10 +147,10 @@ export function GlobalSearch({ onNavigate }) {
         />
         {query && (
           <button 
-            className="text-on-surface-variant hover:text-on-surface p-1 hover:bg-surface-variant rounded-full transition-all" 
+            className="text-on-surface-variant hover:text-on-surface p-1 hover:bg-surface-variant rounded-full transition-all cursor-pointer" 
             onClick={() => { setQuery(''); setResults([]); }}
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X size={18} />
           </button>
         )}
       </div>
@@ -182,9 +183,14 @@ export function GlobalSearch({ onNavigate }) {
                     onClick={() => handleNavigate(result.type)}
                   >
                     <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container shadow-inner transition-transform group-hover:scale-110 ${CATEGORIES[result.type].color}`}>
-                      <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        {CATEGORIES[result.type].icon}
-                      </span>
+                      {(() => {
+                        const Icon = CATEGORIES[result.type].icon;
+                        return <Icon size={20} className="fill-current opacity-20 absolute" />;
+                      })()}
+                      {(() => {
+                        const Icon = CATEGORIES[result.type].icon;
+                        return <Icon size={20} />;
+                      })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
@@ -195,16 +201,16 @@ export function GlobalSearch({ onNavigate }) {
                       </div>
                       <span className="text-[11px] text-on-surface-variant block truncate opacity-70 font-medium">{result.subtitle}</span>
                     </div>
-                    <span className={`material-symbols-outlined transition-all text-[18px] ${idx === activeIndex ? 'text-primary translate-x-0' : 'text-on-surface-variant/0 -translate-x-2 group-hover:text-on-surface-variant group-hover:translate-x-0'}`}>
-                      arrow_forward
-                    </span>
+                    <div className={`transition-all ${idx === activeIndex ? 'text-primary translate-x-0' : 'text-on-surface-variant/0 -translate-x-2 group-hover:text-on-surface-variant group-hover:translate-x-0'}`}>
+                      <ArrowRight size={18} />
+                    </div>
                   </motion.div>
                 ))}
               </div>
             ) : !isLoading && (
               <div className="p-12 text-center flex flex-col items-center gap-4">
                 <div className="w-16 h-16 rounded-[2rem] bg-surface-container-high flex items-center justify-center text-outline-variant shadow-inner">
-                  <span className="material-symbols-outlined text-3xl">sentiment_dissatisfied</span>
+                  <Frown size={32} />
                 </div>
                 <div>
                   <p className="text-sm font-black text-on-surface mb-1 uppercase tracking-widest">No matches found</p>

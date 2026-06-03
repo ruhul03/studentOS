@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSuccessSound, playErrorSound } from '../utils/notificationSound';
+import { GraduationCap, AlertCircle, User, Lock, ArrowRight } from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -60,7 +61,7 @@ export function Login() {
       {/* Top Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-md fixed top-0 z-50">
         <div className="font-h3 text-xl font-bold tracking-tight text-primary cursor-pointer flex items-center gap-2" onClick={() => navigate('/')}>
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+          <GraduationCap size={24} className="fill-current" />
           StudentOS
         </div>
         <nav>
@@ -92,7 +93,7 @@ export function Login() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-6 p-3 rounded-lg bg-error/10 border border-error/20 text-error font-body-sm text-sm flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">error</span>
+                <AlertCircle size={18} />
                 {error}
               </motion.div>
             )}
@@ -102,7 +103,7 @@ export function Login() {
             <div className="flex flex-col gap-2">
               <label className="font-label-caps text-xs text-on-surface-variant">Email or Username</label>
               <div className="relative flex items-center">
-                <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">person</span>
+                <User size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                 <input 
                   type="text" 
                   value={email} 
@@ -120,7 +121,7 @@ export function Login() {
                 <Link to="/forgot-credentials" className="font-body-sm text-xs text-primary hover:text-primary-fixed transition-colors font-medium">Forgot Password?</Link>
               </div>
               <div className="relative flex items-center">
-                <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
+                <Lock size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                 <input 
                   type="password" 
                   value={password} 
@@ -136,10 +137,10 @@ export function Login() {
               <button 
                 type="submit" 
                 disabled={loading} 
-                className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? 'LOGGING IN...' : 'LOG IN'}
-                {!loading && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
+                {!loading && <ArrowRight size={18} />}
               </button>
             </div>
           </form>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, CheckCircle, CheckCheck } from 'lucide-react';
 
 export function LostFoundFiltersModal({ 
   isOpen, 
@@ -60,7 +61,7 @@ export function LostFoundFiltersModal({
                 onClick={onClose}
                 className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant w-10 h-10 flex items-center justify-center rounded-xl transition-all"
               >
-                <span className="material-symbols-outlined">close</span>
+                <X size={20} />
               </button>
             </div>
 
@@ -126,7 +127,7 @@ export function LostFoundFiltersModal({
                       }`}
                     >
                       <span className="text-xs font-bold uppercase tracking-wider">{option}</span>
-                      {dateRange === option && <span className="material-symbols-outlined text-[18px]">check_circle</span>}
+                      {dateRange === option && <CheckCircle size={18} />}
                     </button>
                   ))}
                 </div>
@@ -146,7 +147,7 @@ export function LostFoundFiltersModal({
                 className="px-8 py-3 rounded-xl bg-primary text-on-primary text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-primary/20 flex items-center gap-2"
               >
                 Apply Filters
-                <span className="material-symbols-outlined text-[18px]">done_all</span>
+                <CheckCheck size={18} />
               </button>
             </div>
           </motion.div>

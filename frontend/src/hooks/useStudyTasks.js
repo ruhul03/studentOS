@@ -34,7 +34,7 @@ export function useStudyTasks(userId) {
     onMutate: async (id) => {
       playToggleSound();
       // Optimistic update
-      await queryClient.cancelQueries(['studyTasks', userId]);
+      await queryClient.cancelQueries({ queryKey: ['studyTasks', userId] });
       const previousTasks = queryClient.getQueryData(['studyTasks', userId]);
       queryClient.setQueryData(['studyTasks', userId], old => 
         old?.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
@@ -45,7 +45,7 @@ export function useStudyTasks(userId) {
       queryClient.setQueryData(['studyTasks', userId], context.previousTasks);
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['studyTasks', userId]);
+      queryClient.invalidateQueries({ queryKey: ['studyTasks', userId] });
     }
   });
 
@@ -58,7 +58,7 @@ export function useStudyTasks(userId) {
     onMutate: async (id) => {
       playDeleteSound();
       // Optimistic update
-      await queryClient.cancelQueries(['studyTasks', userId]);
+      await queryClient.cancelQueries({ queryKey: ['studyTasks', userId] });
       const previousTasks = queryClient.getQueryData(['studyTasks', userId]);
       queryClient.setQueryData(['studyTasks', userId], old => old?.filter(t => t.id !== id));
       return { previousTasks };
@@ -67,7 +67,7 @@ export function useStudyTasks(userId) {
       queryClient.setQueryData(['studyTasks', userId], context.previousTasks);
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['studyTasks', userId]);
+      queryClient.invalidateQueries({ queryKey: ['studyTasks', userId] });
     }
   });
 
@@ -77,6 +77,6 @@ export function useStudyTasks(userId) {
     error,
     toggleTask: toggleTaskMutation.mutate,
     deleteTask: deleteTaskMutation.mutate,
-    refetch: () => queryClient.invalidateQueries(['studyTasks', userId])
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['studyTasks', userId] })
   };
 }

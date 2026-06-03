@@ -7,6 +7,7 @@ import { AccountSettings } from './settings/AccountSettings';
 import { NotificationSettings } from './settings/NotificationSettings';
 import { SecuritySettings } from './settings/SecuritySettings';
 import { PrivacySettings } from './settings/PrivacySettings';
+import { User, Bell, Shield, Lock, CheckCircle } from 'lucide-react';
 
 export function SettingsPage() {
   const [activeSection, setActiveSection] = useState('account');
@@ -20,10 +21,10 @@ export function SettingsPage() {
   } = useSettingsMutations();
 
   const sections = [
-    { id: 'account', label: 'Account', icon: 'person' },
-    { id: 'notifications', label: 'Notifications', icon: 'notifications' },
-    { id: 'security', label: 'Security', icon: 'security' },
-    { id: 'privacy', label: 'Privacy', icon: 'lock' }
+    { id: 'account', label: 'Account', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'privacy', label: 'Privacy', icon: Lock }
   ];
 
   return (
@@ -42,7 +43,7 @@ export function SettingsPage() {
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-500/20 flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">verified</span>
+              <CheckCircle size={18} className="shrink-0" />
               Changes Saved Successfully
             </motion.div>
           )}
@@ -62,7 +63,7 @@ export function SettingsPage() {
                   : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
               }`}
             >
-              <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: activeSection === section.id ? "'FILL' 1" : "'FILL' 0" }}>{section.icon}</span>
+              <section.icon size={22} className={`${activeSection === section.id ? 'fill-current' : ''}`} />
               {section.label}
               {activeSection === section.id && (
                 <motion.div layoutId="active-settings" className="ml-auto w-1.5 h-1.5 rounded-full bg-on-primary shadow-sm" />

@@ -34,7 +34,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         if (adminService.deleteUser(id)) {
             return ResponseEntity.ok().build();
         }
@@ -42,7 +42,7 @@ public class AdminController {
     }
 
     @PatchMapping("/users/{id}/role")
-    public ResponseEntity<User> toggleUserRole(@PathVariable Long id) {
+    public ResponseEntity<User> toggleUserRole(@PathVariable("id") Long id) {
         return adminService.toggleUserRole(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -55,7 +55,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/resources/{id}")
-    public ResponseEntity<?> deleteResource(@PathVariable Long id) {
+    public ResponseEntity<?> deleteResource(@PathVariable("id") Long id) {
         if (adminService.deleteResource(id)) {
             return ResponseEntity.ok().build();
         }
@@ -69,7 +69,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/marketplace/{id}")
-    public ResponseEntity<?> deleteMarketplaceItem(@PathVariable Long id) {
+    public ResponseEntity<?> deleteMarketplaceItem(@PathVariable("id") Long id) {
         if (adminService.deleteMarketplaceItem(id)) {
             return ResponseEntity.ok().build();
         }
@@ -83,7 +83,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/events/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable("id") Long id) {
         if (adminService.deleteEvent(id)) {
             return ResponseEntity.ok().build();
         }
@@ -92,7 +92,7 @@ public class AdminController {
 
     // User Insights & Activity
     @GetMapping("/users/{id}/activity")
-    public ResponseEntity<Map<String, Object>> getUserActivity(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getUserActivity(@PathVariable("id") Long id) {
         return adminService.getUserActivity(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

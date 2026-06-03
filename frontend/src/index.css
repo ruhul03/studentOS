@@ -5,58 +5,57 @@
 @tailwind utilities;
 
 :root {
-  /* Surface colors */
-  --surface: #11141b;
-  --surface-dim: #0d0f14;
-  --surface-bright: #1f222c;
-  --surface-container-lowest: #07080a;
-  --surface-container-low: #11141b;
-  --surface-container: #151921;
-  --surface-container-high: #1c212b;
-  --surface-container-highest: #252a37;
+  /* Apple-style Light Theme Surface colors */
+  --surface: #ffffff;
+  --surface-dim: #f3f4f6;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f9fafb;
+  --surface-container: #f3f4f6;
+  --surface-container-high: #e5e7eb;
+  --surface-container-highest: #d1d5db;
   
   /* On-surface colors */
-  --on-surface: #f1f5f9;
-  --on-surface-variant: #94a3b8;
-  --inverse-surface: #f1f5f9;
-  --inverse-on-surface: #0f172a;
+  --on-surface: #111827;
+  --on-surface-variant: #4b5563;
+  --inverse-surface: #1f2937;
+  --inverse-on-surface: #f9fafb;
   
   /* Outline */
-  --outline: #475569;
-  --outline-variant: #1e293b;
+  --outline: #d1d5db;
+  --outline-variant: #e5e7eb;
   
-  /* Brand/Accent Colors */
-  --accent-primary: #818cf8; /* Vibrant Indigo */
-  --accent-secondary: #2dd4bf; /* Teal/Emerald */
-  --accent-tertiary: #c084fc; /* Purple/Violet */
+  /* Accent Colors */
+  --accent-primary: #007aff;
+  --accent-secondary: #34c759;
+  --accent-tertiary: #5856d6;
   
   /* Main Colors */
-  --primary: #818cf8;
+  --primary: #007aff;
   --on-primary: #ffffff;
-  --primary-container: #4f46e5;
-  --on-primary-container: #e0e7ff;
-  --inverse-primary: #4338ca;
+  --primary-container: #dbeafe;
+  --on-primary-container: #1e3a8a;
   
-  --secondary: #2dd4bf;
-  --on-secondary: #042f2e;
-  --secondary-container: #0d9488;
-  --on-secondary-container: #ccfbf1;
+  --secondary: #34c759;
+  --on-secondary: #ffffff;
+  --secondary-container: #dcfce7;
+  --on-secondary-container: #14532d;
   
-  --tertiary: #c084fc;
-  --on-tertiary: #3b0764;
-  --tertiary-container: #9333ea;
-  --on-tertiary-container: #f5f3ff;
+  --tertiary: #5856d6;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #e0e7ff;
+  --on-tertiary-container: #312e81;
   
-  --error: #fb7185;
-  --on-error: #4c0519;
-  --error-container: #e11d48;
-  --on-error-container: #fff1f2;
+  --error: #ff3b30;
+  --on-error: #ffffff;
+  --error-container: #fee2e2;
+  --on-error-container: #7f1d1d;
   
   /* Background */
-  --background: #09090b; /* True deep dark */
-  --bg-card: #11141d; 
-  --on-background: #ffffff; 
-  --text-dim: #94a3b8; 
+  --background: #f2f2f7;
+  --bg-card: #ffffff; 
+  --on-background: #000000; 
+  --text-dim: #64748b; 
   
   /* Spacing */
   --spacing-base: 4px;
@@ -69,23 +68,72 @@
   --spacing-margin: 32px;
 
   /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
   
   /* Aliases for App.css backward compatibility */
   --aura-purple: var(--accent-primary);
-  --aura-purple-glow: rgba(99, 102, 241, 0.2);
+  --aura-purple-glow: rgba(0, 122, 255, 0.2);
   --aura-cyan: var(--accent-secondary);
-  --aura-pink: #8b5cf6;
-  --aura-pink-glow: rgba(139, 92, 246, 0.2);
+  --aura-pink: #ff2d55;
+  --aura-pink-glow: rgba(255, 45, 85, 0.2);
   
   --bg-deep: var(--background);
   --glass-border: var(--outline-variant);
   --text-main: var(--on-background);
   --text-muted: var(--text-dim);
+}
+
+.dark {
+  /* Apple-style Dark Theme (like macOS Dark Mode) */
+  --surface: #1c1c1e;
+  --surface-dim: #151517;
+  --surface-bright: #2c2c2e;
+  --surface-container-lowest: #000000;
+  --surface-container-low: #1c1c1e;
+  --surface-container: #2c2c2e;
+  --surface-container-high: #3a3a3c;
+  --surface-container-highest: #48484a;
+  
+  --on-surface: #ffffff;
+  --on-surface-variant: #ebebf599;
+  --inverse-surface: #ffffff;
+  --inverse-on-surface: #1c1c1e;
+  
+  --outline: #38383a;
+  --outline-variant: #2c2c2e;
+  
+  --accent-primary: #0a84ff;
+  --accent-secondary: #30d158;
+  --accent-tertiary: #5e5ce6;
+  
+  --primary: #0a84ff;
+  --on-primary: #ffffff;
+  --primary-container: #0040dd;
+  --on-primary-container: #d1e1ff;
+  
+  --secondary: #30d158;
+  --on-secondary: #ffffff;
+  --secondary-container: #005914;
+  --on-secondary-container: #b3fbc5;
+  
+  --tertiary: #5e5ce6;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #3634a3;
+  --on-tertiary-container: #e0e0ff;
+  
+  --error: #ff453a;
+  --on-error: #ffffff;
+  --error-container: #8a1a14;
+  --on-error-container: #ffdad6;
+  
+  --background: #000000;
+  --bg-card: #1c1c1e; 
+  --on-background: #ffffff; 
+  --text-dim: #ebebf599; 
 }
 
 * {

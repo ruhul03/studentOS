@@ -8,6 +8,7 @@ import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
 import { EditProfileModal } from '../components/profile/EditProfileModal';
 import { DeleteProfileModal } from '../components/profile/DeleteProfileModal';
+import { ArrowLeft, User as UserIcon, Edit3, CreditCard, Contact, FileText, Shield, Trash2 } from 'lucide-react';
 
 export function Profile() {
   const { user } = useAuth();
@@ -50,10 +51,10 @@ export function Profile() {
     <div className="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full h-full overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
       {(!isOwnProfile || userId) && (
         <button 
-          className="mb-6 flex items-center gap-2 text-outline hover:text-white transition-colors text-sm font-medium" 
+          className="mb-6 flex items-center gap-2 text-outline hover:text-white transition-colors text-sm font-medium cursor-pointer" 
           onClick={() => navigate(-1)}
         >
-          <span className="material-symbols-outlined text-sm">arrow_back</span> Back
+          <ArrowLeft size={18} /> Back
         </button>
       )}
 
@@ -65,7 +66,7 @@ export function Profile() {
               <img src={viewedUser.profilePicture} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <div className="text-outline flex items-center justify-center">
-                <span className="material-symbols-outlined text-6xl">person</span>
+                <UserIcon size={64} strokeWidth={1} />
               </div>
             )}
           </div>
@@ -80,10 +81,10 @@ export function Profile() {
           <div className="flex flex-wrap justify-center md:justify-start gap-4">
             {isOwnProfile && (
               <button 
-                className="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-body-sm text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.2)]"
+                className="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-body-sm text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.2)] cursor-pointer"
                 onClick={() => setIsEditing(true)}
               >
-                <span className="material-symbols-outlined text-[18px]">edit</span>
+                <Edit3 size={18} />
                 Edit Profile
               </button>
             )}
@@ -96,7 +97,7 @@ export function Profile() {
         {/* Detail Card 1: ID & Batch */}
         <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 hover:bg-surface-bright transition-colors shadow-sm">
           <div className="flex items-center gap-3 mb-4 text-primary">
-            <span className="material-symbols-outlined">badge</span>
+            <IdCard size={24} />
             <h3 className="font-h3 text-h3 text-on-surface">Academic Identity</h3>
           </div>
           <div className="space-y-4">
@@ -118,7 +119,7 @@ export function Profile() {
         {/* Detail Card 2: Contact Info */}
         <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 hover:bg-surface-bright transition-colors shadow-sm lg:col-span-2">
           <div className="flex items-center gap-3 mb-4 text-primary">
-            <span className="material-symbols-outlined">contact_mail</span>
+            <Contact size={24} />
             <h3 className="font-h3 text-h3 text-on-surface">Contact Information</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -145,7 +146,7 @@ export function Profile() {
       {/* Bio Section */}
       <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 hover:bg-surface-bright transition-colors shadow-sm mb-12">
         <div className="flex items-center gap-3 mb-4 text-primary">
-          <span className="material-symbols-outlined">article</span>
+          <FileText size={24} />
           <h3 className="font-h3 text-h3 text-on-surface">Biography</h3>
         </div>
         <p className="font-body-lg text-sm text-on-surface-variant leading-relaxed">
@@ -162,15 +163,15 @@ export function Profile() {
               <p className="font-body-lg text-base font-semibold text-on-surface mb-1">Delete Account</p>
               <p className="font-body-sm text-sm text-on-surface-variant">Once you delete your account, there is no going back. Please be certain.</p>
               <p className="text-xs text-outline mt-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">shield</span>
+                <Shield size={14} />
                 Changes remaining: {Math.max(0, 2 - (user?.updateCount || 0))}
               </p>
             </div>
             <button 
-              className="shrink-0 bg-transparent border border-error text-error hover:bg-error hover:text-on-error px-6 py-2.5 rounded-lg font-body-sm text-sm transition-colors flex items-center gap-2"
+              className="shrink-0 bg-transparent border border-error text-error hover:bg-error hover:text-on-error px-6 py-2.5 rounded-lg font-body-sm text-sm transition-colors flex items-center gap-2 cursor-pointer"
               onClick={() => setShowDeleteConfirm(true)}
             >
-              <span className="material-symbols-outlined text-[18px]">delete_forever</span>
+              <Trash2 size={18} />
               Delete Account
             </button>
           </div>

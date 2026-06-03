@@ -1,3 +1,5 @@
+import { Calendar, Clock } from 'lucide-react';
+
 export function EntryFormFields({
   entryType,
   title, setTitle,
@@ -32,7 +34,7 @@ export function EntryFormFields({
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-on-surface-variant" htmlFor="entry-date">Date</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">calendar_month</span>
+            <Calendar size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none" />
             <input 
               id="entry-date" 
               className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-2.5 text-on-surface focus:outline-none focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed transition-all [color-scheme:dark]" 
@@ -45,7 +47,7 @@ export function EntryFormFields({
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-on-surface-variant" htmlFor="entry-time">Time</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">schedule</span>
+            <Clock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none" />
             <input 
               id="entry-time" 
               className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-2.5 text-on-surface focus:outline-none focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed transition-all [color-scheme:dark]" 

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { TaskCard } from './TaskCard';
+import { ListTodo, Check, Trash2, CheckSquare } from 'lucide-react';
 
 export function FocusList({
   pendingTasks,
@@ -22,7 +23,7 @@ export function FocusList({
             <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-60 mt-1">{pendingTasks.length} PENDING TASKS</p>
           </div>
           <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>list_alt</span>
+            <ListTodo size={20} strokeWidth={2} />
           </div>
         </div>
 
@@ -31,7 +32,7 @@ export function FocusList({
             <button
               key={s}
               onClick={() => { setSortBy(s); playTabSound(); }}
-              className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all ${sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+              className={`flex-1 text-[9px] font-black uppercase tracking-widest py-2 rounded-lg transition-all cursor-pointer ${sortBy === s ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
             >
               {s}
             </button>
@@ -71,12 +72,12 @@ export function FocusList({
             <div className="space-y-2">
               {completedTasks.slice(0, 5).map(task => (
                 <motion.div layout key={task.id} className="group bg-surface-container/30 rounded-xl p-3 flex gap-4 opacity-50 hover:opacity-100 transition-opacity">
-                  <button onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-on-primary text-[14px] font-black">check</span>
+                  <button onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0 cursor-pointer">
+                    <Check size={14} strokeWidth={3} className="text-on-primary" />
                   </button>
                   <span className="text-xs font-medium text-on-surface line-through truncate flex-1">{task.title}</span>
-                  <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error transition-all">
-                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                  <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error transition-all cursor-pointer">
+                    <Trash2 size={16} />
                   </button>
                 </motion.div>
               ))}
@@ -87,7 +88,7 @@ export function FocusList({
         {tasks?.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-12 opacity-30">
             <div className="w-20 h-20 rounded-[2.5rem] bg-surface-container-highest flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined text-4xl">task_alt</span>
+              <CheckSquare size={32} />
             </div>
             <h3 className="text-lg font-black text-on-surface mb-2">Clean Slate!</h3>
             <p className="text-xs font-medium">No pending tasks found. Enjoy your free time or add a new goal.</p>

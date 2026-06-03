@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, Check } from 'lucide-react';
 
 export function EventModal({ 
   show, 
@@ -27,7 +28,7 @@ export function EventModal({
           <div className="px-6 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-high shrink-0">
             <h2 className="text-xl font-bold text-on-surface">{isEditing ? 'Edit Event' : 'Create New Event'}</h2>
             <button className="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-lg hover:bg-surface-variant" onClick={onClose}>
-              <span className="material-symbols-outlined">close</span>
+              <X size={20} />
             </button>
           </div>
 
@@ -120,7 +121,7 @@ export function EventModal({
               form="event-form"
               className="px-6 py-2 rounded-lg bg-primary text-on-primary text-sm font-bold hover:opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
             >
-              <span className="material-symbols-outlined text-[18px]">check</span>
+              <Check size={18} />
               {isEditing ? 'Update Event' : 'Create Event'}
             </button>
           </div>

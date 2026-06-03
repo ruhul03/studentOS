@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CommentSection } from './CommentSection';
+import { Star, X, ThumbsUp } from 'lucide-react';
 
 export function ReviewDetailModal({ review, isOpen, onClose, user, onHelpful }) {
   if (!review) return null;
@@ -11,13 +12,11 @@ export function ReviewDetailModal({ review, isOpen, onClose, user, onHelpful }) 
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
-      <span 
+      <Star 
         key={i} 
-        className={`material-symbols-outlined text-[16px] ${i < rating ? 'text-amber-500' : 'text-on-surface-variant/10'}`}
-        style={{ fontVariationSettings: i < rating ? "'FILL' 1" : "'FILL' 0" }}
-      >
-        star
-      </span>
+        size={16}
+        className={`${i < rating ? 'text-amber-500 fill-current' : 'text-on-surface-variant/10'}`}
+      />
     ));
   };
 
@@ -56,7 +55,7 @@ export function ReviewDetailModal({ review, isOpen, onClose, user, onHelpful }) 
                   {review.courseCode}
                 </span>
                 <button onClick={onClose} className="md:hidden w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                  <span className="material-symbols-outlined">close</span>
+                  <X size={20} />
                 </button>
               </div>
 
@@ -107,7 +106,7 @@ export function ReviewDetailModal({ review, isOpen, onClose, user, onHelpful }) 
                <div className="p-8 pb-4 flex justify-between items-center border-b border-outline-variant/20">
                   <h3 className="text-lg font-black text-on-surface tracking-tight">Discussion</h3>
                   <button onClick={onClose} className="hidden md:flex w-10 h-10 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-all">
-                    <span className="material-symbols-outlined">close</span>
+                    <X size={20} />
                   </button>
                </div>
                
@@ -126,7 +125,7 @@ export function ReviewDetailModal({ review, isOpen, onClose, user, onHelpful }) 
                       review.isHelpful ? 'bg-primary text-on-primary shadow-xl shadow-primary/20' : 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30 hover:bg-surface-variant'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: review.isHelpful ? "'FILL' 1" : "'FILL' 0" }}>thumb_up</span>
+                    <ThumbsUp size={18} className={review.isHelpful ? "fill-current" : ""} />
                     {review.isHelpful ? 'Helpful' : `Mark as Helpful (${review.helpfulVotes || 0})`}
                  </button>
                </div>

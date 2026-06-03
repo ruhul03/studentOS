@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchWithAuth } from '../../api';
+import { Bell, BellOff, X, Star, FileText, MessageCircle } from 'lucide-react';
 
 export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigate, onMessageClick }) {
   const { user } = useAuth();
@@ -85,7 +86,7 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
         onClick={toggleShow}
         title="Notifications"
       >
-        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: `'FILL' ${getUnreadCount() > 0 ? 1 : 0}` }}>notifications</span>
+        <Bell size={20} className={`${getUnreadCount() > 0 ? 'fill-current' : ''}`} />
         {getUnreadCount() > 0 && (
           <span className="absolute top-2 right-2 w-4 h-4 bg-primary text-on-primary text-[10px] font-black flex items-center justify-center rounded-full border-2 border-surface-container">
             {getUnreadCount() > 9 ? '9+' : getUnreadCount()}
@@ -103,13 +104,13 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
                 onClick={toggleMute}
                 title={isMuted ? "Unmute Notifications" : "Mute Notifications"}
               >
-                <span className="material-symbols-outlined text-[18px]">{isMuted ? 'notifications_off' : 'notifications'}</span>
+                {isMuted ? <BellOff size={18} /> : <Bell size={18} />}
               </button>
               <button
                 className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant"
                 onClick={toggleShow}
               >
-                <span className="material-symbols-outlined text-[18px]">close</span>
+                <X size={18} />
               </button>
             </div>
           </div>
@@ -138,11 +139,9 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
                     }}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notification.read ? 'bg-surface-container text-on-surface-variant' : 'bg-primary text-on-primary shadow-lg shadow-primary/20'}`}>
-                      <span className="material-symbols-outlined text-[20px]">
-                        {notification.type === 'review_posted' ? 'rate_review' :
-                          notification.type === 'resource_uploaded' ? 'description' :
-                            notification.type === 'direct_message' ? 'chat' : 'notifications'}
-                      </span>
+                      {notification.type === 'review_posted' ? <Star size={20} /> :
+                          notification.type === 'resource_uploaded' ? <FileText size={20} /> :
+                            notification.type === 'direct_message' ? <MessageCircle size={20} /> : <Bell size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h5 className={`text-sm leading-snug mb-1 ${notification.read ? 'font-medium text-on-surface' : 'font-bold text-on-surface'}`}>
@@ -164,7 +163,7 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
             ) : (
               <div className="p-12 text-center flex flex-col items-center justify-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant/20">
-                  <span className="material-symbols-outlined text-[32px]">notifications_none</span>
+                  <Bell size={32} />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-on-surface mb-1">All caught up!</p>

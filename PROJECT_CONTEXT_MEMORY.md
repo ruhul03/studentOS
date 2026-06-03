@@ -218,6 +218,14 @@ erDiagram
   - `AuthService`: Upgraded verification code generator to use `SecureRandom` (CWE-330 fix).
   - `UserService` & `AdminService`: Resolved N+1 query bottlenecks during user deletion by leveraging bulk delete queries in `NotificationRepository` (`deleteByRelatedEntityIdIn`).
   - `AdminService`: Removed `parallelStream()` anti-pattern in `getTopContributors` to prevent JVM ForkJoin pool exhaustion, replacing it with a standard stream.
+  - `Controllers`: Fixed Spring Boot 3.2 explicit parameter names issue globally by configuring `maven-compiler-plugin` and explicitly adding parameter names to `@PathVariable` and `@RequestParam` annotations (e.g. `UserController`, `MarketplaceController`, `StudyPlannerController`, `AdminController`) to prevent 500 runtime errors before a clean compile.
+- **Frontend Optimizations**:
+  - `React Query`: Upgraded deprecated v4 query invalidation syntax (`queryClient.invalidateQueries([...])`) to v5 object syntax (`{ queryKey: [...] }`) in hooks like `useStudyTasks.js` to fix silent failures.
+- **UI & Design System Overhaul**:
+  - `Design System`: Completely overhauled the UI to an Apple-style aesthetic using pure Tailwind CSS variables in `index.css` supporting dynamic Light/Dark mode via a new `ThemeContext`. This semantic token system ensures dark and light themes apply automatically to every page in the application.
+  - `Iconography`: Deprecated error-prone `material-symbols-outlined` in favor of reliable, vector-based `lucide-react` icons. All frontend components (Auth, Dashboard, Planner, Social, Market, LostFound, Events, Admin, profile, Help, Diagnostics) are fully migrated, and the build succeeds flawlessly.
+  - `Mobile Responsiveness`: Built a `MobileNav.jsx` bottom-tab bar for mobile layouts and applied `md:` and `lg:` Tailwind breakpoints across all grid and flex components to guarantee total responsiveness across desktop, tablet, and mobile views.
+  - `Study Planner Fix`: Rewrote and fixed rendering bugs in the planner modules (`StudyPlanner`, `FocusList`, `WeeklyCalendarView`, `PlannerModal`, `TaskCard`) matching the new responsive design.
 
 ### 7. Remaining Tech Debt / Next Steps
 - Implement HttpOnly cookies for JWT (currently in localStorage).

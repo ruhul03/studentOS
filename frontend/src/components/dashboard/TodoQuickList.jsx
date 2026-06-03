@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { PlusSquare, Check, Trash2, ListTodo } from 'lucide-react';
 
 export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText, isAdding, onTabChange }) {
   const getPriorityInfo = (task) => {
@@ -26,17 +27,17 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
         </div>
         <button 
           onClick={() => onTabChange('planner')}
-          className="text-[10px] font-bold text-outline hover:text-on-surface transition-colors tracking-widest"
+          className="text-[10px] font-bold text-outline hover:text-on-surface transition-colors tracking-widest cursor-pointer"
         >
           VIEW ALL →
         </button>
       </div>
 
       <div className="relative flex items-center gap-3 mb-6 bg-surface-container-high p-2 rounded-xl border border-outline-variant/50 group focus-within:border-primary transition-all shadow-inner">
-        <span className="material-symbols-outlined text-outline ml-2 group-focus-within:text-primary transition-colors">add_task</span>
+        <PlusSquare size={20} className="text-outline ml-2 group-focus-within:text-primary transition-colors" />
         <input
           type="text"
-          className="flex-1 bg-transparent border-none text-sm text-on-surface placeholder:text-outline/70 focus:ring-0 py-2"
+          className="flex-1 bg-transparent border-none text-sm text-on-surface placeholder:text-outline/70 focus:ring-0 py-2 outline-none"
           placeholder="What needs to be done?"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -44,7 +45,7 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
           disabled={isAdding}
         />
         <button
-          className="bg-primary text-on-primary px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+          className="bg-primary text-on-primary px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale cursor-pointer"
           onClick={onAdd}
           disabled={isAdding || !text.trim()}
         >
@@ -70,14 +71,14 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <button 
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all cursor-pointer ${
                       task.completed 
                         ? 'bg-secondary text-on-secondary shadow-lg shadow-secondary/20' 
                         : `border-2 border-${priority.color}/30 bg-surface group-hover:border-${priority.color}`
                     }`}
                     onClick={() => onToggle(task.id)}
                   >
-                    {task.completed && <span className="material-symbols-outlined text-[16px] font-black">check</span>}
+                    {task.completed && <Check size={14} strokeWidth={3} />}
                   </button>
                   <div className="flex flex-col min-w-0">
                     <span className={`text-sm font-bold text-on-surface truncate ${task.completed ? 'line-through opacity-50' : ''}`}>
@@ -92,17 +93,17 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
                   </div>
                 </div>
                 <button
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-outline/50 hover:text-error hover:bg-error/10 transition-all opacity-0 group-hover:opacity-100"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-outline/50 hover:text-error hover:bg-error/10 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
                   onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
                 >
-                  <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
+                  <Trash2 size={16} />
                 </button>
               </motion.div>
             );
           })
         ) : (
           <div className="text-center py-10 bg-surface-variant/10 rounded-xl border border-outline-variant/30">
-            <span className="material-symbols-outlined text-4xl text-outline-variant/50 mb-3">list_alt</span>
+            <ListTodo size={32} className="text-outline-variant/50 mx-auto mb-3" />
             <p className="text-on-surface-variant text-sm font-medium">Your checklist is empty.</p>
           </div>
         )}

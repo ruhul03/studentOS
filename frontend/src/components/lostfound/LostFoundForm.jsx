@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, AlertCircle, Trash2, ImagePlus, Send } from 'lucide-react';
 
 export function LostFoundForm({ show, onClose, onSubmit, editingItem, form, setForm, error }) {
   const handlePhotoUpload = (e) => {
@@ -49,7 +50,7 @@ export function LostFoundForm({ show, onClose, onSubmit, editingItem, form, setF
             className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant w-10 h-10 flex items-center justify-center rounded-xl transition-all"
             onClick={onClose}
           >
-            <span className="material-symbols-outlined">close</span>
+            <X size={24} />
           </button>
         </div>
 
@@ -57,7 +58,7 @@ export function LostFoundForm({ show, onClose, onSubmit, editingItem, form, setF
         <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar">
           {error && (
             <div className="bg-error/10 text-error p-4 rounded-2xl mb-6 flex items-center gap-3 border border-error/20">
-              <span className="material-symbols-outlined">error</span>
+              <AlertCircle size={20} />
               <span className="text-sm font-bold">{error}</span>
             </div>
           )}
@@ -162,12 +163,12 @@ export function LostFoundForm({ show, onClose, onSubmit, editingItem, form, setF
                       className="absolute top-2 right-2 bg-error text-white w-8 h-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => removePhoto(index)}
                     >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 ))}
                 <label className="aspect-square border-2 border-dashed border-outline-variant rounded-2xl flex flex-col items-center justify-center text-center hover:bg-surface-variant/20 hover:border-primary transition-all cursor-pointer group">
-                  <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-2xl">add_photo_alternate</span>
+                  <ImagePlus size={24} className="text-outline group-hover:text-primary transition-colors" />
                   <span className="text-[10px] font-bold text-on-surface-variant mt-1 uppercase tracking-tighter">Add Photo</span>
                   <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
                 </label>
@@ -191,7 +192,7 @@ export function LostFoundForm({ show, onClose, onSubmit, editingItem, form, setF
             className="px-8 py-3 rounded-xl bg-primary text-on-primary text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-primary/20 flex items-center gap-3"
           >
             {editingItem ? 'Update Report' : 'Submit Report'}
-            <span className="material-symbols-outlined text-[20px]">send</span>
+            <Send size={20} />
           </button>
         </div>
       </motion.div>

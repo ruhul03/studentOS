@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PlannerModal } from './PlannerModal';
 import { playTabSound } from '../../utils/notificationSound';
 import { useStudyTasks } from '../../hooks/useStudyTasks';
 import { WeeklyCalendarView } from './WeeklyCalendarView';
 import { FocusList } from './FocusList';
-import { TaskCard } from './TaskCard';
 import LoadingState from '../ui/LoadingState';
 import ErrorState from '../ui/ErrorState';
+import { Plus } from 'lucide-react';
 
 export function StudyPlanner() {
   const { user } = useAuth();
@@ -133,11 +133,11 @@ export function StudyPlanner() {
       <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-12 right-12 z-[60] w-16 h-16 bg-primary text-on-primary rounded-[2rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center transition-all group overflow-hidden"
+        className="fixed bottom-12 right-12 z-[60] w-16 h-16 bg-primary text-on-primary rounded-[2rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center transition-all group overflow-hidden cursor-pointer"
         onClick={() => setShowModal(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <span className="material-symbols-outlined text-[32px] group-hover:rotate-90 transition-transform duration-500">add</span>
+        <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
       </motion.button>
 
       <PlannerModal isOpen={showModal} onClose={() => setShowModal(false)} onTaskCreated={refetch} />

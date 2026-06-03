@@ -5,6 +5,7 @@ import { fetchWithAuth } from '../../api';
 import { ResourceModal } from './ResourceModal';
 import { ResourceCard } from './ResourceCard';
 import { playDeleteSound, playSuccessSound } from '../../utils/notificationSound';
+import { Upload, Search, X, FolderOpen, SearchX } from 'lucide-react';
 
 export function ResourceFeed() {
   const [resources, setResources] = useState([]);
@@ -115,10 +116,8 @@ export function ResourceFeed() {
     
     return (
       <div className="flex flex-col items-center justify-center py-20 border border-outline-variant/30 rounded-2xl bg-surface-container/30">
-        <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-outline mb-5">
-          <span className="material-symbols-outlined text-[36px]">
-            {search ? 'search_off' : 'folder_open'}
-          </span>
+        <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-outline mb-5 shadow-inner">
+          {search ? <SearchX size={36} /> : <FolderOpen size={36} />}
         </div>
         <h3 className="text-lg font-bold text-on-surface mb-1">
           {search ? 'No results found' : 'No resources yet'}
@@ -149,9 +148,9 @@ export function ResourceFeed() {
           </div>
           <button 
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-primary text-on-primary rounded-xl font-bold shadow-lg hover:shadow-primary/30 hover:brightness-110 active:scale-95 transition-all shrink-0"
+            className="flex items-center gap-2 px-5 py-3 bg-primary text-on-primary rounded-xl font-bold shadow-lg hover:shadow-primary/30 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px]">upload</span>
+            <Upload size={20} strokeWidth={2.5} />
             Share Resource
           </button>
         </div>
@@ -159,7 +158,7 @@ export function ResourceFeed() {
         {/* ── Search & Filters ── */}
         <div className="space-y-4">
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" size={20} />
             <input 
               className="w-full bg-surface-container border border-outline-variant rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm" 
               placeholder="Search by course code, title, or topic..." 
@@ -170,9 +169,9 @@ export function ResourceFeed() {
             {search && (
               <button 
                 onClick={() => setSearch('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">close</span>
+                <X size={18} />
               </button>
             )}
           </div>

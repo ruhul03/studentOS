@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
+import { BookOpen, ShoppingBag, Calendar, User, MessageSquare, CheckCircle, History, ArrowLeft, ArrowRight, Clock } from 'lucide-react';
 
 export function ActivityHistory({ onBack, onNavigate }) {
   const { user } = useAuth();
@@ -27,13 +28,13 @@ export function ActivityHistory({ onBack, onNavigate }) {
 
   const getActivityIcon = (type) => {
     switch (type) {
-      case 'resources': return 'menu_book';
-      case 'market': return 'shopping_bag';
-      case 'planner': return 'schedule';
-      case 'profile': return 'person';
-      case 'reviews': return 'chat';
-      case 'lostfound': return 'check_circle';
-      default: return 'history';
+      case 'resources': return <BookOpen />;
+      case 'market': return <ShoppingBag />;
+      case 'planner': return <Calendar />;
+      case 'profile': return <User />;
+      case 'reviews': return <MessageSquare />;
+      case 'lostfound': return <CheckCircle />;
+      default: return <History />;
     }
   };
 
@@ -70,7 +71,7 @@ export function ActivityHistory({ onBack, onNavigate }) {
           className="flex items-center gap-2 px-6 py-2.5 bg-surface-container-high border border-outline-variant hover:bg-surface-container-highest rounded-xl text-sm font-bold text-on-surface transition-all active:scale-95 shadow-sm" 
           onClick={onBack}
         >
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span> Back to Dashboard
+          <ArrowLeft size={18} /> Back to Dashboard
         </button>
       </div>
 
@@ -94,9 +95,9 @@ export function ActivityHistory({ onBack, onNavigate }) {
                 {/* Timeline Dot & Icon */}
                 <div className="relative shrink-0 pt-1">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 duration-300 relative z-10 ${getStatusColorClass(item.status)}`}>
-                    <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    <div className="text-[24px]">
                       {getActivityIcon(item.type)}
-                    </span>
+                    </div>
                   </div>
                   {/* Pulse Effect for Recent Items */}
                   {index === 0 && (
@@ -120,7 +121,7 @@ export function ActivityHistory({ onBack, onNavigate }) {
                   <p className="text-sm text-on-surface-variant leading-relaxed mb-4">{item.description}</p>
                   
                   <div className="flex items-center gap-2 text-xs font-bold text-primary opacity-0 group-hover/card:opacity-100 transition-all -translate-x-2 group-hover/card:translate-x-0">
-                    Explore Details <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    Explore Details <ArrowRight size={16} />
                   </div>
                 </div>
               </motion.div>
@@ -128,7 +129,7 @@ export function ActivityHistory({ onBack, onNavigate }) {
           ) : (
             <div className="flex flex-col items-center justify-center py-20 bg-surface-container-low border border-outline-variant/30 rounded-3xl">
               <div className="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center text-outline mb-6">
-                <span className="material-symbols-outlined text-4xl">history_toggle_off</span>
+                <Clock size={40} />
               </div>
               <h3 className="text-xl font-bold text-on-surface mb-2">Silence in the archives</h3>
               <p className="text-on-surface-variant text-center max-w-sm">Your activity history is currently empty. Your actions on StudentOS will be chronologically preserved here.</p>

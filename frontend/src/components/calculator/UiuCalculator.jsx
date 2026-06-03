@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GpaPredictor } from './GpaPredictor';
 import { TuitionEstimator } from './TuitionEstimator';
+import { GraduationCap, Banknote, X, Award, Wallet, CalendarClock } from 'lucide-react';
 
 export function UiuCalculator() {
   const [activeTab, setActiveTab] = useState('gpa');
@@ -29,13 +30,13 @@ export function UiuCalculator() {
             className={`flex-1 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all relative z-10 uppercase tracking-widest ${activeTab === 'gpa' ? 'text-on-primary' : 'text-on-surface-variant'}`}
             onClick={() => setActiveTab('gpa')}
           >
-            <span className="material-symbols-outlined text-[20px]">school</span> GPA Predictor
+            <GraduationCap size={20} /> GPA Predictor
           </button>
           <button 
             className={`flex-1 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all relative z-10 uppercase tracking-widest ${activeTab === 'tuition' ? 'text-on-primary' : 'text-on-surface-variant'}`}
             onClick={() => setActiveTab('tuition')}
           >
-            <span className="material-symbols-outlined text-[20px]">payments</span> Fee Estimator
+            <Banknote size={20} /> Fee Estimator
           </button>
           <motion.div 
             className="absolute inset-y-1.5 bg-primary rounded-xl shadow-xl shadow-primary/20"
@@ -80,13 +81,13 @@ export function UiuCalculator() {
             className="relative w-full max-w-xl bg-surface-container border border-outline-variant/30 rounded-[3rem] p-10 shadow-2xl z-10 overflow-hidden"
           >
             <button className="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors" onClick={() => setModalData(null)}>
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <X size={24} />
             </button>
 
             {modalData.type === 'gpa' ? (
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary mb-8 border border-primary/20">
-                  <span className="material-symbols-outlined text-[40px]">grade</span>
+                  <Award size={40} />
                 </div>
                 <h2 className="text-3xl font-black text-on-surface mb-2">Projected Performance</h2>
                 <p className="text-sm text-on-surface-variant font-medium opacity-70 mb-10">Academic prediction for your current load</p>
@@ -119,7 +120,7 @@ export function UiuCalculator() {
               <div className="space-y-8">
                 <div className="flex items-center gap-6">
                   <div className="w-16 h-16 rounded-[1.5rem] bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/20">
-                    <span className="material-symbols-outlined text-[32px]">account_balance_wallet</span>
+                    <Wallet size={32} />
                   </div>
                   <div>
                     <h2 className="text-3xl font-black text-on-surface leading-tight">Tuition Breakdown</h2>
@@ -158,7 +159,7 @@ export function UiuCalculator() {
 
                 <div className="space-y-4">
                   <h3 className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] ml-1 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[14px]">event_repeat</span> Installment Strategy
+                    <CalendarClock size={14} /> Installment Strategy
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {modalData.schedule.preRegistration > 0 && (

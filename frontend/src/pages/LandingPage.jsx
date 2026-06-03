@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
+import { GraduationCap, ArrowRight, ChevronDown, BookOpen, Landmark, Calendar, Store, FileSearch } from 'lucide-react';
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export function LandingPage() {
       {/* Top NavBar */}
       <nav className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-xl fixed top-0 z-50 bg-surface-lowest/80">
         <div className="flex items-center gap-2 cursor-pointer font-h3 text-xl font-bold tracking-tight text-primary" onClick={() => navigate('/')}>
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+          <GraduationCap size={24} className="fill-current" />
           StudentOS
         </div>
 
@@ -58,16 +59,16 @@ export function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button 
-                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(129,140,248,0.2)] flex items-center gap-2"
+                className="px-8 py-4 font-label-caps text-sm bg-primary text-on-primary hover:bg-primary-fixed rounded-xl transition-colors shadow-[0_8px_30px_rgba(129,140,248,0.2)] flex items-center gap-2 cursor-pointer"
                 onClick={handleStart}
               >
-                Get Started for Free <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                Get Started for Free <ArrowRight size={18} />
               </button>
               <button 
-                className="px-8 py-4 font-label-caps text-sm bg-surface-container border border-outline-variant hover:bg-surface-container-high text-on-surface rounded-xl transition-colors flex items-center gap-2"
+                className="px-8 py-4 font-label-caps text-sm bg-surface-container border border-outline-variant hover:bg-surface-container-high text-on-surface rounded-xl transition-colors flex items-center gap-2 cursor-pointer"
                 onClick={() => document.getElementById('modules').scrollIntoView({ behavior: 'smooth' })}
               >
-                Explore Modules <span className="material-symbols-outlined text-[18px]">expand_more</span>
+                Explore Modules <ChevronDown size={18} />
               </button>
             </div>
           </motion.div>
@@ -90,7 +91,7 @@ export function LandingPage() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-[40px] group-hover:bg-primary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 border border-primary/20">
-                  <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>menu_book</span>
+                  <BookOpen size={24} className="fill-current" />
                 </div>
                 <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Study Resources</h3>
                 <p className="font-body-sm text-on-surface-variant max-w-[400px]">Centralized repository for notes, past papers, and academic materials. Search instantly and organize seamlessly.</p>
@@ -106,7 +107,7 @@ export function LandingPage() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-secondary/10 rounded-full blur-[40px] group-hover:bg-secondary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary mb-6 border border-secondary/20">
-                  <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance</span>
+                  <Landmark size={24} className="fill-current" />
                 </div>
                 <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Campus Services</h3>
                 <p className="font-body-sm text-on-surface-variant">Live status of library seating, cafeteria queues, and shuttle buses.</p>
@@ -122,7 +123,7 @@ export function LandingPage() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-tertiary/10 rounded-full blur-[40px] group-hover:bg-tertiary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6 border border-tertiary/20">
-                  <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>calendar_month</span>
+                  <Calendar size={24} className="fill-current" />
                 </div>
                 <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Intelligent Planner</h3>
                 <p className="font-body-sm text-on-surface-variant">Syllabus-aware task management that prioritizes deadlines automatically.</p>
@@ -138,7 +139,7 @@ export function LandingPage() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary-fixed mb-6 border border-primary/30">
-                  <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>storefront</span>
+                  <Store size={24} className="fill-current" />
                 </div>
                 <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Student Marketplace</h3>
                 <p className="font-body-sm text-on-surface-variant">Securely buy, sell, or trade textbooks and electronics on campus.</p>
@@ -154,7 +155,7 @@ export function LandingPage() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-error/10 rounded-full blur-[40px] group-hover:bg-error/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center text-error mb-6 border border-error/20">
-                  <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>find_in_page</span>
+                  <FileSearch size={24} className="fill-current" />
                 </div>
                 <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Lost & Found</h3>
                 <p className="font-body-sm text-on-surface-variant">Community-driven reporting network to quickly recover misplaced items.</p>
@@ -186,7 +187,7 @@ export function LandingPage() {
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
             <span className="font-h3 text-lg font-bold text-primary flex items-center gap-2">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+              <GraduationCap size={24} className="fill-current" />
               StudentOS
             </span>
             <p className="font-body-sm text-xs text-on-surface-variant">&copy; 2026 StudentOS. Engineered for Academic Excellence.</p>

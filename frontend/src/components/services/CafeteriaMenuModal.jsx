@@ -1,3 +1,5 @@
+import { X, Star, Coffee, Utensils, UtensilsCrossed } from 'lucide-react';
+
 export function CafeteriaMenuModal({ service, onClose }) {
   if (!service) return null;
 
@@ -18,7 +20,7 @@ export function CafeteriaMenuModal({ service, onClose }) {
             className="p-1.5 rounded-full hover:bg-surface-variant text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center border border-transparent"
             onClick={onClose}
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X size={18} />
           </button>
         </div>
 
@@ -37,7 +39,7 @@ export function CafeteriaMenuModal({ service, onClose }) {
               </div>
               <div className="md:col-span-2 p-5 flex flex-col justify-center relative">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-primary text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                  <Star size={16} className="text-primary fill-current" />
                   <span className="text-[10px] font-bold text-primary tracking-widest uppercase">DAILY SPECIAL</span>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -56,7 +58,7 @@ export function CafeteriaMenuModal({ service, onClose }) {
             {/* Breakfast */}
             <div className="flex flex-col gap-3">
               <div className="border-b border-outline-variant pb-1.5 flex items-center gap-2 mb-1">
-                <span className="material-symbols-outlined text-tertiary text-[18px]">bakery_dining</span>
+                <Coffee size={18} className="text-tertiary" />
                 <h3 className="text-base font-bold text-on-surface">Breakfast</h3>
               </div>
               
@@ -77,7 +79,7 @@ export function CafeteriaMenuModal({ service, onClose }) {
             {/* Lunch */}
             <div className="flex flex-col gap-3">
               <div className="border-b border-outline-variant pb-1.5 flex items-center gap-2 mb-1">
-                <span className="material-symbols-outlined text-secondary text-[18px]">lunch_dining</span>
+                <Utensils size={18} className="text-secondary" />
                 <h3 className="text-base font-bold text-on-surface">Lunch</h3>
               </div>
               
@@ -101,7 +103,7 @@ export function CafeteriaMenuModal({ service, onClose }) {
             {/* Dinner */}
             <div className="flex flex-col gap-3">
               <div className="border-b border-outline-variant pb-1.5 flex items-center gap-2 mb-1">
-                <span className="material-symbols-outlined text-error text-[18px]">restaurant</span>
+                <UtensilsCrossed size={18} className="text-error" />
                 <h3 className="text-base font-bold text-on-surface">Dinner</h3>
               </div>
               

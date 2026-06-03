@@ -1,37 +1,44 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { 
+  LayoutDashboard, Folder, Calendar, BookOpen, Search, 
+  Store, CalendarDays, Star, Calculator, Settings, HelpCircle, 
+  Shield, PlusCircle, LogOut, Sun, Moon
+} from 'lucide-react';
 import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { NewEntryModal } from './NewEntryModal';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { playTabSound, playDeleteSound } from '../../utils/notificationSound';
 
 export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick }) {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [isNewEntryOpen, setIsNewEntryOpen] = useState(false);
 
   // Mapping site features to the side nav
   const navItems = [
-    { id: 'home', icon: 'dashboard', label: 'Dashboard' },
-    { id: 'resources', icon: 'folder', label: 'Resources' },
-    { id: 'planner', icon: 'calendar_month', label: 'Planner' },
-    { id: 'services', icon: 'menu_book', label: 'Services' },
-    { id: 'lostfound', icon: 'search', label: 'Lost & Found' },
-    { id: 'market', icon: 'storefront', label: 'Market' },
-    { id: 'events', icon: 'event', label: 'Events' },
-    { id: 'reviews', icon: 'rate_review', label: 'Reviews' },
-    { id: 'calculator', icon: 'calculate', label: 'UIU Calc' }
+    { id: 'home', icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'resources', icon: Folder, label: 'Resources' },
+    { id: 'planner', icon: Calendar, label: 'Planner' },
+    { id: 'services', icon: BookOpen, label: 'Services' },
+    { id: 'lostfound', icon: Search, label: 'Lost & Found' },
+    { id: 'market', icon: Store, label: 'Market' },
+    { id: 'events', icon: CalendarDays, label: 'Events' },
+    { id: 'reviews', icon: Star, label: 'Reviews' },
+    { id: 'calculator', icon: Calculator, label: 'UIU Calc' }
   ];
 
   return (
     <>
       {/* TopNavBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 h-16 bg-background/95 backdrop-blur-md border-b border-surface-variant/30">
+      <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant transition-colors duration-300">
         <div className="flex items-center gap-4 min-w-[200px]">
-          <span className="font-h2 text-xl font-black text-on-background tracking-tighter cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
+          <span className="text-xl font-bold text-on-surface tracking-tight cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
         </div>
 
         <div className="hidden md:flex flex-1 max-w-lg mx-8">
@@ -39,107 +46,112 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
         </div>
         
         {/* Right: Actions */}
-        <div className="flex items-center justify-end gap-4">
-          <div className="flex items-center gap-0 border-r border-surface-variant/30 pr-4">
-            <NotificationPanel 
-              show={showNotificationPanel} 
-              toggleShow={() => setShowNotificationPanel(!showNotificationPanel)} 
-              wsNotifications={wsNotifications} 
-              onNavigate={onNavigate} 
-              onMessageClick={onMessageClick}
-            />
-            <motion.button 
-              whileHover={{ scale: 1.1, backgroundColor: 'rgba(var(--primary-rgb), 0.1)' }}
-              whileTap={{ scale: 0.9 }}
-              className="w-10 h-10 rounded-xl bg-transparent border-none text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:text-primary" 
+        <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center gap-1 border-r border-outline-variant pr-3">
+            <button 
+              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+              onClick={toggleTheme}
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={20} strokeWidth={2} /> : <Moon size={20} strokeWidth={2} />}
+            </button>
+            <div className="relative">
+              <NotificationPanel 
+                show={showNotificationPanel} 
+                toggleShow={() => setShowNotificationPanel(!showNotificationPanel)} 
+                wsNotifications={wsNotifications} 
+                onNavigate={onNavigate} 
+                onMessageClick={onMessageClick}
+              />
+            </div>
+            <button 
+              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
               onClick={() => onNavigate('settings')}
               title="Settings"
             >
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>settings</span>
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.1, backgroundColor: 'rgba(var(--secondary-rgb), 0.1)' }}
-              whileTap={{ scale: 0.9 }}
-              className="w-10 h-10 rounded-xl bg-transparent border-none text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:text-secondary" 
+              <Settings size={20} strokeWidth={2} />
+            </button>
+            <button 
+              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
               onClick={() => onNavigate('help')}
               title="Help Center"
             >
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>help</span>
-            </motion.button>
+              <HelpCircle size={20} strokeWidth={2} />
+            </button>
           </div>
           
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative"
+            className="relative cursor-pointer"
+            onClick={() => onNavigate('profile')}
           >
             <img 
               alt="User avatar" 
-              className="w-9 h-9 rounded-xl border-2 border-surface-variant/50 object-cover cursor-pointer hover:border-primary transition-all shadow-md" 
-              onClick={() => onNavigate('profile')}
+              className="w-8 h-8 rounded-full border border-outline-variant object-cover hover:border-primary transition-all shadow-sm" 
               src={user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
             />
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-secondary rounded-full border-2 border-surface shadow-sm"></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface"></div>
           </motion.div>
         </div>
       </nav>
 
       {/* SideNavBar */}
-      <aside className="hidden md:flex fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-surface-container border-r border-surface-variant flex-col py-8 z-40">
-        <div className="px-6 mb-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Main Menu</p>
+      <aside className="hidden md:flex fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-surface/50 backdrop-blur-md border-r border-outline-variant flex-col py-6 z-40 transition-colors duration-300">
+        <div className="px-5 mb-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">Main Menu</p>
         </div>
-        <nav className="flex-1 px-4 flex flex-col gap-1 overflow-y-auto sidebar-nav">
+        <nav className="flex-1 px-3 flex flex-col gap-1 overflow-y-auto sidebar-nav">
           {navItems.map(item => {
             const isActive = activeTab === item.id;
+            const Icon = item.icon;
             return (
               <button
                 key={item.id}
-                className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded cursor-pointer transition-all border ${
+                className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl cursor-pointer transition-all border ${
                   isActive 
-                    ? 'bg-primary/10 text-primary border-r-4 border-r-primary border-t-transparent border-b-transparent border-l-transparent rounded-r-none' 
+                    ? 'bg-primary text-on-primary shadow-soft border-transparent' 
                     : 'text-on-surface-variant bg-transparent border-transparent hover:bg-surface-container-high hover:text-on-surface'
                 }`}
                 onClick={() => { onNavigate(item.id); playTabSound(); }}
               >
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{item.icon}</span>
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                 {item.label}
               </button>
             );
           })}
 
           {user?.role === 'ADMIN' && (
-            <div className="mt-6 pt-6 border-t border-surface-variant/30">
-              <p className="px-4 mb-2 text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Management</p>
+            <div className="mt-4 pt-4 border-t border-outline-variant/50">
+              <p className="px-2 mb-2 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">Management</p>
               <button
-                className="flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl cursor-pointer transition-all border border-transparent bg-secondary/10 text-secondary hover:bg-secondary/20 w-full"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl cursor-pointer transition-all border border-transparent bg-secondary/10 text-secondary hover:bg-secondary/20 w-full"
                 onClick={() => navigate('/admin')}
               >
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>admin_panel_settings</span>
+                <Shield size={18} strokeWidth={2} />
                 Admin Console
               </button>
             </div>
           )}
         </nav>
         
-        <div className="px-6 mt-auto flex flex-col gap-6 pt-4">
+        <div className="px-4 mt-auto flex flex-col gap-3 pt-4">
           {activeTab === 'home' && (
             <motion.button 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              id="global-new-entry-btn" 
-              className="w-full bg-gradient-to-tr from-primary to-[#A855F7] text-on-primary py-3 px-4 border-none rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all" 
+              className="w-full bg-primary text-on-primary py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-soft hover:shadow-glow transition-all" 
               onClick={() => { setIsNewEntryOpen(true); playTabSound(); }}
             >
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
+              <PlusCircle size={18} strokeWidth={2} />
               New Entry
             </motion.button>
           )}
           <button 
-            className="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded cursor-pointer transition-all border border-transparent text-on-surface-variant bg-transparent hover:bg-surface-container-high hover:text-on-surface w-full text-left" 
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl cursor-pointer transition-all border border-outline-variant text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high hover:text-on-surface w-full" 
             onClick={() => { logout(); playDeleteSound(); }}
           >
-            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>logout</span>
+            <LogOut size={18} strokeWidth={2} />
             Log Out
           </button>
         </div>

@@ -36,7 +36,7 @@ public class CampusEventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CampusEvent> updateEvent(
-            @PathVariable Long id, 
+            @PathVariable("id") Long id, 
             @Valid @RequestBody CampusEventRequest request,
             @AuthenticationPrincipal User user) {
         CampusEvent updatedEvent = campusEventService.updateEvent(id, request, user);
@@ -45,7 +45,7 @@ public class CampusEventController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEvent(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @AuthenticationPrincipal User user) {
         campusEventService.deleteEvent(id, user);
         return ResponseEntity.ok("Event deleted successfully.");

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, Bell, X } from 'lucide-react';
 
 export function NotificationToast({ notifications, onClear, onClick }) {
   return (
@@ -21,9 +22,7 @@ export function NotificationToast({ notifications, onClear, onClick }) {
                 ? 'bg-secondary/10 text-secondary shadow-secondary/10' 
                 : 'bg-primary/10 text-primary shadow-primary/10'
             }`}>
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                {note.type === 'direct_message' ? 'chat' : 'notifications'}
-              </span>
+              {note.type === 'direct_message' ? <MessageCircle size={20} className="fill-current" /> : <Bell size={20} className="fill-current" />}
             </div>
             <div className="flex-1 flex flex-col gap-1">
               <div className="text-sm font-bold text-on-surface leading-tight">
@@ -40,7 +39,7 @@ export function NotificationToast({ notifications, onClear, onClick }) {
                 onClear(index);
               }}
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              <X size={18} />
             </button>
           </motion.div>
         ))}

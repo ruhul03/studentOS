@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Shield } from 'lucide-react';
 
 export function Privacy() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function Privacy() {
           className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-semibold transition-colors group" 
           onClick={() => navigate(-1)}
         >
-          <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+          <ArrowLeft size={24} className="transition-transform group-hover:-translate-x-1" />
           Back
         </button>
         <div 
@@ -26,7 +27,7 @@ export function Privacy() {
         {/* Header */}
         <header className="text-center mb-16 md:mb-20">
           <div className="w-20 h-20 rounded-[2rem] bg-tertiary/10 flex items-center justify-center mx-auto mb-8 border border-tertiary/20 shadow-lg shadow-tertiary/5">
-            <span className="material-symbols-outlined text-[40px] text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>shield_with_heart</span>
+            <Shield size={40} className="text-tertiary fill-current" />
           </div>
           <h1 className="text-5xl font-black mb-6 tracking-tight leading-tight">Privacy Policy</h1>
           <p className="text-xl text-on-surface-variant leading-relaxed">

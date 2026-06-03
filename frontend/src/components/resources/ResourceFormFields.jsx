@@ -1,3 +1,5 @@
+import { CheckCircle, Upload } from 'lucide-react';
+
 export function ResourceFormFields({
   title, setTitle,
   courseTitle, setCourseTitle,
@@ -73,7 +75,7 @@ export function ResourceFormFields({
               className={`flex items-center gap-4 p-4 border-2 border-dashed rounded-2xl transition-all cursor-pointer ${selectedFile ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-primary/20 bg-surface/50'}`}
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selectedFile ? 'bg-primary text-on-primary' : 'bg-white/5 text-on-surface-variant'}`}>
-                <span className="material-symbols-outlined text-[20px]">{selectedFile ? 'check_circle' : 'upload_file'}</span>
+                {selectedFile ? <CheckCircle size={20} /> : <Upload size={20} />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-on-surface truncate">

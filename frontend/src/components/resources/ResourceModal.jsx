@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 import { ResourceFormFields } from './ResourceFormFields';
+import { Share2, X, AlertCircle } from 'lucide-react';
 
 export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   const { user } = useAuth();
@@ -123,19 +124,19 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
-                  <span className="material-symbols-outlined text-[24px]">share</span>
+                  <Share2 size={24} />
                 </div>
                 <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">Share Resource</h2>
               </div>
               <button onClick={handleClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
-                <span className="material-symbols-outlined">close</span>
+                <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
               {error && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-2xl bg-error/10 border border-error/20 flex items-center gap-3 text-error text-xs font-bold uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-[18px]">error</span>
+                  <AlertCircle size={18} />
                   {error}
                 </motion.div>
               )}

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Calendar, Clock, MapPin, Pencil, Trash2 } from 'lucide-react';
 
 export function EventCard({ event, index, canManage, onEdit, onDelete }) {
   const getThemeStyles = (idx) => {
@@ -25,7 +26,7 @@ export function EventCard({ event, index, canManage, onEdit, onDelete }) {
       >
         <div className="w-full sm:w-2/5 h-48 sm:h-full relative overflow-hidden bg-surface-container-highest flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent z-10 sm:bg-gradient-to-r"></div>
-          <span className="material-symbols-outlined text-[120px] text-primary/10 group-hover:scale-110 transition-transform duration-700">event</span>
+          <Calendar className="text-primary/10 group-hover:scale-110 transition-transform duration-700" size={120} strokeWidth={1} />
           <span className="absolute top-4 left-4 z-20 bg-surface-container-lowest/60 backdrop-blur-md text-on-surface text-[10px] font-bold uppercase tracking-widest py-1.5 px-3 rounded-full border border-outline-variant/50">Featured Event</span>
         </div>
         <div className="p-8 flex flex-col justify-between w-full sm:w-3/5 relative z-20">
@@ -45,21 +46,21 @@ export function EventCard({ event, index, canManage, onEdit, onDelete }) {
           <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-4 border-t border-outline-variant/20">
             <div className="flex gap-6">
               <div className="flex items-center gap-2 text-on-surface-variant text-xs font-medium">
-                <span className="material-symbols-outlined text-[18px] text-primary">schedule</span>
+                <Clock size={16} className="text-primary" />
                 {eventDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
               </div>
               <div className="flex items-center gap-2 text-on-surface-variant text-xs font-medium">
-                <span className="material-symbols-outlined text-[18px] text-primary">location_on</span>
+                <MapPin size={16} className="text-primary" />
                 {event.location}
               </div>
             </div>
             {canManage && (
               <div className="flex gap-2 relative z-30">
-                <button className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={(e) => { e.stopPropagation(); onEdit(event); }}>
-                  <span className="material-symbols-outlined text-[20px]">edit</span>
+                <button className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer" onClick={(e) => { e.stopPropagation(); onEdit(event); }}>
+                  <Pencil size={18} />
                 </button>
-                <button className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all" onClick={(e) => { e.stopPropagation(); onDelete(event.id); }}>
-                  <span className="material-symbols-outlined text-[20px]">delete</span>
+                <button className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all cursor-pointer" onClick={(e) => { e.stopPropagation(); onDelete(event.id); }}>
+                  <Trash2 size={18} />
                 </button>
               </div>
             )}
@@ -97,22 +98,22 @@ export function EventCard({ event, index, canManage, onEdit, onDelete }) {
       <div className="flex items-center justify-between mt-6 pt-4 border-t border-outline-variant/20 relative z-10">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-medium">
-            <span className="material-symbols-outlined text-[16px] text-primary">schedule</span>
+            <Clock size={16} className="text-primary" />
             {eventDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
           </div>
           <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-medium">
-            <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
+            <MapPin size={16} className="text-primary" />
             <span className="truncate max-w-[120px]">{event.location}</span>
           </div>
         </div>
         
         {canManage && (
           <div className="flex gap-1">
-            <button className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={(e) => { e.stopPropagation(); onEdit(event); }}>
-              <span className="material-symbols-outlined text-[18px]">edit</span>
+            <button className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer" onClick={(e) => { e.stopPropagation(); onEdit(event); }}>
+              <Pencil size={18} />
             </button>
-            <button className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all" onClick={(e) => { e.stopPropagation(); onDelete(event.id); }}>
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+            <button className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all cursor-pointer" onClick={(e) => { e.stopPropagation(); onDelete(event.id); }}>
+              <Trash2 size={18} />
             </button>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { BookOpen, MessageSquare, Headset, HelpCircle } from 'lucide-react';
 
 export function HelpPage() {
   const faqs = [
@@ -19,9 +20,9 @@ export function HelpPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         {[
-          { icon: 'auto_stories', title: 'Knowledge Base', desc: 'Detailed guides on every StudentOS feature.' },
-          { icon: 'forum', title: 'Community Support', desc: 'Join the Discord for real-time peer help.' },
-          { icon: 'support_agent', title: 'Contact Us', desc: 'Direct line to the platform administrators.' }
+          { icon: <BookOpen size={32} />, title: 'Knowledge Base', desc: 'Detailed guides on every StudentOS feature.' },
+          { icon: <MessageSquare size={32} />, title: 'Community Support', desc: 'Join the Discord for real-time peer help.' },
+          { icon: <Headset size={32} />, title: 'Contact Us', desc: 'Direct line to the platform administrators.' }
         ].map((item, i) => (
           <motion.div
             key={item.title}
@@ -31,7 +32,7 @@ export function HelpPage() {
             className="bg-surface-container border border-outline-variant/30 rounded-3xl p-8 text-center hover:bg-surface-container-high transition-all group cursor-pointer"
           >
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-[32px]">{item.icon}</span>
+              {item.icon}
             </div>
             <h3 className="text-xl font-bold text-on-surface mb-2">{item.title}</h3>
             <p className="text-on-surface-variant text-sm leading-relaxed">{item.desc}</p>
@@ -41,7 +42,7 @@ export function HelpPage() {
 
       <div className="bg-surface-container rounded-3xl border border-outline-variant/30 p-10">
         <h2 className="text-2xl font-bold text-on-surface mb-8 flex items-center gap-3">
-          <span className="material-symbols-outlined text-secondary">quiz</span>
+          <HelpCircle className="text-secondary" />
           Frequently Asked Questions
         </h2>
         <div className="grid grid-cols-1 gap-6">

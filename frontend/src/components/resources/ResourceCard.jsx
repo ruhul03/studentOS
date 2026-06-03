@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
+import { FileText, FileQuestion, BookOpen, File, Link, Trash2, ThumbsUp, Download } from 'lucide-react';
 
 const typeConfig = {
-  'Notes':      { icon: 'description',   label: 'Lecture Notes', accent: '#6750A4', border: 'border-l-[#6750A4]', badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20' },
-  'Exam Paper': { icon: 'quiz',          label: 'Exam Paper',    accent: '#E8622A', border: 'border-l-[#E8622A]', badge: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
-  'Study Guide':{ icon: 'menu_book',     label: 'Study Guide',   accent: '#2DA44E', border: 'border-l-[#2DA44E]', badge: 'bg-green-500/10 text-green-400 border-green-500/20'  },
-  'Textbook':   { icon: 'picture_as_pdf',label: 'Textbook',      accent: '#0969DA', border: 'border-l-[#0969DA]', badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20'    },
-  'Link':       { icon: 'link',          label: 'Link',          accent: '#8250DF', border: 'border-l-[#8250DF]', badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20'},
+  'Notes':      { icon: FileText,   label: 'Lecture Notes', accent: '#6750A4', border: 'border-l-[#6750A4]', badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20' },
+  'Exam Paper': { icon: FileQuestion,          label: 'Exam Paper',    accent: '#E8622A', border: 'border-l-[#E8622A]', badge: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  'Study Guide':{ icon: BookOpen,     label: 'Study Guide',   accent: '#2DA44E', border: 'border-l-[#2DA44E]', badge: 'bg-green-500/10 text-green-400 border-green-500/20'  },
+  'Textbook':   { icon: File,label: 'Textbook',      accent: '#0969DA', border: 'border-l-[#0969DA]', badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20'    },
+  'Link':       { icon: Link,          label: 'Link',          accent: '#8250DF', border: 'border-l-[#8250DF]', badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20'},
 };
 
 const getInitials = (name) => {
@@ -44,19 +45,17 @@ export function ResourceCard({
       {/* ── Card Header: Type + Actions ── */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border ${cfg.badge}`}>
-          <span className="material-symbols-outlined text-[13px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-            {cfg.icon}
-          </span>
+          <cfg.icon size={14} strokeWidth={2.5} />
           {cfg.label}
         </span>
 
         {canManageResource(res.uploader?.id) && (
           <button
             onClick={(e) => { e.stopPropagation(); handleDeleteResource(res.id); }}
-            className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-error/10 text-error/70 hover:bg-error hover:text-white flex items-center justify-center transition-all duration-200"
+            className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-error/10 text-error/70 hover:bg-error hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
             title="Delete resource"
           >
-            <span className="material-symbols-outlined text-[15px]">delete</span>
+            <Trash2 size={15} />
           </button>
         )}
       </div>
@@ -105,16 +104,14 @@ export function ResourceCard({
           <button
             onClick={() => handleUpvote(res.id)}
             disabled={!!userUpvotes[res.id]}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 cursor-pointer ${
               userUpvotes[res.id]
                 ? 'bg-primary text-on-primary shadow-md shadow-primary/30'
                 : 'bg-surface-container-high text-on-surface-variant border border-outline-variant/60 hover:border-primary/50 hover:text-primary hover:bg-primary/5'
             }`}
             title={userUpvotes[res.id] ? 'Upvoted' : 'Upvote'}
           >
-            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: userUpvotes[res.id] ? "'FILL' 1" : "" }}>
-              thumb_up
-            </span>
+            <ThumbsUp size={14} className={userUpvotes[res.id] ? 'fill-current' : ''} />
             <span>{res.upvotes || 0}</span>
           </button>
 
@@ -122,11 +119,11 @@ export function ResourceCard({
             href={res.fileUrl?.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl || ''}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all duration-200 shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all duration-200 shadow-sm cursor-pointer"
             download
             title="Download resource"
           >
-            <span className="material-symbols-outlined text-[14px]">download</span>
+            <Download size={14} />
             <span>Get</span>
           </a>
         </div>

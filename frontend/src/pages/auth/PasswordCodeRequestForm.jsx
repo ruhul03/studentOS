@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Mail } from 'lucide-react';
 
 export function PasswordCodeRequestForm({ email, setEmail, handleRequestResetCode, loading }) {
   return (
@@ -13,7 +14,7 @@ export function PasswordCodeRequestForm({ email, setEmail, handleRequestResetCod
       <div className="flex flex-col gap-2">
         <label className="font-label-caps text-xs text-on-surface-variant">Recovery Email</label>
         <div className="relative flex items-center">
-          <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">mail</span>
+          <Mail size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
           <input 
             type="email" 
             value={email}
@@ -27,7 +28,7 @@ export function PasswordCodeRequestForm({ email, setEmail, handleRequestResetCod
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+        className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed mt-2 cursor-pointer"
       >
         {loading ? 'SENDING CODE...' : 'SEND RESET CODE'}
       </button>

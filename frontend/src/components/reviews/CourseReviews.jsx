@@ -7,6 +7,7 @@ import { ReviewCard } from './ReviewCard';
 import { ReviewForm } from './ReviewForm';
 import { ReviewRequestForm } from './ReviewRequestForm';
 import { ReviewDetailModal } from './ReviewDetailModal';
+import { Search, X, MessageSquare } from 'lucide-react';
 
 export function CourseReviews() {
   const [reviews, setReviews] = useState([]);
@@ -185,7 +186,7 @@ export function CourseReviews() {
           </div>
 
           <div className="relative max-w-2xl">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40">search</span>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40" size={20} />
             <input 
               className="w-full bg-surface-container-high border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-on-surface placeholder-on-surface-variant/30 focus:outline-none focus:border-primary/50 transition-all text-sm shadow-sm" 
               placeholder="Search for courses, professors, or keywords..." 
@@ -211,8 +212,8 @@ export function CourseReviews() {
                     <div className="flex justify-between items-start">
                       <span className="text-xs font-black text-primary uppercase tracking-widest">{req.courseCode}</span>
                       {user && (user.id === req.requester?.id || user.role === 'ADMIN') && (
-                        <button onClick={() => handleDeleteRequest(req.id)} className="text-on-surface-variant/20 hover:text-error transition-colors">
-                          <span className="material-symbols-outlined text-[18px]">close</span>
+                        <button onClick={() => handleDeleteRequest(req.id)} className="text-on-surface-variant/20 hover:text-error transition-colors cursor-pointer">
+                          <X size={18} />
                         </button>
                       )}
                     </div>
@@ -269,7 +270,7 @@ export function CourseReviews() {
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-4xl text-on-surface-variant/20">rate_review</span>
+                <MessageSquare className="text-on-surface-variant/20" size={36} strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-black text-on-surface mb-2">No reviews found</h3>
               <p className="text-sm text-on-surface-variant/40 max-w-xs mx-auto">

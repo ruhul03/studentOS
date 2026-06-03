@@ -36,14 +36,14 @@ public class CampusServiceController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CampusService> updateService(@PathVariable Long id, @Valid @RequestBody CampusServiceRequest request) {
+    public ResponseEntity<CampusService> updateService(@PathVariable("id") Long id, @Valid @RequestBody CampusServiceRequest request) {
         CampusService updatedService = campusServiceService.updateService(id, request);
         return ResponseEntity.ok(updatedService);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteService(@PathVariable("id") Long id) {
         campusServiceService.deleteService(id);
         return ResponseEntity.ok().build();
     }

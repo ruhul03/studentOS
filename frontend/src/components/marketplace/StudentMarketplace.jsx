@@ -7,6 +7,7 @@ import { MarketplaceForm } from './MarketplaceForm';
 import { useMarketplace } from '../../hooks/useMarketplace';
 import LoadingState from '../ui/LoadingState';
 import ErrorState from '../ui/ErrorState';
+import { ShoppingCart, Search, Store } from 'lucide-react';
 
 export function StudentMarketplace({ onProfileView }) {
   const { user } = useAuth();
@@ -73,10 +74,10 @@ export function StudentMarketplace({ onProfileView }) {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+            className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer"
             onClick={handleOpenCreate}
           >
-            <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+            <ShoppingCart size={20} strokeWidth={2.5} />
             List New Item
           </motion.button>
         </div>
@@ -85,7 +86,7 @@ export function StudentMarketplace({ onProfileView }) {
       {/* Control Bar */}
       <div className="bg-surface-container border border-outline-variant/30 rounded-3xl p-3 mb-10 flex flex-col xl:flex-row gap-4 items-stretch shrink-0 shadow-inner">
         <div className="relative flex-1 group">
-          <span className="absolute left-5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">search</span>
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" size={20} />
           <input 
             className="w-full bg-transparent border-none rounded-2xl py-4 pl-14 pr-4 text-on-surface focus:outline-none text-sm font-bold placeholder:text-outline/60" 
             placeholder="Search items, categories, sellers..." 
@@ -133,11 +134,11 @@ export function StudentMarketplace({ onProfileView }) {
         ) : (
           <div className="flex flex-col items-center justify-center py-32 text-center bg-surface-container/20 rounded-[3rem] border border-dashed border-outline-variant/30">
             <div className="w-24 h-24 rounded-[2.5rem] bg-surface-container flex items-center justify-center text-outline-variant mb-6 shadow-inner">
-              <span className="material-symbols-outlined text-[48px]">storefront</span>
+              <Store size={48} strokeWidth={1.5} />
             </div>
             <h3 className="text-2xl font-black text-on-surface mb-2 tracking-tight">Marketplace Empty</h3>
             <p className="text-on-surface-variant text-sm max-w-xs font-medium opacity-70 mb-8">Be the first to list an item or try adjusting your current filters.</p>
-            <button className="px-8 py-3 bg-secondary text-on-secondary rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-secondary/20 transition-all hover:scale-105" onClick={handleOpenCreate}>
+            <button className="px-8 py-3 bg-secondary text-on-secondary rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-secondary/20 transition-all hover:scale-105 cursor-pointer" onClick={handleOpenCreate}>
               Start Selling
             </button>
           </div>

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { KeyRound, Lock } from 'lucide-react';
 
 export function PasswordResetForm({ 
   code, setCode, 
@@ -20,7 +21,7 @@ export function PasswordResetForm({
       <div className="flex flex-col gap-2">
         <label className="font-label-caps text-xs text-on-surface-variant">Verification Code</label>
         <div className="relative flex items-center">
-          <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">pin</span>
+          <KeyRound size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
           <input 
             type="text" 
             value={code}
@@ -35,7 +36,7 @@ export function PasswordResetForm({
       <div className="flex flex-col gap-2">
         <label className="font-label-caps text-xs text-on-surface-variant">New Password</label>
         <div className="relative flex items-center">
-          <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
+          <Lock size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
           <input 
             type="password" 
             value={newPassword}
@@ -50,7 +51,7 @@ export function PasswordResetForm({
       <div className="flex flex-col gap-2">
         <label className="font-label-caps text-xs text-on-surface-variant">Confirm New Password</label>
         <div className="relative flex items-center">
-          <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
+          <Lock size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
           <input 
             type="password" 
             value={confirmPassword}
@@ -66,7 +67,7 @@ export function PasswordResetForm({
         <button 
           type="submit" 
           disabled={loading}
-          className="w-full py-3 bg-secondary text-on-secondary rounded-lg font-label-caps text-sm tracking-wider hover:bg-secondary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(78,222,163,0.1)] disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-secondary text-on-secondary rounded-lg font-label-caps text-sm tracking-wider hover:bg-secondary-fixed transition-colors flex items-center justify-center shadow-[0_4px_20px_rgba(78,222,163,0.1)] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? 'RESETTING...' : 'RESET PASSWORD'}
         </button>

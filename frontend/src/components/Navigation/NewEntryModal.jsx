@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { EntryFormFields } from './EntryFormFields';
+import { X, CheckCircle, AlertCircle, ClipboardList, Calendar, Bookmark, Megaphone, Check, ArrowRight } from 'lucide-react';
 
 export function NewEntryModal({ isOpen, onClose, onNavigate }) {
   const { user } = useAuth();
@@ -194,10 +195,10 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
             <div className="flex items-center justify-between p-4 md:p-6 border-b border-outline-variant/50 bg-surface-container-highest/30">
               <h2 className="text-2xl font-bold text-on-surface leading-none">Create New Entry</h2>
               <button 
-                className="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-surface-variant transition-colors"
+                className="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-surface-variant transition-colors cursor-pointer"
                 onClick={handleClose}
               >
-                <span className="material-symbols-outlined">close</span>
+                <X size={24} />
               </button>
             </div>
 
@@ -206,13 +207,13 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
               {/* Messages */}
               {successMsg && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/10 text-secondary border border-secondary/25 text-sm font-medium animate-in">
-                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  <CheckCircle size={18} />
                   {successMsg}
                 </div>
               )}
               {errorMsg && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-error/10 text-error border border-error/25 text-sm font-medium animate-in">
-                  <span className="material-symbols-outlined text-[18px]">error</span>
+                  <AlertCircle size={18} />
                   {errorMsg}
                 </div>
               )}
@@ -222,24 +223,27 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
                 <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Entry Type</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: 'task', label: 'Task', icon: 'assignment' },
-                    { id: 'schedule', label: 'Schedule', icon: 'event' },
-                    { id: 'resource', label: 'Resource', icon: 'bookmark' },
-                    { id: 'event', label: 'Event', icon: 'campaign' }
-                  ].map(type => (
-                    <button 
-                      key={type.id}
-                      className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all ${
-                        entryType === type.id 
-                          ? 'bg-primary-container text-on-primary-container border-primary-container' 
-                          : 'bg-surface border-outline-variant text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
-                      }`}
-                      onClick={() => handleTypeChange(type.id)}
-                    >
-                      <span className="material-symbols-outlined text-[18px]">{type.icon}</span>
-                      {type.label}
-                    </button>
-                  ))}
+                    { id: 'task', label: 'Task', icon: ClipboardList },
+                    { id: 'schedule', label: 'Schedule', icon: Calendar },
+                    { id: 'resource', label: 'Resource', icon: Bookmark },
+                    { id: 'event', label: 'Event', icon: Megaphone }
+                  ].map(type => {
+                    const Icon = type.icon;
+                    return (
+                      <button 
+                        key={type.id}
+                        className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all cursor-pointer ${
+                          entryType === type.id 
+                            ? 'bg-primary-container text-on-primary-container border-primary-container' 
+                            : 'bg-surface border-outline-variant text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
+                        }`}
+                        onClick={() => handleTypeChange(type.id)}
+                      >
+                        <Icon size={18} />
+                        {type.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -267,7 +271,7 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
                 Cancel
               </button>
               <button 
-                className="px-6 py-2 rounded-lg bg-inverse-primary text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none" 
+                className="px-6 py-2 rounded-lg bg-inverse-primary text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none cursor-pointer" 
                 onClick={handleSubmit} 
                 disabled={isSubmitting || !!successMsg}
               >
@@ -278,13 +282,13 @@ export function NewEntryModal({ isOpen, onClose, onNavigate }) {
                   </>
                 ) : successMsg ? (
                   <>
-                    <span className="material-symbols-outlined text-[18px]">check</span>
+                    <Check size={18} />
                     Done!
                   </>
                 ) : (
                   <>
                     Push to Dashboard
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <ArrowRight size={18} />
                   </>
                 )}
               </button>

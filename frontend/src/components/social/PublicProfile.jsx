@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../api';
+import { X, User as UserIcon, GraduationCap, Calendar, Phone, MessageCircle, Send, ArrowRight } from 'lucide-react';
 
 export function PublicProfile({ userId, onClose, onStartChat }) {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
           className="absolute top-6 right-6 w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all" 
           onClick={onClose}
         >
-          <span className="material-symbols-outlined text-[20px]">close</span>
+          <X size={20} />
         </button>
         
         <div className="flex flex-col items-center mb-8 relative z-10">
@@ -57,7 +58,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
             {profile.profilePicture ? (
               <img src={profile.profilePicture} alt={profile.username} className="w-full h-full object-cover" />
             ) : (
-              <span className="material-symbols-outlined text-[48px]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+              <UserIcon size={48} className="fill-current" />
             )}
           </div>
           <h2 className="text-2xl font-black text-on-surface tracking-tight">{profile.username}</h2>
@@ -67,7 +68,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
         <div className="space-y-3 mb-8 relative z-10">
           <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/30 transition-colors">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+              <GraduationCap size={20} className="fill-current" />
             </div>
             <div>
               <span className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Department</span>
@@ -77,7 +78,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
           
           <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-2xl border border-outline-variant/30 hover:border-secondary/30 transition-colors">
             <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>calendar_today</span>
+              <Calendar size={20} className="fill-current" />
             </div>
             <div>
               <span className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Batch</span>
@@ -88,7 +89,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
           {profile.phoneNumber && (
             <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-2xl border border-outline-variant/30 hover:border-tertiary/30 transition-colors">
               <div className="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>call</span>
+                <Phone size={20} className="fill-current" />
               </div>
               <div>
                 <span className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">Contact</span>
@@ -107,7 +108,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-[#25D366] text-white p-3.5 rounded-2xl font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-[#25D366]/20"
               >
-                <span className="material-symbols-outlined text-[18px]">chat</span>
+                <MessageCircle size={18} />
                 WhatsApp
               </a>
             )}
@@ -115,7 +116,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
               className={`flex items-center justify-center gap-2 bg-primary text-on-primary p-3.5 rounded-2xl font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/20 ${!profile.phoneNumber ? 'col-span-2' : ''}`}
               onClick={() => onStartChat(profile)}
             >
-              <span className="material-symbols-outlined text-[18px]">send</span>
+              <Send size={18} />
               Message
             </button>
           </div>
@@ -128,7 +129,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
             }}
           >
             Visit Full Profile
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <ArrowRight size={16} />
           </button>
         </div>
       </motion.div>

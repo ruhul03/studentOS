@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Megaphone, Rocket, PartyPopper, Calendar, MapPin, Ticket } from 'lucide-react';
 
 export function CampusLife({ events, onTabChange }) {
   return (
@@ -8,7 +9,7 @@ export function CampusLife({ events, onTabChange }) {
           <h2 className="text-2xl font-black text-on-surface tracking-tight">Campus Life</h2>
           <p className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider mt-1">Trending Events</p>
         </div>
-        <span className="material-symbols-outlined text-outline-variant">campaign</span>
+        <Megaphone className="text-outline-variant" size={24} />
       </div>
 
       <div className="space-y-8 flex-1">
@@ -23,9 +24,7 @@ export function CampusLife({ events, onTabChange }) {
               <div className="relative aspect-video rounded-xl overflow-hidden bg-surface-container-highest border border-outline-variant shadow-sm group-hover:shadow-lg group-hover:border-primary/30 transition-all">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity"></div>
                 <div className="absolute inset-0 flex items-center justify-center bg-surface-container-high/50 backdrop-blur-sm z-0">
-                   <span className="material-symbols-outlined text-4xl text-primary/30" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      {index === 0 ? 'rocket_launch' : 'celebration'}
-                   </span>
+                   {index === 0 ? <Rocket size={40} className="text-primary/30" /> : <PartyPopper size={40} className="text-primary/30" />}
                 </div>
                 <div className="absolute bottom-3 left-3 z-20">
                    <span className="text-[10px] font-black text-on-primary bg-primary px-2.5 py-1 rounded-full uppercase tracking-widest shadow-lg">
@@ -37,11 +36,11 @@ export function CampusLife({ events, onTabChange }) {
                 <h3 className="text-base font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium">
-                    <span className="material-symbols-outlined text-[14px]">calendar_month</span>
+                    <Calendar size={14} />
                     {event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Soon'}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium">
-                    <span className="material-symbols-outlined text-[14px]">location_on</span>
+                    <MapPin size={14} />
                     {event.location?.split(',')[0] || 'TBA'}
                   </div>
                 </div>
@@ -50,7 +49,7 @@ export function CampusLife({ events, onTabChange }) {
           ))
         ) : (
           <div className="flex flex-col items-center justify-center py-12 grayscale opacity-40">
-            <span className="material-symbols-outlined text-5xl mb-3">festival</span>
+            <Ticket size={48} className="mb-3" />
             <p className="text-xs font-bold uppercase tracking-widest text-center">No major events<br/>recorded yet</p>
           </div>
         )}
@@ -58,7 +57,7 @@ export function CampusLife({ events, onTabChange }) {
 
       <button 
          onClick={() => onTabChange('events')}
-         className="w-full mt-10 py-3 rounded-xl border border-outline-variant text-xs font-black text-on-surface-variant hover:bg-surface-container-high hover:text-primary hover:border-primary/30 transition-all active:scale-[0.98] uppercase tracking-widest"
+         className="w-full mt-10 py-3 rounded-xl border border-outline-variant text-xs font-black text-on-surface-variant hover:bg-surface-container-high hover:text-primary hover:border-primary/30 transition-all active:scale-[0.98] uppercase tracking-widest cursor-pointer"
       >
         BROWSE ALL EVENTS
       </button>

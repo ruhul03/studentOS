@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Search, CheckCircle, CheckCircle2, Package, MapPin, Edit3, Trash2 } from 'lucide-react';
 
 export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onProfileView, onPhotoClick }) {
   const getDaysAgo = (dateString) => {
@@ -16,7 +17,7 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
         : (days === 0 ? 'Just Found' : `Found ${days} Days Ago`),
       color: isLost ? 'text-error' : 'text-secondary',
       bgColor: isLost ? 'bg-error/10' : 'bg-secondary/10',
-      icon: isLost ? 'search' : 'check_circle'
+      icon: isLost ? <Search size={14} /> : <CheckCircle size={14} />
     };
   };
 
@@ -47,13 +48,15 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
             onClick={() => onPhotoClick && onPhotoClick(item.photos[0])}
           />
         ) : (
-          <span className="material-symbols-outlined text-[64px] text-outline/20">
-            {isLost ? 'manage_search' : 'package_2'}
-          </span>
+          <div className="text-outline/20">
+            {isLost ? <Search size={64} strokeWidth={1} /> : <Package size={64} strokeWidth={1} />}
+          </div>
         )}
         
         <div className={`absolute top-4 left-4 px-3 py-1 rounded-full border border-current backdrop-blur-sm flex items-center gap-2 ${badgeInfo.bgColor} ${badgeInfo.color}`}>
-          <span className="material-symbols-outlined text-[14px]">{item.resolved ? 'done_all' : badgeInfo.icon}</span>
+          <div className="flex items-center justify-center">
+            {item.resolved ? <CheckCircle2 size={14} /> : badgeInfo.icon}
+          </div>
           <span className="text-[10px] font-black uppercase tracking-widest">{item.resolved ? 'Resolved' : badgeInfo.text}</span>
         </div>
       </div>
@@ -74,7 +77,7 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
         <div className="mt-auto space-y-3">
           <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">
             <div className="flex items-center gap-1.5 truncate max-w-[70%]">
-              <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
+              <MapPin size={16} className="text-primary" />
               <span className="truncate">{item.location}</span>
             </div>
             <span>{new Date(item.reportedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
@@ -102,14 +105,14 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
                   onClick={() => onEdit(item)}
                   title="Edit"
                 >
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                  <Edit3 size={16} />
                 </button>
                 <button 
                   className="w-7 h-7 rounded-md flex items-center justify-center text-error hover:bg-error/10 transition-colors"
                   onClick={() => onDelete(item.id)}
                   title="Delete"
                 >
-                  <span className="material-symbols-outlined text-[16px]">delete</span>
+                  <Trash2 size={16} />
                 </button>
               </div>
             )}
@@ -122,7 +125,7 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
               onClick={() => onResolve(item.id)}
               className="mt-4 w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-on-secondary rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-secondary/20"
             >
-              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              <CheckCircle size={18} />
               Mark as Resolved
             </motion.button>
           )}

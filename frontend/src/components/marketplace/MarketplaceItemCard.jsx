@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Store, Clock, Pencil, CheckCircle, Trash2, Phone } from 'lucide-react';
 
 export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold, onProfileView, onOpenModal }) {
   const photos = item.photosJson ? JSON.parse(item.photosJson) : [];
@@ -38,7 +39,7 @@ export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold
         {mainPhoto ? (
           <img src={mainPhoto} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
         ) : (
-          <span className="material-symbols-outlined text-[64px] text-outline/30 group-hover:scale-110 transition-transform duration-500">storefront</span>
+          <Store className="text-outline/30 group-hover:scale-110 transition-transform duration-500" size={64} strokeWidth={1} />
         )}
         
         <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-md text-primary text-sm font-black px-3 py-1.5 rounded-xl border border-primary/20 shadow-lg">
@@ -75,7 +76,7 @@ export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold
               {item.condition === 'New' ? 'Like New' : item.condition}
             </div>
             <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px] text-primary">schedule</span> 
+              <Clock size={16} className="text-primary" /> 
               {getTimeAgo(item.listedAt)}
             </span>
           </div>
@@ -97,32 +98,32 @@ export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold
               {isOwner ? (
                 <>
                   <button 
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" 
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-colors cursor-pointer" 
                     onClick={() => onEdit(item)} 
                     title="Edit Listing"
                   >
-                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                    <Pencil size={18} />
                   </button>
                   {!item.sold && (
                     <button 
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-secondary hover:bg-secondary/10 transition-colors" 
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-secondary hover:bg-secondary/10 transition-colors cursor-pointer" 
                       onClick={() => onMarkAsSold(item.id)} 
                       title="Mark as Sold"
                     >
-                      <span className="material-symbols-outlined text-[18px]">task_alt</span>
+                      <CheckCircle size={18} />
                     </button>
                   )}
                   <button 
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-error hover:bg-error/10 transition-colors" 
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-error hover:bg-error/10 transition-colors cursor-pointer" 
                     onClick={() => onDelete(item.id)} 
                     title="Delete Listing"
                   >
-                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                    <Trash2 size={18} />
                   </button>
                 </>
               ) : (
                 <div className="flex items-center gap-1.5 text-[11px] font-black text-on-surface-variant border border-outline-variant/50 rounded-lg px-2.5 py-1 bg-surface-container-high transition-all hover:border-primary/30">
-                  <span className="material-symbols-outlined text-[14px] text-primary">call</span>
+                  <Phone size={14} className="text-primary" />
                   {item.contactInfo}
                 </div>
               )}

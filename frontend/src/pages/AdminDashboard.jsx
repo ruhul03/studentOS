@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,6 +6,7 @@ import { fetchWithAuth } from '../api';
 import { useAdminStats } from '../hooks/useAdminStats';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
+import { LayoutDashboard, Users, GraduationCap, Calendar, Store, Tag, LineChart, Shield, ArrowLeft, User, AlertCircle, CheckCircle, X } from 'lucide-react';
 
 // Sub-components
 import { TabOverview } from '../components/admin/TabOverview';
@@ -162,13 +163,13 @@ export function AdminDashboard() {
   }
 
   const menuItems = [
-    { id: 'stats', label: 'Overview', icon: 'dashboard' },
-    { id: 'users', label: 'Users', icon: 'group' },
-    { id: 'resources', label: 'Knowledge', icon: 'school' },
-    { id: 'events', label: 'Campus Events', icon: 'event' },
-    { id: 'services', label: 'Services', icon: 'storefront' },
-    { id: 'marketplace', label: 'Market', icon: 'receipt_long' },
-    { id: 'analytics', label: 'Intelligence', icon: 'monitoring' }
+    { id: 'stats', label: 'Overview', icon: LayoutDashboard },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'resources', label: 'Knowledge', icon: GraduationCap },
+    { id: 'events', label: 'Campus Events', icon: Calendar },
+    { id: 'services', label: 'Services', icon: Store },
+    { id: 'marketplace', label: 'Market', icon: Tag },
+    { id: 'analytics', label: 'Intelligence', icon: LineChart }
   ];
 
   return (
@@ -178,7 +179,7 @@ export function AdminDashboard() {
         <div className="p-8 pb-10">
           <div className="flex items-center gap-3 mb-10 cursor-pointer" onClick={() => navigate('/')}>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+              <Shield size={24} />
             </div>
             <div>
               <h1 className="text-xl font-black tracking-tighter text-white leading-none">StudentOS</h1>
@@ -197,7 +198,7 @@ export function AdminDashboard() {
                     : 'text-on-surface-variant hover:bg-white/5 hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <item.icon size={20} />
                 {item.label}
               </button>
             ))}
@@ -206,7 +207,7 @@ export function AdminDashboard() {
 
         <div className="mt-auto p-8 pt-0 border-t border-outline-variant/10">
           <button onClick={() => navigate('/dashboard')} className="flex items-center gap-4 px-5 py-4 w-full text-on-surface-variant hover:text-white transition-colors font-bold text-sm">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <ArrowLeft size={20} />
             Dashboard
           </button>
         </div>
@@ -222,7 +223,7 @@ export function AdminDashboard() {
               <p className="text-[10px] font-black text-primary tracking-widest uppercase">Lead Administrator</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center border border-outline-variant/30 overflow-hidden">
-              {user?.profilePicture ? <img src={user.profilePicture} alt="Avatar" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-outline">shield_person</span>}
+              {user?.profilePicture ? <img src={user.profilePicture} alt="Avatar" className="w-full h-full object-cover" /> : <User size={24} className="text-outline" />}
             </div>
           </div>
         </header>
@@ -237,11 +238,11 @@ export function AdminDashboard() {
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <span className="material-symbols-outlined">{message.type === 'error' ? 'error' : 'verified'}</span>
+                  {message.type === 'error' ? <AlertCircle size={24} /> : <CheckCircle size={24} />}
                   <span className="font-bold text-sm tracking-wide">{message.text}</span>
                 </div>
                 <button onClick={() => setMessage(null)} className="p-1 hover:bg-white/10 rounded-full">
-                  <span className="material-symbols-outlined text-[18px]">close</span>
+                  <X size={18} />
                 </button>
               </motion.div>
             )}

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { Terminal } from 'lucide-react';
 
 export function DiagnosticsModal({ show, onClose, health }) {
   return (
@@ -14,7 +15,7 @@ export function DiagnosticsModal({ show, onClose, health }) {
           >
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined text-3xl animate-pulse">terminal</span>
+                <Terminal size={30} className="animate-pulse" />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white tracking-tight">System Diagnostics</h3>

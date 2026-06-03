@@ -24,7 +24,7 @@ public class MarketplaceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MarketplaceItem>> getAvailableItems(@RequestParam(required = false) String category) {
+    public ResponseEntity<List<MarketplaceItem>> getAvailableItems(@RequestParam(value = "category", required = false) String category) {
         return ResponseEntity.ok(marketplaceService.getAvailableItems(category));
     }
 
@@ -35,19 +35,19 @@ public class MarketplaceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MarketplaceItem> updateItem(@PathVariable Long id, @Valid @RequestBody MarketplaceRequest request, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<MarketplaceItem> updateItem(@PathVariable("id") Long id, @Valid @RequestBody MarketplaceRequest request, @AuthenticationPrincipal User currentUser) {
         MarketplaceItem updatedItem = marketplaceService.updateItem(id, request, currentUser);
         return ResponseEntity.ok(updatedItem);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<Void> deleteItem(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         marketplaceService.deleteItem(id, currentUser);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/sold")
-    public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<MarketplaceItem> markAsSold(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         MarketplaceItem soldItem = marketplaceService.markAsSold(id, currentUser);
         return ResponseEntity.ok(soldItem);
     }

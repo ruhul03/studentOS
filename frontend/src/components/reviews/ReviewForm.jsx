@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, X, Star, Zap } from 'lucide-react';
 
 export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
   const [courseCode, setCourseCode] = useState(initialData?.courseCode || '');
@@ -41,14 +42,14 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
-                  <span className="material-symbols-outlined text-[24px]">rate_review</span>
+                  <MessageSquare size={24} />
                 </div>
                 <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">
                   {initialData ? 'Edit Review' : 'Write a Review'}
                 </h2>
               </div>
               <button onClick={onClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
-                <span className="material-symbols-outlined">close</span>
+                <X size={20} />
               </button>
             </div>
 
@@ -97,10 +98,9 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
                           key={num} 
                           type="button"
                           onClick={() => setQualityRating(num)}
-                          className={`material-symbols-outlined text-2xl transition-all hover:scale-110 ${num <= qualityRating ? 'text-primary' : 'text-on-surface-variant/20'}`}
-                          style={{ fontVariationSettings: num <= qualityRating ? "'FILL' 1" : "'FILL' 0" }}
+                          className={`transition-all hover:scale-110 ${num <= qualityRating ? 'text-primary' : 'text-on-surface-variant/20'}`}
                         >
-                          star
+                          <Star size={24} className={num <= qualityRating ? 'fill-current' : ''} />
                         </button>
                       ))}
                     </div>
@@ -113,10 +113,9 @@ export function ReviewForm({ isOpen, onClose, onSubmit, initialData = null }) {
                           key={num} 
                           type="button"
                           onClick={() => setDifficultyRating(num)}
-                          className={`material-symbols-outlined text-2xl transition-all hover:scale-110 ${num <= difficultyRating ? 'text-error' : 'text-on-surface-variant/20'}`}
-                          style={{ fontVariationSettings: num <= difficultyRating ? "'FILL' 1" : "'FILL' 0" }}
+                          className={`transition-all hover:scale-110 ${num <= difficultyRating ? 'text-error' : 'text-on-surface-variant/20'}`}
                         >
-                          bolt
+                          <Zap size={24} className={num <= difficultyRating ? 'fill-current' : ''} />
                         </button>
                       ))}
                     </div>

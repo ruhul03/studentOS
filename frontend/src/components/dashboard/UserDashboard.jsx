@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
+import { Zap, FileText, Bell } from 'lucide-react';
 import { StatCards } from './StatCards';
 import { ScheduleTimeline } from './ScheduleTimeline';
 import { CampusLife } from './CampusLife';
@@ -164,16 +165,14 @@ export function UserDashboard({ onTabChange }) {
                <div className="space-y-4">
                  {recentActivities.slice(0, 3).map((activity) => (
                    <div key={activity.id} className="flex gap-4 items-center p-3 rounded-xl bg-surface-container-low/50 border border-transparent hover:border-outline-variant transition-all cursor-pointer group" onClick={() => onTabChange('activity')}>
-                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                        activity.status === 'success' ? 'bg-secondary/10 text-secondary' : 'bg-primary/10 text-primary'
                      }`}>
-                       <span className="material-symbols-outlined text-[18px]">
-                         {activity.type === 'planner' ? 'bolt' : activity.type === 'resources' ? 'description' : 'circle_notifications'}
-                       </span>
+                       {activity.type === 'planner' ? <Zap size={18} /> : activity.type === 'resources' ? <FileText size={18} /> : <Bell size={18} />}
                      </div>
                      <div className="flex-1 min-w-0">
-                       <p className="text-xs font-bold text-on-surface truncate leading-none mb-1">{activity.title}</p>
-                       <p className="text-[10px] text-on-surface-variant font-medium opacity-60 uppercase tracking-widest">
+                       <p className="text-sm font-semibold text-on-surface truncate leading-none mb-1.5">{activity.title}</p>
+                       <p className="text-[11px] text-on-surface-variant font-medium opacity-80 uppercase tracking-wider">
                           {new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                        </p>
                      </div>

@@ -1,4 +1,5 @@
 import { AdminTable } from './AdminTable';
+import { Shield, Trash2 } from 'lucide-react';
 
 export function TabUsers({ users, onToggleRole, onDeleteUser }) {
   return (
@@ -30,10 +31,10 @@ export function TabUsers({ users, onToggleRole, onDeleteUser }) {
           <td className="py-5 px-8 text-right">
             <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <button onClick={() => onToggleRole(u.id)} className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all" title="Toggle Role">
-                <span className="material-symbols-outlined text-[18px]">security</span>
+                <Shield size={18} />
               </button>
               <button onClick={() => onDeleteUser(u.id)} className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-error/20 hover:text-error transition-all" title="Purge User">
-                <span className="material-symbols-outlined text-[18px]">delete</span>
+                <Trash2 size={18} />
               </button>
             </div>
           </td>

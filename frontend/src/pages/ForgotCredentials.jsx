@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { UsernameRecoveryForm } from './auth/UsernameRecoveryForm';
 import { PasswordCodeRequestForm } from './auth/PasswordCodeRequestForm';
 import { PasswordResetForm } from './auth/PasswordResetForm';
+import { GraduationCap, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
 
 export function ForgotCredentials() {
   const [activeTab, setActiveTab] = useState('username'); // 'username' or 'password'
@@ -132,7 +133,7 @@ export function ForgotCredentials() {
       {/* Top Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-md fixed top-0 z-50">
         <div className="font-h3 text-xl font-bold tracking-tight text-primary cursor-pointer flex items-center gap-2" onClick={() => navigate('/')}>
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+          <GraduationCap size={24} className="fill-current" />
           StudentOS
         </div>
       </header>
@@ -149,9 +150,9 @@ export function ForgotCredentials() {
         >
           <button 
             onClick={() => navigate('/login')}
-            className="flex items-center gap-2 font-body-sm text-sm text-on-surface-variant hover:text-primary transition-colors mb-6"
+            className="flex items-center gap-2 font-body-sm text-sm text-on-surface-variant hover:text-primary transition-colors mb-6 cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <ArrowLeft size={18} />
             Back to Login
           </button>
 
@@ -183,7 +184,7 @@ export function ForgotCredentials() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-6 p-3 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary font-body-sm text-sm flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                <CheckCircle size={18} />
                 {message}
               </motion.div>
             )}
@@ -195,7 +196,7 @@ export function ForgotCredentials() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-6 p-3 rounded-lg bg-error/10 border border-error/20 text-error font-body-sm text-sm flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">error</span>
+                <AlertCircle size={18} />
                 {error}
               </motion.div>
             )}

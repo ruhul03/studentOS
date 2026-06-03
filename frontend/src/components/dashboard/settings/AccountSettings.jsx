@@ -1,3 +1,5 @@
+import { Camera } from 'lucide-react';
+
 export function AccountSettings({ user, accountInfo, setAccountInfo }) {
   return (
     <div className="space-y-8">
@@ -9,8 +11,8 @@ export function AccountSettings({ user, accountInfo, setAccountInfo }) {
             className="w-28 h-28 rounded-[2rem] object-cover border-4 border-surface shadow-2xl relative z-10"
             alt="Profile"
           />
-          <button className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-2xl border-4 border-surface transition-all hover:scale-110 active:scale-95 z-20">
-            <span className="material-symbols-outlined text-[18px]">add_a_photo</span>
+          <button className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-2xl border-4 border-surface transition-all hover:scale-110 active:scale-95 z-20 cursor-pointer">
+            <Camera size={18} />
           </button>
         </div>
         <div>

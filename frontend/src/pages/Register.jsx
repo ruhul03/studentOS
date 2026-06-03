@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GraduationCap, UserPlus, AlertCircle, User as UserIcon, AtSign, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export function Register() {
   const [name, setName] = useState('');
@@ -61,7 +62,7 @@ export function Register() {
       {/* Top Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-md fixed top-0 z-50">
         <div className="font-h3 text-xl font-bold tracking-tight text-primary cursor-pointer flex items-center gap-2" onClick={() => navigate('/')}>
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+          <GraduationCap size={24} className="fill-current" />
           StudentOS
         </div>
         <nav>
@@ -79,10 +80,8 @@ export function Register() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-[420px] bg-surface-container border border-outline-variant rounded-2xl p-8 shadow-2xl relative z-10 my-8"
         >
-          <div className="text-center mb-8">
-            <span className="material-symbols-outlined text-primary text-4xl mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>
-              how_to_reg
-            </span>
+          <div className="text-center mb-8 flex flex-col items-center">
+            <UserPlus className="text-primary mb-4" size={36} strokeWidth={1.5} />
             <h1 className="font-h1 text-3xl font-bold text-on-surface mb-2">
               Join StudentOS
             </h1>
@@ -99,7 +98,7 @@ export function Register() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-6 p-3 rounded-lg bg-error/10 border border-error/20 text-error font-body-sm text-sm flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">error</span>
+                <AlertCircle size={18} />
                 {error}
               </motion.div>
             )}
@@ -117,7 +116,7 @@ export function Register() {
               <div className="flex flex-col gap-2">
                 <label className="font-label-caps text-xs text-on-surface-variant">Full Name</label>
                 <div className="relative flex items-center">
-                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">person</span>
+                  <UserIcon size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                   <input
                     type="text"
                     value={name}
@@ -132,7 +131,7 @@ export function Register() {
               <div className="flex flex-col gap-2">
                 <label className="font-label-caps text-xs text-on-surface-variant">Username</label>
                 <div className="relative flex items-center">
-                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">alternate_email</span>
+                  <AtSign size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                   <input
                     type="text"
                     value={username}
@@ -147,7 +146,7 @@ export function Register() {
               <div className="flex flex-col gap-2">
                 <label className="font-label-caps text-xs text-on-surface-variant">Email</label>
                 <div className="relative flex items-center">
-                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">mail</span>
+                  <Mail size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                   <input
                     type="email"
                     value={email}
@@ -162,7 +161,7 @@ export function Register() {
               <div className="flex flex-col gap-2">
                 <label className="font-label-caps text-xs text-on-surface-variant">Password</label>
                 <div className="relative flex items-center">
-                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant opacity-70">lock</span>
+                  <Lock size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                   <input
                     type="password"
                     value={password}
@@ -179,10 +178,10 @@ export function Register() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-primary text-on-primary rounded-lg font-label-caps text-sm tracking-wider hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(192,193,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {loading ? 'REGISTERING...' : 'REGISTER'}
-                  {!loading && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
+                  {!loading && <ArrowRight size={18} />}
                 </button>
                 <div className="text-center mt-6">
                   <span className="font-body-sm text-sm text-on-surface-variant">Already have an account? </span>

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LineChart, ListChecks, Plus, Trash2, Calculator } from 'lucide-react';
 
 const UIU_GRADES = {
   'A': 4.00, 'A-': 3.67, 'B+': 3.33, 'B': 3.00,
@@ -59,7 +60,7 @@ export function GpaPredictor({ onCalculate }) {
       <div className="bg-surface-container border border-outline-variant rounded-3xl p-8 shadow-sm">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <span className="material-symbols-outlined text-2xl">analytics</span>
+            <LineChart size={24} />
           </div>
           <div>
             <h3 className="text-xl font-bold">Current Standing</h3>
@@ -95,7 +96,7 @@ export function GpaPredictor({ onCalculate }) {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/20">
-              <span className="material-symbols-outlined text-2xl">list_alt</span>
+              <ListChecks size={24} />
             </div>
             <div>
               <h3 className="text-xl font-bold">Trimester Courses</h3>
@@ -106,7 +107,7 @@ export function GpaPredictor({ onCalculate }) {
             onClick={addCourse}
             className="flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary rounded-xl text-xs font-black uppercase tracking-widest hover:bg-secondary/20 transition-all active:scale-95"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span> Add Course
+            <Plus size={18} /> Add Course
           </button>
         </div>
 
@@ -153,7 +154,7 @@ export function GpaPredictor({ onCalculate }) {
                       onClick={() => removeCourse(course.id)}
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-all opacity-0 group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-[20px]">delete</span>
+                      <Trash2 size={20} />
                     </button>
                   </div>
                 </div>
@@ -187,7 +188,7 @@ export function GpaPredictor({ onCalculate }) {
         onClick={handleCalculate}
         className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-sm tracking-wide hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
       >
-        <span className="material-symbols-outlined text-xl">calculate</span>
+        <Calculator size={20} />
         Predict GPA
       </button>
     </div>

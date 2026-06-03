@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Trash2, AlertCircle, Clock } from 'lucide-react';
 
 export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDelete, courseColor }) {
   return (
@@ -16,7 +17,7 @@ export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDele
           <motion.button
             whileTap={{ scale: 0.8 }}
             onClick={() => onToggle(task.id)}
-            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer ${
               isOverdue ? 'border-error bg-error/10' : isUrgent ? 'border-secondary bg-secondary/10' : 'border-outline-variant hover:border-primary'
             }`}
           >
@@ -29,9 +30,9 @@ export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDele
             <h4 className="text-sm font-bold text-on-surface leading-tight">{task.title}</h4>
             <button
               onClick={() => onDelete(task.id)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error/10 transition-all shrink-0"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error/10 transition-all shrink-0 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <Trash2 size={16} />
             </button>
           </div>
 
@@ -43,9 +44,7 @@ export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDele
             <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${
               isOverdue ? 'text-error' : isUrgent ? 'text-secondary' : 'text-on-surface-variant opacity-60'
             }`}>
-              <span className="material-symbols-outlined text-[14px]">
-                {isOverdue ? 'error' : 'schedule'}
-              </span>
+              {isOverdue ? <AlertCircle size={14} /> : <Clock size={14} />}
               {isOverdue ? 'Overdue' : daysLeft === 0 ? 'Due Today' : `${daysLeft} Days Left`}
             </div>
           </div>

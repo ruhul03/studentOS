@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { X, Headphones, BookOpen, Armchair, Shirt, Tag, Store, Clock, MapPin, ShieldCheck, Send, Heart } from 'lucide-react';
 
 export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
   if (!show || !item) return null;
@@ -44,18 +45,18 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
           className="absolute top-6 right-6 p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high w-12 h-12 flex items-center justify-center rounded-2xl transition-all z-20 bg-background/20 backdrop-blur-md border border-white/5"
           onClick={onClose}
         >
-          <span className="material-symbols-outlined text-[24px]">close</span>
+          <X size={24} />
         </button>
 
         {/* Left: Image Section */}
         <div className="w-full md:w-1/2 bg-surface-container-lowest relative min-h-[400px] md:min-h-full border-b md:border-b-0 md:border-r border-outline-variant flex items-center justify-center overflow-hidden group">
           <div className="absolute top-8 left-8 z-10 bg-primary/20 backdrop-blur-xl border border-primary/20 px-5 py-2 rounded-2xl flex items-center gap-3">
-            <span className="material-symbols-outlined text-[20px] text-primary">
-              {item.category === 'Electronics' ? 'headphones' : 
-               item.category === 'Books' ? 'menu_book' : 
-               item.category === 'Furniture' ? 'chair' : 
-               item.category === 'Clothing' ? 'checkroom' : 'sell'}
-            </span>
+            <div className="text-[20px] text-primary">
+              {item.category === 'Electronics' ? <Headphones size={20} /> : 
+               item.category === 'Books' ? <BookOpen size={20} /> : 
+               item.category === 'Furniture' ? <Armchair size={20} /> : 
+               item.category === 'Clothing' ? <Shirt size={20} /> : <Tag size={20} />}
+            </div>
             <span className="text-xs font-black tracking-[0.2em] text-on-surface uppercase">{item.category}</span>
           </div>
           
@@ -66,7 +67,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" 
             />
           ) : (
-            <span className="material-symbols-outlined text-[160px] text-outline/20">storefront</span>
+            <Store size={160} className="text-outline/20" strokeWidth={1} />
           )}
           
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent opacity-90 pointer-events-none"></div>
@@ -84,9 +85,9 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
             <div>
               <h1 className="text-3xl md:text-5xl font-black text-on-surface mb-3 tracking-tighter leading-tight">{item.title}</h1>
               <div className="flex flex-wrap items-center gap-6 text-on-surface-variant text-[12px] font-bold uppercase tracking-widest opacity-60">
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[18px]">schedule</span> Listed {getTimeAgo(item.listedAt)}</span>
+                <span className="flex items-center gap-2"><Clock size={18} /> Listed {getTimeAgo(item.listedAt)}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-outline/40"></span>
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[18px]">location_on</span> Campus Hub</span>
+                <span className="flex items-center gap-2"><MapPin size={18} /> Campus Hub</span>
               </div>
             </div>
 
@@ -99,7 +100,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 mb-2">Condition</span>
                 <div className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 w-fit border ${getConditionStyles(item.condition)} shadow-sm`}>
-                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+                  <ShieldCheck size={16} className="fill-current text-white" />
                   {item.condition === 'New' ? 'Like New' : item.condition}
                 </div>
               </div>
@@ -134,11 +135,11 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
               className="flex-1 bg-primary text-on-primary font-black text-xs uppercase tracking-widest px-8 py-5 rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/30"
               onClick={() => window.location.href = `mailto:${item.contactInfo}`}
             >
-              <span className="material-symbols-outlined text-[20px]">send_time_extension</span>
+              <Send size={20} />
               Inquire Now
             </button>
             <button className="flex-1 sm:flex-none border-2 border-outline-variant hover:bg-surface-container-high text-on-surface font-black text-xs uppercase tracking-widest px-8 py-5 rounded-2xl flex items-center justify-center gap-3 transition-all group">
-              <span className="material-symbols-outlined text-[20px] text-outline group-hover:text-on-surface transition-colors">favorite_border</span>
+              <Heart size={20} className="text-outline group-hover:text-on-surface transition-colors" />
               Save
             </button>
           </div>

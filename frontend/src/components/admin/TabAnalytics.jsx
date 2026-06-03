@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { TrendingUp, PieChart } from 'lucide-react';
 
 export function TabAnalytics({ growthData, deptData, topContributors, totalUsers }) {
   return (
@@ -22,7 +23,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
               </motion.div>
             )) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-30">
-                <span className="material-symbols-outlined text-5xl">trending_up</span>
+                <TrendingUp size={48} />
                 <p className="text-[10px] font-black uppercase tracking-widest">Awaiting growth metrics...</p>
               </div>
             )}
@@ -50,7 +51,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
               </div>
             )) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-30 pt-10">
-                <span className="material-symbols-outlined text-5xl">pie_chart</span>
+                <PieChart size={48} />
                 <p className="text-[10px] font-black uppercase tracking-widest">No distribution data</p>
               </div>
             )}

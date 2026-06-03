@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 
 export function DeleteProfileModal({ isOpen, onClose, onDelete, isDeleting }) {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -35,7 +36,7 @@ export function DeleteProfileModal({ isOpen, onClose, onDelete, isDeleting }) {
         <div className="p-8 flex flex-col items-center text-center">
           {/* Prominent Warning Icon */}
           <div className="w-16 h-16 rounded-full bg-error-container/20 border border-error/20 flex items-center justify-center mb-4">
-            <span className="material-symbols-outlined text-error text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+            <AlertTriangle size={36} className="text-error" />
           </div>
           {/* Title & Message */}
           <h2 className="font-h2 text-h2 text-on-surface mb-2">Delete Account</h2>
@@ -72,11 +73,11 @@ export function DeleteProfileModal({ isOpen, onClose, onDelete, isDeleting }) {
             Keep Account
           </button>
           <button 
-            className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-h3 text-h3 bg-error text-on-error hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2 focus:ring-offset-surface shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${deleteConfirmText !== 'DELETE' || isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-h3 text-h3 bg-error text-on-error hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2 focus:ring-offset-surface shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${deleteConfirmText !== 'DELETE' || isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleDelete}
             disabled={deleteConfirmText !== 'DELETE' || isDeleting}
           >
-            <span className="material-symbols-outlined text-sm">delete_forever</span>
+            <Trash2 size={16} />
             {isDeleting ? 'Deleting...' : 'Delete My Account'}
           </button>
         </div>

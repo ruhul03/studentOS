@@ -1,15 +1,17 @@
+import { GraduationCap, User as UserIcon, CreditCard, Building2, Users } from 'lucide-react';
+
 export function AcademicIdentityFields({ formData, setFormData }) {
   return (
     <section className="space-y-4">
       <h3 className="font-label-caps text-xs font-semibold tracking-wider text-primary border-b border-outline-variant/30 pb-2 flex items-center gap-2">
-        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
+        <GraduationCap size={16} />
         ACADEMIC IDENTITY
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">Username</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
+            <UserIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="text" 
               value={formData.username} 
@@ -22,7 +24,7 @@ export function AcademicIdentityFields({ formData, setFormData }) {
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">Student ID</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">badge</span>
+            <CreditCard size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="text" 
               value={formData.studentId} 
@@ -34,7 +36,7 @@ export function AcademicIdentityFields({ formData, setFormData }) {
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">Department</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">account_balance</span>
+            <Building2 size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="text" 
               value={formData.department} 
@@ -47,7 +49,7 @@ export function AcademicIdentityFields({ formData, setFormData }) {
         <div className="space-y-1">
           <label className="font-body-sm text-sm text-on-surface-variant block">Batch / Cohort</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">group</span>
+            <Users size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input 
               type="text" 
               value={formData.batch} 

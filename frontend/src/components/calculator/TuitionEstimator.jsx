@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Banknote, Wallet } from 'lucide-react';
 
 export function TuitionEstimator({ onCalculate }) {
   const [data, setData] = useState({
@@ -57,7 +58,7 @@ export function TuitionEstimator({ onCalculate }) {
       <div className="bg-surface-container border border-outline-variant rounded-3xl p-8 shadow-sm">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <span className="material-symbols-outlined text-2xl">payments</span>
+            <Banknote size={24} />
           </div>
           <div>
             <h3 className="text-xl font-bold">Fee Parameters</h3>
@@ -146,7 +147,7 @@ export function TuitionEstimator({ onCalculate }) {
         className="w-full py-5 bg-secondary text-on-secondary rounded-3xl font-black text-sm uppercase tracking-[0.3em] shadow-2xl shadow-secondary/30 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
       >
         Estimate Total Fees
-        <span className="material-symbols-outlined text-xl">account_balance_wallet</span>
+        <Wallet size={20} />
       </button>
     </div>
   );

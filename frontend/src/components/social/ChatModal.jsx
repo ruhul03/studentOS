@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { fetchWithAuth } from '../../api';
 import { playMessageSentSound } from '../../utils/notificationSound';
+import { User, X, Send } from 'lucide-react';
 
 export function ChatModal({ otherUser, onClose, incomingMessage }) {
   const { user } = useAuth();
@@ -81,7 +82,7 @@ export function ChatModal({ otherUser, onClose, incomingMessage }) {
             {otherUser.profilePicture ? (
               <img src={otherUser.profilePicture} alt="" className="w-full h-full object-cover" />
             ) : (
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+              <User size={20} className="fill-current" />
             )}
           </div>
           <div className="flex flex-col">
@@ -90,7 +91,7 @@ export function ChatModal({ otherUser, onClose, incomingMessage }) {
           </div>
         </div>
         <button className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all" onClick={onClose}>
-          <span className="material-symbols-outlined text-[18px]">close</span>
+          <X size={18} />
         </button>
       </div>
 
@@ -122,7 +123,7 @@ export function ChatModal({ otherUser, onClose, incomingMessage }) {
           disabled={!newMessage.trim()}
           className="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 transition-all"
         >
-          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
+          <Send size={20} className="fill-current" />
         </button>
       </form>
       

@@ -6,6 +6,7 @@ import { LostFoundFiltersModal } from './LostFoundFiltersModal';
 import { LostFoundItemCard } from './LostFoundItemCard';
 import { LostFoundForm } from './LostFoundForm';
 import { playDeleteSound, playSuccessSound, playErrorSound } from '../../utils/notificationSound';
+import { Filter, PlusCircle, Search, SearchX, X } from 'lucide-react';
 
 export function LostFoundBoard({ onProfileView }) {
   const { user } = useAuth();
@@ -186,7 +187,7 @@ export function LostFoundBoard({ onProfileView }) {
             onClick={() => setIsFilterModalOpen(true)}
             className="flex-1 sm:flex-none px-6 py-4 bg-surface-container border border-outline-variant rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-surface-variant transition-all flex items-center justify-center gap-3"
           >
-            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+            <Filter size={20} />
             Filters
           </button>
           <motion.button 
@@ -195,7 +196,7 @@ export function LostFoundBoard({ onProfileView }) {
             onClick={handleOpenCreate}
             className="flex-1 sm:flex-none px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
           >
-            <span className="material-symbols-outlined text-[20px]">add_circle</span>
+            <PlusCircle size={20} />
             Report Item
           </motion.button>
         </div>
@@ -204,7 +205,7 @@ export function LostFoundBoard({ onProfileView }) {
       {/* Search Bar & Fast Filters */}
       <div className="bg-surface-container border border-outline-variant/30 rounded-3xl p-2 mb-10 flex flex-col md:flex-row gap-2 items-stretch shrink-0 shadow-inner">
         <div className="relative flex-1 group">
-          <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+          <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" />
           <input 
             type="text"
             className="w-full bg-transparent border-none rounded-2xl py-4 pl-14 pr-4 text-on-surface focus:outline-none text-sm font-medium" 
@@ -260,7 +261,7 @@ export function LostFoundBoard({ onProfileView }) {
         ) : (
           <div className="flex flex-col items-center justify-center py-32 text-center bg-surface-container/20 rounded-[3rem] border border-dashed border-outline-variant/30">
             <div className="w-24 h-24 rounded-[2.5rem] bg-surface-container flex items-center justify-center text-outline-variant mb-6 shadow-inner">
-              <span className="material-symbols-outlined text-[48px]">search_off</span>
+              <SearchX size={48} />
             </div>
             <h3 className="text-2xl font-black text-on-surface mb-2 tracking-tight">No Items Found</h3>
             <p className="text-on-surface-variant text-sm max-w-xs font-medium opacity-70">Try adjusting your filters or search terms to find what you're looking for.</p>
@@ -307,7 +308,7 @@ export function LostFoundBoard({ onProfileView }) {
                 className="absolute top-4 right-4 text-white hover:text-primary transition-all w-12 h-12 flex items-center justify-center bg-white/10 rounded-2xl backdrop-blur-md" 
                 onClick={() => setSelectedPhoto(null)}
               >
-                <span className="material-symbols-outlined">close</span>
+                <X size={24} />
               </button>
               
               <img 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { X, AlertCircle, Trash2, ImagePlus } from 'lucide-react';
 
 export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
   const { user } = useAuth();
@@ -126,7 +127,7 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
             className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant w-12 h-12 flex items-center justify-center rounded-2xl transition-all"
             onClick={onClose}
           >
-            <span className="material-symbols-outlined">close</span>
+            <X size={24} />
           </button>
         </div>
 
@@ -134,7 +135,7 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
         <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar">
           {error && (
             <div className="bg-error/10 text-error p-5 rounded-2xl mb-8 flex items-center gap-4 border border-error/20">
-              <span className="material-symbols-outlined text-[20px]">error_outline</span>
+              <AlertCircle size={20} />
               <span className="text-sm font-black uppercase tracking-widest">{error}</span>
             </div>
           )}
@@ -152,13 +153,13 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
                       className="absolute top-2 right-2 bg-error text-white w-9 h-9 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg" 
                       onClick={() => removePhoto(index)}
                     >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 ))}
                 {form.photoPreviews.length < 5 && (
                   <label className="aspect-square border-2 border-dashed border-outline-variant rounded-3xl flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary transition-all group">
-                    <span className="material-symbols-outlined text-outline group-hover:text-primary text-[32px] transition-transform group-hover:scale-110">add_photo_alternate</span>
+                    <ImagePlus size={32} className="text-outline group-hover:text-primary transition-transform group-hover:scale-110" />
                     <span className="text-[9px] font-black text-on-surface-variant mt-2 uppercase tracking-widest opacity-60">Add Media</span>
                     <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
                   </label>

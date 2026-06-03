@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { EventCard } from './EventCard';
 import { EventModal } from './EventModal';
 import { CalendarStrip } from './CalendarStrip';
+import { PlusCircle, Search, CalendarOff } from 'lucide-react';
 
 export function EventsAnnouncements() {
   const { user } = useAuth();
@@ -137,9 +138,9 @@ export function EventsAnnouncements() {
           {canManage && (
             <button 
               onClick={handleOpenCreate}
-              className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 whitespace-nowrap"
+              className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 whitespace-nowrap cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">add_circle</span>
+              <PlusCircle size={20} strokeWidth={2.5} />
               New Event
             </button>
           )}
@@ -149,7 +150,7 @@ export function EventsAnnouncements() {
       {/* Filter Bar */}
       <div className="flex flex-col lg:flex-row gap-4 shrink-0">
         <div className="flex-1 relative group">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">search</span>
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" size={20} />
           <input 
             type="text" 
             placeholder="Search events, announcements, organizers..." 
@@ -201,7 +202,7 @@ export function EventsAnnouncements() {
         ) : (
           <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="w-24 h-24 rounded-[2.5rem] bg-surface-container-high flex items-center justify-center text-outline-variant mb-6 shadow-inner">
-              <span className="material-symbols-outlined text-[48px]">event_busy</span>
+              <CalendarOff size={48} strokeWidth={1.5} />
             </div>
             <h3 className="text-2xl font-black text-on-surface mb-2 tracking-tight">No Events Found</h3>
             <p className="text-on-surface-variant text-sm max-w-xs font-medium opacity-70">We couldn't find any events matching your current filters or search criteria.</p>

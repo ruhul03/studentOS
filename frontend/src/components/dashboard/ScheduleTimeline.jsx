@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Clock, GraduationCap, ChevronRight, CalendarCheck } from 'lucide-react';
 
 export function ScheduleTimeline({ schedule, onTabChange }) {
   const scheduleColors = ['primary', 'secondary', 'tertiary', 'error'];
@@ -19,7 +20,7 @@ export function ScheduleTimeline({ schedule, onTabChange }) {
         </div>
         <button 
           onClick={() => onTabChange('planner')}
-          className="text-[10px] font-bold text-primary border border-primary/20 bg-primary/5 px-4 py-1.5 rounded-full hover:bg-primary hover:text-on-primary transition-all active:scale-95"
+          className="text-[10px] font-bold text-primary border border-primary/20 bg-primary/5 px-4 py-1.5 rounded-full hover:bg-primary hover:text-on-primary transition-all active:scale-95 cursor-pointer"
         >
           OPEN PLANNER
         </button>
@@ -42,13 +43,13 @@ export function ScheduleTimeline({ schedule, onTabChange }) {
                 <div className="flex justify-between items-start">
                   <div>
                     <div className={`text-[10px] font-bold text-${scheduleColors[index % scheduleColors.length]} uppercase tracking-widest mb-1 flex items-center gap-1.5`}>
-                      <span className="material-symbols-outlined text-[14px]">schedule</span>
+                      <Clock size={14} />
                       {formatTime(task.dueDate)}
                     </div>
                     <h3 className="text-lg font-bold text-on-surface leading-snug group-hover:text-primary transition-colors">{task.title}</h3>
                     <div className="flex items-center gap-3 mt-2">
                       <span className="flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant bg-surface-variant/50 px-2 py-0.5 rounded border border-outline-variant/20">
-                        <span className="material-symbols-outlined text-[14px]">school</span> 
+                        <GraduationCap size={14} /> 
                         {task.courseCode}
                       </span>
                       <span className="text-[11px] font-medium text-outline flex items-center gap-1">
@@ -57,7 +58,7 @@ export function ScheduleTimeline({ schedule, onTabChange }) {
                       </span>
                     </div>
                   </div>
-                  <span className="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+                  <ChevronRight size={20} className="text-outline group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </motion.div>
@@ -66,7 +67,7 @@ export function ScheduleTimeline({ schedule, onTabChange }) {
       ) : (
         <div className="flex flex-col items-center justify-center py-12 bg-surface-container-low/50 rounded-xl border border-outline-variant/30">
           <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-outline-variant mb-4 shadow-inner">
-            <span className="material-symbols-outlined text-3xl">event_available</span>
+            <CalendarCheck size={32} />
           </div>
           <h3 className="text-on-surface font-bold">Clear Skies!</h3>
           <p className="text-on-surface-variant text-xs mt-1 text-center max-w-[200px]">No tasks scheduled for today. Enjoy your free time or plan ahead.</p>

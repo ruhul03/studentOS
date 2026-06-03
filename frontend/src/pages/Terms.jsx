@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, FileText } from 'lucide-react';
 
 export function Terms() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function Terms() {
           className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-semibold transition-colors group" 
           onClick={() => navigate(-1)}
         >
-          <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+          <ArrowLeft size={24} className="transition-transform group-hover:-translate-x-1" />
           Back
         </button>
         <div 
@@ -26,7 +27,7 @@ export function Terms() {
         {/* Header */}
         <header className="text-center mb-16 md:mb-20">
           <div className="w-20 h-20 rounded-[2rem] bg-secondary/10 flex items-center justify-center mx-auto mb-8 border border-secondary/20 shadow-lg shadow-secondary/5">
-            <span className="material-symbols-outlined text-[40px] text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>description</span>
+            <FileText size={40} className="text-secondary fill-current" />
           </div>
           <h1 className="text-5xl font-black mb-6 tracking-tight leading-tight">Terms of Service</h1>
           <p className="text-xl text-on-surface-variant leading-relaxed">

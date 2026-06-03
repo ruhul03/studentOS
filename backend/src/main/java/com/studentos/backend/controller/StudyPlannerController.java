@@ -24,7 +24,7 @@ public class StudyPlannerController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<StudyTask>> getUserTasks(@PathVariable Long userId, @RequestParam(required = false) Boolean completed, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<List<StudyTask>> getUserTasks(@PathVariable("userId") Long userId, @RequestParam(value = "completed", required = false) Boolean completed, @AuthenticationPrincipal User currentUser) {
         return ResponseEntity.ok(studyPlannerService.getUserTasks(userId, completed, currentUser));
     }
 
@@ -35,13 +35,13 @@ public class StudyPlannerController {
     }
 
     @PutMapping("/{taskId}/toggle")
-    public ResponseEntity<StudyTask> toggleTaskCompletion(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<StudyTask> toggleTaskCompletion(@PathVariable("taskId") Long taskId, @AuthenticationPrincipal User currentUser) {
         StudyTask updatedTask = studyPlannerService.toggleTaskCompletion(taskId, currentUser);
         return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Long taskId, @AuthenticationPrincipal User currentUser) {
         studyPlannerService.deleteTask(taskId, currentUser);
         return ResponseEntity.noContent().build();
     }

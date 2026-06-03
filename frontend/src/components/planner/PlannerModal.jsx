@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
+import { PlusSquare, X, AlertCircle } from 'lucide-react';
 
 export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
   const { user } = useAuth();
@@ -79,22 +80,22 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
             <div className="p-8 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_task</span>
+                  <PlusSquare size={20} strokeWidth={2} />
                 </div>
                 <h2 className="text-xl font-black text-on-surface tracking-tight">Create New Task</h2>
               </div>
               <button
-                className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer"
                 onClick={handleClose}
               >
-                <span className="material-symbols-outlined text-[20px]">close</span>
+                <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               {error && (
                 <div className="flex items-center gap-2 p-4 bg-error/10 border border-error/20 text-error rounded-2xl text-xs font-bold uppercase tracking-widest">
-                  <span className="material-symbols-outlined text-[16px]">error</span>
+                  <AlertCircle size={16} />
                   {error}
                 </div>
               )}
@@ -165,7 +166,7 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
               <div className="pt-4 flex gap-4">
                 <button
                   type="button"
-                  className="flex-1 bg-surface-container-high text-on-surface font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl border border-outline-variant/50 hover:bg-surface-variant transition-all"
+                  className="flex-1 bg-surface-container-high text-on-surface font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl border border-outline-variant/50 hover:bg-surface-variant transition-all cursor-pointer"
                   onClick={handleClose}
                 >
                   Cancel
@@ -173,7 +174,7 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all"
+                  className="flex-1 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all cursor-pointer"
                 >
                   {isSubmitting ? 'Processing...' : 'Create Task'}
                 </button>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
+import { MessageSquare } from 'lucide-react';
 
 export function CommentSection({ reviewId, user, onUpdateCount }) {
   const [comments, setComments] = useState([]);
@@ -200,7 +201,7 @@ export function CommentSection({ reviewId, user, onUpdateCount }) {
           ))
         ) : (
           <div className="text-center py-8">
-            <span className="material-symbols-outlined text-2xl text-on-surface-variant/20 mb-2">forum</span>
+            <MessageSquare size={24} className="text-on-surface-variant/20 mb-2" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/20">No comments yet</p>
           </div>
         )}
