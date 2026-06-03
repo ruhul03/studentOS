@@ -93,12 +93,12 @@ export function WeeklyCalendarView({
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           key={t.id}
-                          className={`absolute left-0 w-full p-3 rounded-2xl border cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all z-10 ${colorCls}`}
-                          style={{ top: `${topPct}%` }}
+                          className={`absolute left-0 w-full p-2 rounded-md cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all z-10 ${colorCls}`}
+                          style={{ top: `${topPct}%`, minHeight: '48px' }}
                           title={`${t.title} - ${t.courseCode}`}
                         >
-                          <span className="block text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">{t.courseCode}</span>
-                          <p className="text-[11px] font-bold leading-tight line-clamp-2">{t.title}</p>
+                          <span className="block text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">{t.courseCode}</span>
+                          <p className="text-[11px] font-medium leading-tight line-clamp-2">{t.title}</p>
                         </motion.div>
                       );
                     })}

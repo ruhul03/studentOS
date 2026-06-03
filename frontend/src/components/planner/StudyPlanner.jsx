@@ -66,9 +66,9 @@ export function StudyPlanner() {
 
   const getCourseColor = (code) => {
     const colors = [
-      'bg-primary/20 text-primary border-primary/30',
-      'bg-secondary/20 text-secondary border-secondary/30',
-      'bg-tertiary/20 text-tertiary border-tertiary/30',
+      'bg-primary text-on-primary shadow-md',
+      'bg-secondary text-on-secondary shadow-md',
+      'bg-tertiary text-on-tertiary shadow-md',
     ];
     const sum = (code || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
     return colors[sum % colors.length];
