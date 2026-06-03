@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { motion } from 'framer-motion';
-import { GraduationCap, ArrowRight, ChevronDown, BookOpen, Landmark, Calendar, Store, FileSearch } from 'lucide-react';
+import { GraduationCap, ArrowRight, ChevronDown, BookOpen, Landmark, Calendar, Store, FileSearch, Sun, Moon } from 'lucide-react';
 
 export function LandingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleStart = () => {
     if (user) {
@@ -33,6 +35,14 @@ export function LandingPage() {
               <button className="px-4 py-2 font-label-caps text-xs bg-primary text-on-primary hover:bg-primary-fixed rounded-lg transition-colors shadow-[0_4px_14px_rgba(129,140,248,0.1)]" onClick={() => navigate('/register')}>Get Started</button>
             </>
           )}
+          
+          <button 
+            onClick={toggleTheme} 
+            className="p-2 ml-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center border border-outline-variant/30 shadow-sm"
+            title={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
       </nav>
 
