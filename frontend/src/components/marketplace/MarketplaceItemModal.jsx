@@ -4,7 +4,8 @@ import { X, Headphones, BookOpen, Armchair, Shirt, Tag, Store, Clock, MapPin, Sh
 export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
   if (!show || !item) return null;
 
-  const photos = item.photosJson ? JSON.parse(item.photosJson) : [];
+  let photos = [];
+  try { photos = item.photosJson ? JSON.parse(item.photosJson) : []; } catch(e) {}
   const getTimeAgo = (dateString) => {
     if (!dateString) return '';
     const diff = Math.floor((new Date() - new Date(dateString)) / 1000);

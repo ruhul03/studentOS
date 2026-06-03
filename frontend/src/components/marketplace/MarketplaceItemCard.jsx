@@ -2,7 +2,8 @@ import { motion } from 'framer-motion';
 import { Store, Clock, Pencil, CheckCircle, Trash2, Phone } from 'lucide-react';
 
 export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold, onProfileView, onOpenModal }) {
-  const photos = item.photosJson ? JSON.parse(item.photosJson) : [];
+  let photos = [];
+  try { photos = item.photosJson ? JSON.parse(item.photosJson) : []; } catch(e) {}
   const mainPhoto = photos.length > 0 ? photos[0] : null;
 
   const getConditionStyles = (cond) => {

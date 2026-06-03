@@ -27,7 +27,10 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
         category: editingItem.category,
         contactInfo: editingItem.contactInfo,
         itemPhotos: [],
-        photoPreviews: editingItem.photosJson ? JSON.parse(editingItem.photosJson) : []
+        photoPreviews: (() => {
+          try { return editingItem.photosJson ? JSON.parse(editingItem.photosJson) : []; }
+          catch(e) { return []; }
+        })()
       });
     } else {
       setForm({
