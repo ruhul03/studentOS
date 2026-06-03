@@ -12,6 +12,7 @@ export const useAdminStats = (user) => {
         { key: 'resources', url: '/api/admin/resources' },
         { key: 'marketItems', url: '/api/admin/marketplace' },
         { key: 'events', url: '/api/admin/events' },
+        { key: 'reviews', url: '/api/admin/reviews' },
         { key: 'services', url: '/api/services' },
         { key: 'growth', url: '/api/admin/analytics/growth' },
         { key: 'departments', url: '/api/admin/analytics/departments' },

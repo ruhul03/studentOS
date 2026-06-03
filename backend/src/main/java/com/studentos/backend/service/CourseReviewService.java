@@ -12,10 +12,12 @@ import com.studentos.backend.repository.CourseReviewRepository;
 import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @SuppressWarnings("null")
 public class CourseReviewService {
 

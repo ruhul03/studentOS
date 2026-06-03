@@ -6,7 +6,7 @@ import { fetchWithAuth } from '../api';
 import { useAdminStats } from '../hooks/useAdminStats';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
-import { LayoutDashboard, Users, GraduationCap, Calendar, Store, Tag, LineChart, Shield, ArrowLeft, User, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Calendar, Store, Tag, LineChart, Shield, ArrowLeft, User, AlertCircle, CheckCircle, X, MessageSquare } from 'lucide-react';
 
 // Sub-components
 import { TabOverview } from '../components/admin/TabOverview';
@@ -16,6 +16,7 @@ import { TabEvents } from '../components/admin/TabEvents';
 import { TabServices } from '../components/admin/TabServices';
 import { TabMarketplace } from '../components/admin/TabMarketplace';
 import { TabAnalytics } from '../components/admin/TabAnalytics';
+import { TabReviews } from '../components/admin/TabReviews';
 import { ServiceModal } from '../components/admin/ServiceModal';
 import { DiagnosticsModal } from '../components/admin/DiagnosticsModal';
 
@@ -31,6 +32,7 @@ export function AdminDashboard() {
   const [resources, setResources] = useState([]);
   const [marketItems, setMarketItems] = useState([]);
   const [events, setEvents] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [services, setServices] = useState([]);
   const [health, setHealth] = useState(null);
   const [analytics, setAnalytics] = useState({
@@ -64,6 +66,7 @@ export function AdminDashboard() {
       setResources(data.resources || []);
       setMarketItems(data.marketItems || []);
       setEvents(data.events || []);
+      setReviews(data.reviews || []);
       setServices(data.services || []);
       setHealth(data.health || null);
       setAnalytics({
@@ -118,6 +121,10 @@ export function AdminDashboard() {
     handleAction('Cancel this campus event?', `/api/admin/events/${id}`, 'DELETE', 'Event cancelled', 
       () => setEvents(events.filter(e => e.id !== id)));
 
+  const handleDeleteReview = (id) => 
+    handleAction('Delete this course review?', `/api/admin/reviews/${id}`, 'DELETE', 'Review deleted', 
+      () => setReviews(reviews.filter(r => r.id !== id)));
+
   const handleDeleteService = (id) => 
     handleAction('Decommission this campus service?', `/api/services/${id}`, 'DELETE', 'Service decommissioned', 
       () => setServices(services.filter(s => s.id !== id)));
@@ -169,6 +176,7 @@ export function AdminDashboard() {
     { id: 'events', label: 'Campus Events', icon: Calendar },
     { id: 'services', label: 'Services', icon: Store },
     { id: 'marketplace', label: 'Market', icon: Tag },
+    { id: 'reviews', label: 'Reviews', icon: MessageSquare },
     { id: 'analytics', label: 'Intelligence', icon: LineChart }
   ];
 
@@ -258,6 +266,7 @@ export function AdminDashboard() {
               {activeTab === 'users' && <TabUsers users={users} onToggleRole={handleToggleRole} onDeleteUser={handleDeleteUser} />}
               {activeTab === 'resources' && <TabResources resources={resources} onDeleteResource={handleDeleteResource} />}
               {activeTab === 'events' && <TabEvents events={events} onDeleteEvent={handleDeleteEvent} />}
+              {activeTab === 'reviews' && <TabReviews reviews={reviews} onDeleteReview={handleDeleteReview} />}
               {activeTab === 'services' && (
                 <TabServices 
                   services={services} 

@@ -39,8 +39,8 @@ public class ReviewRequestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRequest(@PathVariable Long id, @RequestParam Long userId) {
-        reviewRequestService.deleteRequest(id, userId);
+    public ResponseEntity<Void> deleteRequest(@PathVariable Long id, @org.springframework.security.core.annotation.AuthenticationPrincipal com.studentos.backend.model.User currentUser) {
+        reviewRequestService.deleteRequest(id, currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 }

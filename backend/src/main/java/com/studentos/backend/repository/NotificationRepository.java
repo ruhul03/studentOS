@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"recipient", "sender"})
     List<Notification> findByRecipientOrderByCreatedAtDesc(User recipient);
     
     @org.springframework.transaction.annotation.Transactional

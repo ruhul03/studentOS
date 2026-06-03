@@ -222,6 +222,8 @@ erDiagram
   - `Controllers`: Fixed Spring Boot 3.2 explicit parameter names issue globally by configuring `maven-compiler-plugin` and explicitly adding parameter names to `@PathVariable` and `@RequestParam` annotations.
   - `MessageRepository`: Implemented an optimized native SQL query with a self-join to efficiently fetch the latest message per conversation, powering the centralized Inbox.
   - `ResourceController`: Added `PUT /api/resources/{id}` allowing authors to edit resources securely.
+  - `Transaction Management`: Added `@Transactional` to `CourseReviewService` and `ReviewRequestService` to prevent `LazyInitializationException` during cascading deletion of relational entities (comments).
+  - `Security Overhaul`: Upgraded DELETE endpoints in `CourseReviewController` and `ReviewRequestController` to resolve the acting user via `@AuthenticationPrincipal` instead of an insecure URL query parameter, closing authorization vulnerabilities.
 - **Database Architecture Updates**:
   - `MySQL Schema Adjustments`: Diagnosed and resolved fatal `Data truncation` errors on photo uploads by forcefully altering the schema for `marketplace_items` and `lost_found_items` to upgrade the `photos_json` column type from `TEXT` to `LONGTEXT`. Added `@Column(columnDefinition = "LONGTEXT")` mappings to JPA entities.
 - **Frontend Optimizations**:
@@ -236,6 +238,9 @@ erDiagram
 - **New Features (Recent)**:
   - `Centralized Inbox`: Built `Inbox.jsx` providing a full-screen, two-pane layout for all Direct Messages, fully integrated with real-time WebSockets and reachable via the main sidebar.
   - `Resource Interaction`: Added inline "Edit" controls for resource authors and a "Message" button on `ResourceCard` enabling direct user-to-author communication.
+  - `Admin Course Reviews`: Added full management of `CourseReview` entities into the Admin Dashboard, introducing `TabReviews.jsx` and new robust backend administrative endpoints for review monitoring and secure deletion.
+- **DevOps & Scripting**:
+  - `Run Script Architecture`: Rebuilt `run-all.bat` with a robust, interactive TUI (Text User Interface) for managing the Node and Java development servers, integrating strict taskkill procedures and resolving CRLF batch script parsing faults.
 
 ### 7. Remaining Tech Debt / Next Steps
 - Implement HttpOnly cookies for JWT (currently in localStorage).

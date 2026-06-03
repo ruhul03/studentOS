@@ -4,6 +4,7 @@ import com.studentos.backend.dto.CommentRequest;
 import com.studentos.backend.dto.CourseReviewRequest;
 import com.studentos.backend.model.Comment;
 import com.studentos.backend.model.CourseReview;
+import com.studentos.backend.model.User;
 import com.studentos.backend.service.CourseReviewService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,8 @@ public class CourseReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id, @RequestParam Long userId) {
-        courseReviewService.deleteReview(id, userId);
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id, @org.springframework.security.core.annotation.AuthenticationPrincipal User currentUser) {
+        courseReviewService.deleteReview(id, currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 

@@ -90,6 +90,20 @@ public class AdminController {
         return ResponseEntity.notFound().build();
     }
 
+    // Reviews Management
+    @GetMapping("/reviews")
+    public ResponseEntity<List<CourseReview>> getAllReviews() {
+        return ResponseEntity.ok(adminService.getAllReviews());
+    }
+
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<?> deleteReview(@PathVariable("id") Long id) {
+        if (adminService.deleteReview(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     // User Insights & Activity
     @GetMapping("/users/{id}/activity")
     public ResponseEntity<Map<String, Object>> getUserActivity(@PathVariable("id") Long id) {

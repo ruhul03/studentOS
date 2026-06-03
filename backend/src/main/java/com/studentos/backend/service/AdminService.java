@@ -66,6 +66,7 @@ public class AdminService {
         stats.put("totalMarketplaceItems", marketplaceRepository.count());
         stats.put("totalEvents", eventRepository.count());
         stats.put("totalLostFoundItems", lostFoundRepository.count());
+        stats.put("totalReviews", reviewRepository.count());
         return stats;
     }
 
@@ -162,6 +163,21 @@ public class AdminService {
         if (!eventRepository.existsById(id)) return false;
         eventRepository.deleteById(id);
         return true;
+    }
+
+    public List<CourseReview> getAllReviews() {
+        return reviewRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Transactional
+    public boolean deleteReview(Long id) {
+        return reviewRepository.findById(id).map(review -> {
+            notificationRepository.deleteByRelatedEntityId(id);
+            review.getComments().clear();
+            reviewRepository.saveAndFlush(review);
+            reviewRepository.delete(review);
+            return true;
+        }).orElse(false);
     }
 
     public Optional<Map<String, Object>> getUserActivity(Long id) {

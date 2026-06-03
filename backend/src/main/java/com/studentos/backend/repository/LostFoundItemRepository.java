@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LostFoundItemRepository extends JpaRepository<LostFoundItem, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
+    Optional<LostFoundItem> findById(Long id);
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     List<LostFoundItem> findByResolvedFalseOrderByReportedAtDesc();
     
