@@ -1,5 +1,6 @@
 package com.studentos.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +44,9 @@ public class MarketplaceItem {
     @Column(nullable = false)
     private String contactInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "verificationCode", "authorities"})
     private User seller;
 
     @Column(columnDefinition = "TEXT")
