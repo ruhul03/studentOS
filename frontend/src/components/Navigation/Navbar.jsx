@@ -13,7 +13,7 @@ import { NewEntryModal } from './NewEntryModal';
 import { GlobalSearch } from '../GlobalSearch/GlobalSearch';
 import { playTabSound, playDeleteSound } from '../../utils/notificationSound';
 
-export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick }) {
+export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick, unreadDMCount }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -116,7 +116,14 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
                 }`}
                 onClick={() => { onNavigate(item.id); playTabSound(); }}
               >
-                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                <div className="relative">
+                  <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                  {item.id === 'inbox' && unreadDMCount > 0 && (
+                    <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-error text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface shadow-sm">
+                      {unreadDMCount > 9 ? '9+' : unreadDMCount}
+                    </span>
+                  )}
+                </div>
                 {item.label}
               </button>
             );

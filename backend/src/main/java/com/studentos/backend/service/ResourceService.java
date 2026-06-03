@@ -101,16 +101,6 @@ public class ResourceService {
             "success"
         );
 
-        Map<String, Object> notification = new HashMap<>();
-        notification.put("type", "resource_uploaded");
-        notification.put("title", "New Resource Uploaded");
-        String senderName = savedResource.isAnonymous() ? "Someone" : currentUser.getName();
-        notification.put("message", senderName + " shared a new resource: " + savedResource.getTitle());
-        notification.put("relatedEntityId", savedResource.getId());
-        notification.put("createdAt", LocalDateTime.now());
-        
-        notificationService.sendGlobalNotification(notification);
-
         logger.info("Successfully uploaded resource: {}", savedResource.getId());
         return savedResource;
     }

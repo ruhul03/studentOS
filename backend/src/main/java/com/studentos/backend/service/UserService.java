@@ -66,6 +66,13 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public List<User> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return userRepository.findByNameContainingIgnoreCaseOrUsernameContainingIgnoreCase(query, query);
+    }
+
     public User updateProfile(Long id, ProfileUpdateRequest profileUpdate, User currentUser) {
         if (currentUser == null || (!currentUser.getId().equals(id) && !"ADMIN".equals(currentUser.getRole()))) {
             throw new UnauthorizedActionException("You can only update your own profile.");

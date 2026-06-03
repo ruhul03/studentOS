@@ -36,6 +36,15 @@ public class Message {
     @Builder.Default
     private boolean isRead = false;
 
+    @Builder.Default
+    private boolean deletedBySender = false;
+
+    @Builder.Default
+    private boolean deletedByReceiver = false;
+
+    @Builder.Default
+    private boolean deletedForEveryone = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime timestamp;

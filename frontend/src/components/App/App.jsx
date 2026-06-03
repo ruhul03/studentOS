@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
 import { Login } from '../../pages/Login';
@@ -39,10 +39,34 @@ function Dashboard() {
   const { notifications: wsNotifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
   const [chatOpenUserId, setChatOpenUserId] = useState(null);
+  const [unreadDMCount, setUnreadDMCount] = useState(0);
 
   // Derive activeTab solely from URL
   const queryParams = new URLSearchParams(location.search);
   const activeTab = queryParams.get('tab') || 'home';
+
+  useEffect(() => {
+    import('../../api').then(({ fetchWithAuth }) => {
+      if (user) {
+        fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/messages/unread-count`)
+          .then(res => res.json())
+          .then(count => setUnreadDMCount(count))
+          .catch(console.error);
+      }
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (messageEvent) {
+       setUnreadDMCount(prev => prev + 1);
+    }
+  }, [messageEvent]);
+
+  useEffect(() => {
+     if (activeTab === 'inbox') {
+        setUnreadDMCount(0);
+     }
+  }, [activeTab]);
 
   const handleTabChange = (tab) => {
     window.scrollTo(0, 0);
@@ -56,10 +80,12 @@ function Dashboard() {
         onNavigate={handleTabChange} 
         wsNotifications={wsNotifications} 
         onMessageClick={setChatOpenUserId}
+        unreadDMCount={unreadDMCount}
       />
       <MobileNav 
         activeTab={activeTab} 
         onNavigate={handleTabChange} 
+        unreadDMCount={unreadDMCount}
       />
 
       <main className="flex-1 md:ml-64 pt-16 min-h-screen w-full md:w-[calc(100%-256px)] pb-20 md:pb-0">

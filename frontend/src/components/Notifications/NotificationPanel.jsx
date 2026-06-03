@@ -128,20 +128,13 @@ export function NotificationPanel({ show, toggleShow, wsNotifications, onNavigat
                         onNavigate('reviews');
                       } else if (notification.type === 'resource_uploaded') {
                         onNavigate('resources');
-                      } else if (notification.type === 'direct_message') {
-                        if (onMessageClick && notification.sender) {
-                          onMessageClick(notification.sender.id);
-                        } else {
-                          onNavigate('home');
-                        }
                       }
                       toggleShow();
                     }}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notification.read ? 'bg-surface-container text-on-surface-variant' : 'bg-primary text-on-primary shadow-lg shadow-primary/20'}`}>
                       {notification.type === 'review_posted' ? <Star size={20} /> :
-                          notification.type === 'resource_uploaded' ? <FileText size={20} /> :
-                            notification.type === 'direct_message' ? <MessageCircle size={20} /> : <Bell size={20} />}
+                          notification.type === 'resource_uploaded' ? <FileText size={20} /> : <Bell size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h5 className={`text-sm leading-snug mb-1 ${notification.read ? 'font-medium text-on-surface' : 'font-bold text-on-surface'}`}>

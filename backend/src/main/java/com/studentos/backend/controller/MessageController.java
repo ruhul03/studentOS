@@ -43,4 +43,40 @@ public class MessageController {
         }
         return ResponseEntity.ok(messageService.getRecentConversations(currentUser.getId()));
     }
+
+    @GetMapping("/unread-count")
+    public ResponseEntity<Integer> getUnreadCount(@AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(messageService.getUnreadCount(currentUser.getId()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMessage(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "mode", defaultValue = "for_me") String mode,
+            @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(401).build();
+        messageService.deleteMessage(id, currentUser.getId(), mode);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/conversation/{otherUserId}")
+    public ResponseEntity<Void> clearConversation(
+            @PathVariable("otherUserId") Long otherUserId,
+            @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(401).build();
+        messageService.clearConversation(currentUser.getId(), otherUserId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/read/{otherUserId}")
+    public ResponseEntity<Void> markAsRead(
+            @PathVariable("otherUserId") Long otherUserId,
+            @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) return ResponseEntity.status(401).build();
+        messageService.markAsRead(currentUser.getId(), otherUserId);
+        return ResponseEntity.ok().build();
+    }
 }

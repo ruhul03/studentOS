@@ -29,6 +29,11 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam("q") String query) {
+        return ResponseEntity.ok(userService.searchUsers(query));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<User> updateProfile(@PathVariable("id") Long id,
                                          @Valid @RequestBody ProfileUpdateRequest profileUpdate,
