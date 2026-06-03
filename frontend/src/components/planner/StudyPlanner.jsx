@@ -44,7 +44,7 @@ export function StudyPlanner() {
 
   // Map tasks to calendar
   const calendarTasks = useMemo(() => {
-    return (tasks || []).filter(t => {
+    return (Array.isArray(tasks) ? tasks : []).filter(t => {
       if (!t.dueDate || t.completed) return false;
       const d = new Date(t.dueDate);
       return d >= weekData.start && d <= weekData.end;
@@ -82,13 +82,13 @@ export function StudyPlanner() {
   // Sort tasks
   const daysLeft = (d) => d ? Math.ceil((new Date(d) - new Date()) / 864e5) : 999;
   const pendingTasks = useMemo(() => {
-    const p = (tasks || []).filter(t => !t.completed);
+    const p = (Array.isArray(tasks) ? tasks : []).filter(t => !t.completed);
     if (sortBy === 'course') return [...p].sort((a, b) => (a.courseCode || '').localeCompare(b.courseCode || ''));
     if (sortBy === 'type') return [...p].sort((a, b) => (a.type || '').localeCompare(b.type || ''));
     return [...p].sort((a, b) => daysLeft(a.dueDate) - daysLeft(b.dueDate));
   }, [tasks, sortBy]);
 
-  const completedTasks = (tasks || []).filter(t => t.completed);
+  const completedTasks = (Array.isArray(tasks) ? tasks : []).filter(t => t.completed);
 
   const calcDaysLeft = (ds) => {
     if (!ds) return null;

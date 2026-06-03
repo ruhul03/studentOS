@@ -28,10 +28,10 @@ export function StudentMarketplace({ onProfileView }) {
   } = useMarketplace(activeCategory);
 
   const filteredItems = useMemo(() => {
-    return (items || []).filter(item => 
+    return (Array.isArray(items) ? items : []).filter(item => 
       !search || 
-      item.title.toLowerCase().includes(search.toLowerCase()) || 
-      item.description.toLowerCase().includes(search.toLowerCase())
+      item.title?.toLowerCase().includes(search.toLowerCase()) || 
+      item.description?.toLowerCase().includes(search.toLowerCase())
     );
   }, [items, search]);
 
