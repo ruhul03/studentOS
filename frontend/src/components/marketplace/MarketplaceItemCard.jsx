@@ -49,7 +49,7 @@ export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold
         
         {item.sold && (
           <div className="absolute inset-0 bg-background/60 flex items-center justify-center backdrop-blur-[2px]">
-            <span className="bg-error text-white font-black px-6 py-2 rounded-xl text-lg transform -rotate-12 border-2 border-white shadow-2xl tracking-widest">SOLD</span>
+            <span className="bg-error text-on-error font-black px-6 py-2 rounded-xl text-lg transform -rotate-12 border-2 border-outline-variant shadow-2xl tracking-widest">SOLD</span>
           </div>
         )}
 

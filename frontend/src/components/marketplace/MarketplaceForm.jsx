@@ -104,7 +104,7 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+        className="absolute inset-0 bg-background/60 backdrop-blur-sm cursor-pointer"
         onClick={onClose}
       />
 
@@ -153,7 +153,7 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
                     <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover" />
                     <button 
                       type="button" 
-                      className="absolute top-2 right-2 bg-error text-white w-9 h-9 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg" 
+                      className="absolute top-2 right-2 bg-error text-on-error w-9 h-9 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg" 
                       onClick={() => removePhoto(index)}
                     >
                       <Trash2 size={18} />

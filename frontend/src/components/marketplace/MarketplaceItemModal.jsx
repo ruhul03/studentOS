@@ -30,7 +30,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer"
+        className="absolute inset-0 bg-background/80 backdrop-blur-md cursor-pointer"
         onClick={onClose}
       />
 
@@ -43,7 +43,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
       >
         {/* Close Button */}
         <button 
-          className="absolute top-6 right-6 p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high w-12 h-12 flex items-center justify-center rounded-2xl transition-all z-20 bg-background/20 backdrop-blur-md border border-white/5"
+          className="absolute top-6 right-6 p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high w-12 h-12 flex items-center justify-center rounded-2xl transition-all z-20 bg-background/20 backdrop-blur-md border border-outline-variant/10"
           onClick={onClose}
         >
           <X size={24} />
@@ -75,7 +75,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
           
           {item.sold && (
             <div className="absolute inset-0 bg-background/40 flex items-center justify-center backdrop-blur-[2px]">
-              <span className="bg-error text-white font-black px-12 py-4 rounded-3xl text-3xl transform -rotate-12 border-4 border-white shadow-2xl tracking-widest">SOLD</span>
+              <span className="bg-error text-on-error font-black px-12 py-4 rounded-3xl text-3xl transform -rotate-12 border-4 border-outline-variant shadow-2xl tracking-widest">SOLD</span>
             </div>
           )}
         </div>
@@ -101,7 +101,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 mb-2">Condition</span>
                 <div className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 w-fit border ${getConditionStyles(item.condition)} shadow-sm`}>
-                  <ShieldCheck size={16} className="fill-current text-white" />
+                  <ShieldCheck size={16} className="fill-current text-on-surface" />
                   {item.condition === 'New' ? 'Like New' : item.condition}
                 </div>
               </div>
