@@ -97,7 +97,7 @@ export function Profile() {
         {/* Detail Card 1: ID & Batch */}
         <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 hover:bg-surface-bright transition-colors shadow-sm">
           <div className="flex items-center gap-3 mb-4 text-primary">
-            <IdCard size={24} />
+            <CreditCard size={24} />
             <h3 className="font-h3 text-h3 text-on-surface">Academic Identity</h3>
           </div>
           <div className="space-y-4">
