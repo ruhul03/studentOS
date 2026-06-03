@@ -173,7 +173,7 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="bg-[#0a0a0c] text-on-surface min-h-screen flex selection:bg-primary/30">
+    <div className="dark bg-[#0a0a0c] text-on-surface min-h-screen flex selection:bg-primary/30">
       {/* Sidebar */}
       <nav className="fixed left-0 top-0 h-full flex flex-col w-64 bg-surface-container/30 backdrop-blur-3xl border-r border-outline-variant/20 z-40">
         <div className="p-8 pb-10">

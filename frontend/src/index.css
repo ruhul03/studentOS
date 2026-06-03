@@ -10,10 +10,10 @@
   --surface-dim: #f3f4f6;
   --surface-bright: #ffffff;
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #f9fafb;
-  --surface-container: #f3f4f6;
-  --surface-container-high: #e5e7eb;
-  --surface-container-highest: #d1d5db;
+  --surface-container-low: #ffffff;
+  --surface-container: #ffffff;
+  --surface-container-high: #f9fafb;
+  --surface-container-highest: #f3f4f6;
   
   /* On-surface colors */
   --on-surface: #111827;
@@ -276,8 +276,8 @@ h3, .h3 {
 }
 
 .card:hover, .glass-card:hover {
-  background: #252525;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
+  background: var(--surface-container-high);
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* Form Inputs */
