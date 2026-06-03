@@ -11,6 +11,7 @@ import { UiuCalculator } from '../calculator/UiuCalculator';
 import { LostFoundBoard } from '../lostfound/LostFoundBoard';
 import { StudentMarketplace } from '../marketplace/StudentMarketplace';
 import { CourseReviews } from '../reviews/CourseReviews';
+import { Inbox } from '../inbox/Inbox';
 import { LandingPage } from '../../pages/LandingPage';
 import { UserDashboard } from '../dashboard/UserDashboard';
 import { AdminDashboard } from '../../pages/AdminDashboard';
@@ -72,7 +73,8 @@ function Dashboard() {
               transition={{ duration: 0.25, ease: "easeInOut" }}
             >
               {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
-              {activeTab === 'resources' && <ResourceFeed />}
+              {activeTab === 'inbox' && <Inbox messageEvent={messageEvent} onProfileView={setSelectedUserProfile} />}
+              {activeTab === 'resources' && <ResourceFeed onProfileView={setSelectedUserProfile} onMessageClick={setChatOpenUserId} />}
               {activeTab === 'services' && <CampusServicesDirectory />}
               {activeTab === 'planner' && <StudyPlanner />}
               {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}

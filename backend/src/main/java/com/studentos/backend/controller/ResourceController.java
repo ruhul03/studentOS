@@ -25,12 +25,12 @@ public class ResourceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Resource>> getAllResources(@RequestParam(required = false) String query) {
+    public ResponseEntity<List<Resource>> getAllResources(@RequestParam(name = "query", required = false) String query) {
         return ResponseEntity.ok(resourceService.getAllResources(query));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Resource> getResourceById(@PathVariable Long id) {
+    public ResponseEntity<Resource> getResourceById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(resourceService.getResourceById(id));
     }
 
@@ -45,7 +45,7 @@ public class ResourceController {
 
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<Resource> updateResource(
-            @PathVariable Long id, 
+            @PathVariable("id") Long id, 
             @Valid @RequestPart("resource") ResourceRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal User currentUser) {
@@ -54,13 +54,13 @@ public class ResourceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteResource(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<String> deleteResource(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         resourceService.deleteResource(id, currentUser);
         return ResponseEntity.ok("Resource deleted successfully.");
     }
 
     @PostMapping("/{id}/upvote")
-    public ResponseEntity<Resource> upvoteResource(@PathVariable Long id) {
+    public ResponseEntity<Resource> upvoteResource(@PathVariable("id") Long id) {
         return ResponseEntity.ok(resourceService.upvoteResource(id));
     }
 }

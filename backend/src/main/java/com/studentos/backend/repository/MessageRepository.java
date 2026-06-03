@@ -18,4 +18,12 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @org.springframework.transaction.annotation.Transactional
     void deleteBySenderIdOrReceiverId(Long senderId, Long receiverId);
+
+    @Query(value = "SELECT m1.* FROM messages m1 LEFT JOIN messages m2 ON " +
+            "((m1.sender_id = m2.sender_id AND m1.receiver_id = m2.receiver_id) OR " +
+            "(m1.sender_id = m2.receiver_id AND m1.receiver_id = m2.sender_id)) " +
+            "AND m1.timestamp < m2.timestamp " +
+            "WHERE (m1.sender_id = :userId OR m1.receiver_id = :userId) AND m2.id IS NULL " +
+            "ORDER BY m1.timestamp DESC", nativeQuery = true)
+    List<Message> findRecentConversations(@Param("userId") Long userId);
 }

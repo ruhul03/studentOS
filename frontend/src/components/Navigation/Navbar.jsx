@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Folder, Calendar, BookOpen, Search, 
   Store, CalendarDays, Star, Calculator, Settings, HelpCircle, 
-  Shield, PlusCircle, LogOut, Sun, Moon
+  Shield, PlusCircle, LogOut, Sun, Moon, Inbox
 } from 'lucide-react';
 import { NotificationPanel } from '../Notifications/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
@@ -23,6 +23,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick 
   // Mapping site features to the side nav
   const navItems = [
     { id: 'home', icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'inbox', icon: Inbox, label: 'Inbox' },
     { id: 'resources', icon: Folder, label: 'Resources' },
     { id: 'planner', icon: Calendar, label: 'Planner' },
     { id: 'services', icon: BookOpen, label: 'Services' },

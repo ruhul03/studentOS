@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FileText, FileQuestion, BookOpen, File, Link, Trash2, ThumbsUp, Download } from 'lucide-react';
+import { FileText, FileQuestion, BookOpen, File, Link, Trash2, ThumbsUp, Download, Edit2, MessageCircle } from 'lucide-react';
 
 const typeConfig = {
   'Notes':      { icon: FileText,   label: 'Lecture Notes', accent: '#6750A4', border: 'border-l-[#6750A4]', badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20' },
@@ -26,7 +26,11 @@ export function ResourceCard({
   res, 
   idx, 
   canManageResource, 
-  handleDeleteResource, 
+  handleDeleteResource,
+  handleEditResource,
+  onProfileView,
+  onMessageClick,
+  currentUser,
   handleUpvote, 
   userUpvotes 
 }) {
@@ -50,13 +54,22 @@ export function ResourceCard({
         </span>
 
         {canManageResource(res.uploader?.id) && (
-          <button
-            onClick={(e) => { e.stopPropagation(); handleDeleteResource(res.id); }}
-            className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-error/10 text-error/70 hover:bg-error hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
-            title="Delete resource"
-          >
-            <Trash2 size={15} />
-          </button>
+          <div className="opacity-0 group-hover:opacity-100 flex gap-2 transition-all duration-200">
+            <button
+              onClick={(e) => { e.stopPropagation(); handleEditResource(res); }}
+              className="w-7 h-7 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center transition-all duration-200 cursor-pointer"
+              title="Edit resource"
+            >
+              <Edit2 size={15} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); handleDeleteResource(res.id); }}
+              className="w-7 h-7 rounded-lg bg-error/10 text-error/70 hover:bg-error hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
+              title="Delete resource"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
         )}
       </div>
 
@@ -84,12 +97,19 @@ export function ResourceCard({
 
       {/* ── Card Footer: Author + Upvote + Download ── */}
       <div className="flex items-center justify-between px-5 py-4 border-t border-outline-variant/30 bg-surface-container-low/50">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-[11px] font-bold text-primary shrink-0 border border-primary/20">
+        <div 
+          className={`flex items-center gap-2.5 min-w-0 ${!res.anonymous && onProfileView ? 'cursor-pointer group/author' : ''}`}
+          onClick={() => {
+            if (!res.anonymous && onProfileView && res.uploader?.id) {
+              onProfileView(res.uploader.id);
+            }
+          }}
+        >
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-[11px] font-bold text-primary shrink-0 border border-primary/20 group-hover/author:bg-primary group-hover/author:text-white transition-colors">
             {res.anonymous ? '?' : getInitials(res.uploader?.name)}
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-semibold text-on-surface leading-none truncate">
+            <p className="text-[12px] font-semibold text-on-surface leading-none truncate group-hover/author:text-primary transition-colors">
               {res.anonymous ? 'Anonymous' : (res.uploader?.name || 'User')}
             </p>
             {res.uploadedAt && (
@@ -101,6 +121,16 @@ export function ResourceCard({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {!res.anonymous && res.uploader?.id && currentUser?.id !== res.uploader?.id && onMessageClick && (
+            <button
+              onClick={() => onMessageClick(res.uploader.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-surface-container-high text-on-surface-variant border border-outline-variant/60 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer"
+              title="Message Author"
+            >
+              <MessageCircle size={14} />
+              <span>Message</span>
+            </button>
+          )}
           <button
             onClick={() => handleUpvote(res.id)}
             disabled={!!userUpvotes[res.id]}

@@ -1,5 +1,6 @@
 package com.studentos.backend.service;
 
+import com.studentos.backend.dto.ConversationSummaryDTO;
 import com.studentos.backend.dto.MessageRequest;
 import com.studentos.backend.model.Message;
 import com.studentos.backend.model.User;
@@ -8,6 +9,8 @@ import com.studentos.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @SuppressWarnings("null")
@@ -54,5 +57,22 @@ public class MessageService {
 
     public List<Message> getConversation(Long user1, Long user2) {
         return messageRepository.findConversation(user1, user2);
+    }
+
+    public List<ConversationSummaryDTO> getRecentConversations(Long userId) {
+        List<Message> recentMessages = messageRepository.findRecentConversations(userId);
+        List<ConversationSummaryDTO> summaries = new ArrayList<>();
+        
+        for (Message msg : recentMessages) {
+            Long otherUserId = msg.getSenderId().equals(userId) ? msg.getReceiverId() : msg.getSenderId();
+            Optional<User> otherUserOpt = userRepository.findById(otherUserId);
+            if (otherUserOpt.isPresent()) {
+                summaries.add(ConversationSummaryDTO.builder()
+                        .otherUser(otherUserOpt.get())
+                        .latestMessage(msg)
+                        .build());
+            }
+        }
+        return summaries;
     }
 }

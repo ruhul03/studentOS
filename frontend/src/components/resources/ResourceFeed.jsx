@@ -7,11 +7,12 @@ import { ResourceCard } from './ResourceCard';
 import { playDeleteSound, playSuccessSound } from '../../utils/notificationSound';
 import { Upload, Search, X, FolderOpen, SearchX } from 'lucide-react';
 
-export function ResourceFeed() {
+export function ResourceFeed({ onProfileView, onMessageClick }) {
   const [resources, setResources] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [editingResource, setEditingResource] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Resources');
   const { user } = useAuth();
   
@@ -54,6 +55,11 @@ export function ResourceFeed() {
 
   const handleResourceCreated = () => {
     setTimeout(() => fetchResources(), 600);
+  };
+
+  const handleEditResource = (res) => {
+    setEditingResource(res);
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -195,8 +201,9 @@ export function ResourceFeed() {
 
         <ResourceModal 
           isOpen={showModal} 
-          onClose={() => setShowModal(false)} 
-          onResourceCreated={handleResourceCreated} 
+          onClose={() => { setShowModal(false); setEditingResource(null); }} 
+          onSuccess={handleResourceCreated}
+          editingResource={editingResource}
         />
 
         {/* ── Results Count ── */}
@@ -224,6 +231,10 @@ export function ResourceFeed() {
                   idx={idx} 
                   canManageResource={canManageResource}
                   handleDeleteResource={handleDeleteResource}
+                  handleEditResource={handleEditResource}
+                  onProfileView={onProfileView}
+                  onMessageClick={onMessageClick}
+                  currentUser={user}
                   handleUpvote={handleUpvote}
                   userUpvotes={userUpvotes}
                 />

@@ -219,6 +219,8 @@ erDiagram
   - `UserService` & `AdminService`: Resolved N+1 query bottlenecks during user deletion by leveraging bulk delete queries in `NotificationRepository` (`deleteByRelatedEntityIdIn`).
   - `AdminService`: Removed `parallelStream()` anti-pattern in `getTopContributors` to prevent JVM ForkJoin pool exhaustion, replacing it with a standard stream.
   - `Controllers`: Fixed Spring Boot 3.2 explicit parameter names issue globally by configuring `maven-compiler-plugin` and explicitly adding parameter names to `@PathVariable` and `@RequestParam` annotations (e.g. `UserController`, `MarketplaceController`, `StudyPlannerController`, `AdminController`) to prevent 500 runtime errors before a clean compile.
+  - `MessageRepository`: Implemented an optimized native SQL query with a self-join to efficiently fetch the latest message per conversation, powering the centralized Inbox.
+  - `ResourceController`: Added `PUT /api/resources/{id}` allowing authors to edit resources securely. Fixed `LazyInitializationException` via `@EntityGraph(attributePaths = {"author"})`.
 - **Frontend Optimizations**:
   - `React Query`: Upgraded deprecated v4 query invalidation syntax (`queryClient.invalidateQueries([...])`) to v5 object syntax (`{ queryKey: [...] }`) in hooks like `useStudyTasks.js` to fix silent failures.
   - `Error Handling`: Hardened component renders (`StudyPlanner`, `StudentMarketplace`) against `Null Pointer Exceptions` and `TypeError` crashes by enforcing `Array.isArray()` fallbacks and optional chaining (`?.`) when parsing dynamic backend payloads, preventing white-screen fatal errors during empty states or backend anomalies.
@@ -227,6 +229,9 @@ erDiagram
   - `Iconography`: Deprecated error-prone `material-symbols-outlined` in favor of reliable, vector-based `lucide-react` icons. All frontend components (Auth, Dashboard, Planner, Social, Market, LostFound, Events, Admin, profile, Help, Diagnostics) are fully migrated, and the build succeeds flawlessly.
   - `Mobile Responsiveness`: Built a `MobileNav.jsx` bottom-tab bar for mobile layouts and applied `md:` and `lg:` Tailwind breakpoints across all grid and flex components to guarantee total responsiveness across desktop, tablet, and mobile views.
   - `Study Planner Fix`: Rewrote and fixed rendering bugs in the planner modules (`StudyPlanner`, `FocusList`, `WeeklyCalendarView`, `PlannerModal`, `TaskCard`) matching the new responsive design.
+- **New Features (Recent)**:
+  - `Centralized Inbox`: Built `Inbox.jsx` providing a full-screen, two-pane layout for all Direct Messages, fully integrated with real-time WebSockets and reachable via the main sidebar.
+  - `Resource Interaction`: Added inline "Edit" controls for resource authors and a "Message" button on `ResourceCard` enabling direct user-to-author communication.
 
 ### 7. Remaining Tech Debt / Next Steps
 - Implement HttpOnly cookies for JWT (currently in localStorage).

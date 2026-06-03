@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
 import { ResourceFormFields } from './ResourceFormFields';
-import { Share2, X, AlertCircle } from 'lucide-react';
+import { Share2, X, AlertCircle, Edit2 } from 'lucide-react';
 
-export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
+export function ResourceModal({ isOpen, onClose, onSuccess, editingResource }) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -18,6 +18,20 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen && editingResource) {
+      setTitle(editingResource.title || '');
+      setDescription(editingResource.description || '');
+      setCourseCode(editingResource.courseCode || '');
+      setCourseTitle(editingResource.courseTitle || '');
+      setType(editingResource.type || 'Notes');
+      setFileUrl(editingResource.fileUrl || '');
+      setIsAnonymous(editingResource.anonymous || false);
+    } else if (isOpen) {
+      resetForm();
+    }
+  }, [isOpen, editingResource]);
 
   const resourceTypes = ['Notes', 'Exam Paper', 'Study Guide', 'Textbook', 'Link'];
 
@@ -74,8 +88,14 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
         formData.append('file', selectedFile);
       }
 
-      const resp = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/resources`, {
-        method: 'POST',
+      const url = editingResource
+        ? `${import.meta.env.VITE_API_URL}/api/resources/${editingResource.id}`
+        : `${import.meta.env.VITE_API_URL}/api/resources`;
+      
+      const method = editingResource ? 'PUT' : 'POST';
+
+      const resp = await fetchWithAuth(url, {
+        method: method,
         body: formData,
       });
 
@@ -87,7 +107,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
 
       console.log('Resource shared successfully!');
       playSuccessSound();
-      onResourceCreated?.();
+      onSuccess?.();
       handleClose();
     } catch (err) {
       console.error('Submission error:', err);
@@ -124,9 +144,11 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
-                  <Share2 size={24} />
+                  {editingResource ? <Edit2 size={24} /> : <Share2 size={24} />}
                 </div>
-                <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">Share Resource</h2>
+                <h2 className="text-lg font-black uppercase tracking-[0.2em] text-on-surface">
+                  {editingResource ? 'Edit Resource' : 'Share Resource'}
+                </h2>
               </div>
               <button onClick={handleClose} className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all">
                 <X size={20} />
@@ -166,7 +188,7 @@ export function ResourceModal({ isOpen, onClose, onResourceCreated }) {
                   disabled={isSubmitting}
                   className="flex-[2] py-4 rounded-2xl bg-primary text-on-primary text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all"
                 >
-                  {isSubmitting ? 'Syncing...' : 'Publish Resource'}
+                  {isSubmitting ? 'Syncing...' : (editingResource ? 'Save Changes' : 'Publish Resource')}
                 </button>
               </div>
             </form>
