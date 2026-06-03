@@ -37,4 +37,6 @@ public class CourseReviewRequest {
     private Long reviewerId;
 
     private boolean anonymous;
+
+    private Long requestId;
 }

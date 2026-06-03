@@ -118,14 +118,23 @@ export function LostFoundBoard({ onProfileView }) {
   };
 
   const handleResolve = async (id) => {
+    // Optimistic update for immediate feedback
+    setItems(prev => prev.map(i => i.id === id ? { ...i, resolved: true } : i));
+    playSuccessSound();
+    
     try {
       const resp = await fetchWithAuth(`${API}/${id}/resolve`, { 
         method: 'PUT'
       });
-      if (resp.ok) { playSuccessSound(); fetchItems(); }
+      if (!resp.ok) {
+        throw new Error('Failed to resolve on server');
+      }
+      // Re-fetch in background to ensure sync
+      fetchItems();
     } catch (err) {
-      playSuccessSound();
-      setItems(prev => prev.map(i => i.id === id ? { ...i, resolved: true } : i));
+      // Revert if failed
+      setItems(prev => prev.map(i => i.id === id ? { ...i, resolved: false } : i));
+      console.error(err);
     }
   };
 

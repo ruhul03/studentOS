@@ -44,7 +44,7 @@ export function MarketplaceItemCard({ item, user, onEdit, onDelete, onMarkAsSold
         )}
         
         <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-md text-primary text-sm font-black px-3 py-1.5 rounded-xl border border-primary/20 shadow-lg">
-          ${Number(item.price).toFixed(0)}
+          ৳{Number(item.price).toFixed(0)}
         </div>
         
         {item.sold && (

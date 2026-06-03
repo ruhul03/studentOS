@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, CheckCircle, CheckCircle2, Package, MapPin, Edit3, Trash2 } from 'lucide-react';
+import { Search, CheckCircle, CheckCircle2, Package, MapPin, Edit3, Trash2, Loader2 } from 'lucide-react';
 
 export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onProfileView, onPhotoClick }) {
+  const [isResolving, setIsResolving] = useState(false);
   const getDaysAgo = (dateString) => {
     if (!dateString) return 0;
     const diffTime = Math.abs(new Date() - new Date(dateString));
@@ -124,13 +126,35 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
 
           {canManage && !item.resolved && (
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onResolve(item.id)}
-              className="mt-4 w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-on-secondary rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-secondary/20"
+              whileHover={!isResolving ? { scale: 1.02 } : {}}
+              whileTap={!isResolving ? { scale: 0.98 } : {}}
+              onClick={async () => {
+                if (isResolving) return;
+                setIsResolving(true);
+                try {
+                  await onResolve(item.id);
+                } finally {
+                  setIsResolving(false);
+                }
+              }}
+              disabled={isResolving}
+              className={`mt-4 w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border ${
+                isResolving 
+                  ? 'bg-secondary text-on-secondary border-secondary cursor-wait opacity-80' 
+                  : 'bg-secondary/10 hover:bg-secondary text-secondary hover:text-on-secondary border-secondary/20'
+              }`}
             >
-              <CheckCircle size={18} />
-              Mark as Resolved
+              {isResolving ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Resolving...
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={18} />
+                  Mark as Resolved
+                </>
+              )}
             </motion.button>
           )}
         </div>

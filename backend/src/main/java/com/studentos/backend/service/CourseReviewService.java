@@ -11,6 +11,7 @@ import com.studentos.backend.repository.CommentRepository;
 import com.studentos.backend.repository.CourseReviewRepository;
 import com.studentos.backend.repository.NotificationRepository;
 import com.studentos.backend.repository.UserRepository;
+import com.studentos.backend.repository.ReviewRequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,19 +28,22 @@ public class CourseReviewService {
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
+    private final ReviewRequestRepository requestRepository;
 
     public CourseReviewService(CourseReviewRepository reviewRepository,
                                UserRepository userRepository,
                                ActivityService activityService,
                                CommentRepository commentRepository,
                                NotificationService notificationService,
-                               NotificationRepository notificationRepository) {
+                               NotificationRepository notificationRepository,
+                               ReviewRequestRepository requestRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.activityService = activityService;
         this.commentRepository = commentRepository;
         this.notificationService = notificationService;
         this.notificationRepository = notificationRepository;
+        this.requestRepository = requestRepository;
     }
 
     public List<CourseReview> getReviews(String courseCode) {
@@ -73,6 +77,25 @@ public class CourseReviewService {
                 "You shared a review for " + savedReview.getCourseCode() + ".",
                 "reviews",
                 "success");
+
+        if (request.getRequestId() != null) {
+            requestRepository.findById(request.getRequestId()).ifPresent(req -> {
+                requestRepository.delete(req);
+                
+                // Notify the requester that their request was fulfilled
+                if (!req.getRequester().getId().equals(request.getReviewerId())) {
+                    String author = request.isAnonymous() ? "An anonymous student" : reviewer.getName();
+                    notificationService.createAndSendNotification(
+                        req.getRequester().getId(),
+                        "request_fulfilled",
+                        "Review Request Fulfilled",
+                        author + " posted a review for " + request.getCourseCode(),
+                        request.getReviewerId(),
+                        savedReview.getId()
+                    );
+                }
+            });
+        }
 
         return savedReview;
     }

@@ -95,7 +95,7 @@ export function MarketplaceItemModal({ show, item, onClose, onProfileView }) {
             <div className="flex items-center gap-8 py-8 border-y border-outline-variant/30">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60 mb-2">Asking Price</span>
-                <span className="text-5xl font-black text-primary leading-none tracking-tighter tabular-nums">${Number(item.price).toFixed(2)}</span>
+                <span className="text-5xl font-black text-primary leading-none tracking-tighter tabular-nums">৳{Number(item.price).toFixed(2)}</span>
               </div>
               <div className="w-px h-12 bg-outline-variant/30"></div>
               <div className="flex flex-col">

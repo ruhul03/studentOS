@@ -187,7 +187,7 @@ export function MarketplaceForm({ show, onClose, onSave, editingItem }) {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-70">Asking Price</label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant font-black text-sm">$</span>
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant font-black text-sm">৳</span>
                   <input 
                     type="number" 
                     className="w-full bg-surface-container border border-outline-variant rounded-2xl py-4 pl-10 pr-5 text-on-surface text-sm font-black tabular-nums focus:outline-none focus:border-primary transition-all shadow-inner" 

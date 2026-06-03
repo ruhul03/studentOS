@@ -58,7 +58,7 @@ export function CourseReviews() {
 
   const handleReviewSubmit = async (data) => {
     try {
-      const isEdit = !!editingReview;
+      const isEdit = !!editingReview?.id;
       const url = isEdit 
         ? `${import.meta.env.VITE_API_URL}/api/reviews/${editingReview.id}` 
         : `${import.meta.env.VITE_API_URL}/api/reviews`;
@@ -71,6 +71,7 @@ export function CourseReviews() {
       if (response.ok) {
         playSuccessSound();
         fetchReviews();
+        fetchRequests();
         setEditingReview(null);
       } else {
         const err = await response.text();
@@ -223,7 +224,7 @@ export function CourseReviews() {
                     </div>
                     <button 
                       onClick={() => {
-                        setEditingReview({ courseCode: req.courseCode, professor: req.professor || '' });
+                        setEditingReview({ courseCode: req.courseCode, professor: req.professor || '', requestId: req.id });
                         setShowForm(true);
                       }}
                       className="mt-2 w-full py-2 bg-white/5 hover:bg-primary hover:text-on-primary rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all"
