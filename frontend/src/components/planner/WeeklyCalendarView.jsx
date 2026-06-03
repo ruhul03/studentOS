@@ -12,7 +12,8 @@ export function WeeklyCalendarView({
   calendarTasks,
   getTaskPosition,
   getCourseColor,
-  weekOffset
+  weekOffset,
+  onEditTask
 }) {
   return (
     <section className="flex-[1.8] bg-surface-container-low border border-outline-variant rounded-3xl p-8 flex flex-col min-h-[700px] relative overflow-hidden group shadow-2xl">
@@ -96,6 +97,7 @@ export function WeeklyCalendarView({
                           className={`absolute left-0 w-full p-2 rounded-md cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all z-10 ${colorCls}`}
                           style={{ top: `${topPct}%`, minHeight: '48px' }}
                           title={`${t.title} - ${t.courseCode}`}
+                          onClick={() => onEditTask(t)}
                         >
                           <span className="block text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">{t.courseCode}</span>
                           <p className="text-[11px] font-medium leading-tight line-clamp-2">{t.title}</p>

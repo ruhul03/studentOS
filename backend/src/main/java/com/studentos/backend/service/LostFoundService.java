@@ -9,6 +9,8 @@ import com.studentos.backend.repository.LostFoundItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 @SuppressWarnings("null")
@@ -16,10 +18,12 @@ public class LostFoundService {
 
     private final LostFoundItemRepository itemRepository;
     private final ActivityService activityService;
+    private final ObjectMapper objectMapper;
 
     public LostFoundService(LostFoundItemRepository itemRepository, ActivityService activityService) {
         this.itemRepository = itemRepository;
         this.activityService = activityService;
+        this.objectMapper = new ObjectMapper();
     }
 
     public List<LostFoundItem> getActiveItems(String type) {
@@ -34,6 +38,15 @@ public class LostFoundService {
             throw new UnauthorizedActionException("User must be authenticated to report an item.");
         }
 
+        String photosJson = "[]";
+        if (request.getPhotos() != null && !request.getPhotos().isEmpty()) {
+            try {
+                photosJson = objectMapper.writeValueAsString(request.getPhotos());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
         LostFoundItem item = LostFoundItem.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -42,6 +55,7 @@ public class LostFoundService {
                 .contactInfo(request.getContactInfo())
                 .reporter(currentUser)
                 .resolved(false)
+                .photosJson(photosJson)
                 .build();
 
         LostFoundItem savedItem = itemRepository.save(item);
@@ -74,6 +88,16 @@ public class LostFoundService {
         item.setType(request.getType());
         item.setLocation(request.getLocation());
         item.setContactInfo(request.getContactInfo());
+
+        if (request.getPhotos() != null && !request.getPhotos().isEmpty()) {
+            try {
+                item.setPhotosJson(objectMapper.writeValueAsString(request.getPhotos()));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        } else {
+            item.setPhotosJson("[]");
+        }
 
         return itemRepository.save(item);
     }

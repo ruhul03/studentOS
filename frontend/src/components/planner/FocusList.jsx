@@ -12,7 +12,8 @@ export function FocusList({
   toggleTask,
   deleteTask,
   getCourseColor,
-  tasks
+  tasks,
+  onEditTask
 }) {
   return (
     <section className="flex-1 bg-surface-container-low border border-outline-variant rounded-3xl flex flex-col h-full relative overflow-hidden shadow-2xl">
@@ -56,6 +57,7 @@ export function FocusList({
                 daysLeft={dl}
                 onToggle={toggleTask}
                 onDelete={deleteTask}
+                onEdit={onEditTask}
                 courseColor={getCourseColor(task.courseCode)}
               />
             );

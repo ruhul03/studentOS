@@ -64,6 +64,37 @@ public class StudyPlannerService {
         return savedTask;
     }
 
+    public StudyTask updateTask(Long taskId, StudyTaskRequest request, User currentUser) {
+        if (currentUser == null) {
+            throw new UnauthorizedActionException("Authentication required");
+        }
+
+        StudyTask task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        if (!task.getUser().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
+            throw new UnauthorizedActionException("You do not have permission to modify this task");
+        }
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setCourseCode(request.getCourseCode());
+        task.setType(request.getType());
+        task.setDueDate(request.getDueDate());
+
+        StudyTask updatedTask = taskRepository.save(task);
+
+        activityService.logActivity(
+            currentUser.getId(),
+            "Task Updated: " + updatedTask.getTitle(),
+            "You updated the details for your " + updatedTask.getType() + " task.",
+            "planner",
+            "info"
+        );
+
+        return updatedTask;
+    }
+
     public StudyTask toggleTaskCompletion(Long taskId, User currentUser) {
         if (currentUser == null) {
             throw new UnauthorizedActionException("Authentication required");

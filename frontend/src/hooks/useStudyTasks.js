@@ -71,12 +71,39 @@ export function useStudyTasks(userId) {
     }
   });
 
+  // Update Task Mutation
+  const updateTaskMutation = useMutation({
+    mutationFn: async ({ id, ...updatedTask }) => {
+      const response = await fetchWithAuth(`${API}/api/planner/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(updatedTask),
+      });
+      if (!response.ok) throw new Error('Failed to update task');
+      return response.json();
+    },
+    onMutate: async (updatedTask) => {
+      await queryClient.cancelQueries({ queryKey: ['studyTasks', userId] });
+      const previousTasks = queryClient.getQueryData(['studyTasks', userId]);
+      queryClient.setQueryData(['studyTasks', userId], old => 
+        old?.map(t => t.id === updatedTask.id ? { ...t, ...updatedTask } : t)
+      );
+      return { previousTasks };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['studyTasks', userId], context.previousTasks);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['studyTasks', userId] });
+    }
+  });
+
   return {
     tasks,
     isLoading,
     error,
     toggleTask: toggleTaskMutation.mutate,
     deleteTask: deleteTaskMutation.mutate,
+    updateTask: updateTaskMutation.mutateAsync,
     refetch: () => queryClient.invalidateQueries({ queryKey: ['studyTasks', userId] })
   };
 }

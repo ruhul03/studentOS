@@ -15,7 +15,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
                 initial={{ height: 0 }}
                 animate={{ height: `${(d.count / Math.max(...growthData.map(gd => gd.count), 1)) * 100}%` }}
                 transition={{ duration: 1, delay: i * 0.05 }}
-                className="flex-1 bg-gradient-to-t from-secondary/20 to-secondary/60 rounded-t-lg relative group hover:from-secondary/40 hover:to-secondary/80 transition-all cursor-pointer"
+                className="flex-1 bg-secondary opacity-60 rounded-t-lg relative group hover:opacity-100 transition-all cursor-pointer"
               >
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-container-highest border border-outline-variant text-[10px] font-black text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-2xl z-20">
                   {d.date}: {d.count} users

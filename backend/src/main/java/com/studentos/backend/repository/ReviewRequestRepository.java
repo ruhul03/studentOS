@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ReviewRequestRepository extends JpaRepository<ReviewRequest, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"requester"})
     List<ReviewRequest> findAllByOrderByCreatedAtDesc();
 
     @org.springframework.transaction.annotation.Transactional

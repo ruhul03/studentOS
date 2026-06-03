@@ -49,7 +49,7 @@ public class MarketplaceItem {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "verificationCode", "authorities"})
     private User seller;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String photosJson;
 
     @Builder.Default

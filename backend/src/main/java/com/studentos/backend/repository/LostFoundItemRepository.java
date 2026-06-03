@@ -9,8 +9,15 @@ import java.util.List;
 
 @Repository
 public interface LostFoundItemRepository extends JpaRepository<LostFoundItem, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     List<LostFoundItem> findByResolvedFalseOrderByReportedAtDesc();
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     List<LostFoundItem> findByTypeIgnoreCaseAndResolvedFalseOrderByReportedAtDesc(String type);
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
+    List<LostFoundItem> findAll();
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     List<LostFoundItem> findAllByReporter(User reporter);
     long countByReporter(User reporter);
     @org.springframework.transaction.annotation.Transactional

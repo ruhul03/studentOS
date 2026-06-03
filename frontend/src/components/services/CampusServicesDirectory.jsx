@@ -132,7 +132,7 @@ export function CampusServicesDirectory() {
                   >
                     <div className="flex justify-between items-start mb-6">
                       <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-lg ${bgClass} ${colorClass}`}>
+                        <div className={`p-3 rounded-lg ${serviceIcon.bgClass} ${serviceIcon.colorClass}`}>
                           <serviceIcon.icon size={24} strokeWidth={2.5} />
                         </div>
                         <div>

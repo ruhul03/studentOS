@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Trash2, AlertCircle, Clock } from 'lucide-react';
 
-export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDelete, courseColor }) {
+export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDelete, onEdit, courseColor }) {
   return (
     <motion.div
       layout
@@ -28,12 +28,20 @@ export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDele
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2 mb-2">
             <h4 className="text-sm font-bold text-on-surface leading-tight">{task.title}</h4>
-            <button
-              onClick={() => onDelete(task.id)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error/10 transition-all shrink-0 cursor-pointer"
-            >
-              <Trash2 size={16} />
-            </button>
+            <div className="flex gap-1 transition-all">
+              <button
+                onClick={() => onEdit(task)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/10 shrink-0 cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+              </button>
+              <button
+                onClick={() => onDelete(task.id)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 shrink-0 cursor-pointer"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

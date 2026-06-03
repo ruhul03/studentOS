@@ -18,7 +18,12 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     @EntityGraph(attributePaths = {"uploader"})
     List<Resource> findAllByOrderByUpvotesDesc();
     
+    @EntityGraph(attributePaths = {"uploader"})
+    List<Resource> findAll();
+
     long countByUploader(User uploader);
+
+    @EntityGraph(attributePaths = {"uploader"})
     List<Resource> findAllByUploader(User uploader);
     
     @org.springframework.transaction.annotation.Transactional

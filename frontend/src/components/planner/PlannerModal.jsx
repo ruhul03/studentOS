@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchWithAuth } from '../../api';
 import { playSuccessSound, playErrorSound } from '../../utils/notificationSound';
-import { PlusSquare, X, AlertCircle } from 'lucide-react';
+import { PlusSquare, Edit2, X, AlertCircle } from 'lucide-react';
 
-export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
+export function PlannerModal({ isOpen, onClose, onTaskCreated, initialTask = null }) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,6 +17,22 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
   const [error, setError] = useState('');
 
   const taskTypes = ['Assignment', 'Exam', 'Project', 'Reading', 'Lecture', 'Lab'];
+
+  useEffect(() => {
+    if (initialTask && isOpen) {
+      setTitle(initialTask.title || '');
+      setDescription(initialTask.description || '');
+      setCourseCode(initialTask.courseCode || '');
+      setType(initialTask.type || 'Assignment');
+      if (initialTask.dueDate) {
+        const d = new Date(initialTask.dueDate);
+        setDate(d.toISOString().split('T')[0]);
+        setTime(d.toTimeString().slice(0, 5));
+      }
+    } else if (!initialTask && isOpen) {
+      resetForm();
+    }
+  }, [initialTask, isOpen]);
 
   const resetForm = () => {
     setTitle(''); setDescription(''); setCourseCode(''); setType('Assignment');
@@ -34,8 +50,11 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
     setError('');
     try {
       const dueDate = time ? `${date}T${time}:00` : `${date}T23:59:00`;
-      const resp = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/planner`, {
-        method: 'POST',
+      const url = initialTask ? `${import.meta.env.VITE_API_URL}/api/planner/${initialTask.id}` : `${import.meta.env.VITE_API_URL}/api/planner`;
+      const method = initialTask ? 'PUT' : 'POST';
+
+      const resp = await fetchWithAuth(url, {
+        method,
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim() || null,
@@ -45,7 +64,7 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
           userId: user?.id,
         }),
       });
-      if (!resp.ok) throw new Error('Failed to create task');
+      if (!resp.ok) throw new Error(initialTask ? 'Failed to update task' : 'Failed to create task');
       playSuccessSound();
       resetForm();
       onClose();
@@ -80,9 +99,9 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
             <div className="p-8 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                  <PlusSquare size={20} strokeWidth={2} />
+                  {initialTask ? <Edit2 size={20} strokeWidth={2} /> : <PlusSquare size={20} strokeWidth={2} />}
                 </div>
-                <h2 className="text-xl font-black text-on-surface tracking-tight">Create New Task</h2>
+                <h2 className="text-xl font-black text-on-surface tracking-tight">{initialTask ? 'Edit Task' : 'Create New Task'}</h2>
               </div>
               <button
                 className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer"
@@ -176,7 +195,7 @@ export function PlannerModal({ isOpen, onClose, onTaskCreated }) {
                   disabled={isSubmitting}
                   className="flex-1 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all cursor-pointer"
                 >
-                  {isSubmitting ? 'Processing...' : 'Create Task'}
+                  {isSubmitting ? 'Processing...' : (initialTask ? 'Update Task' : 'Create Task')}
                 </button>
               </div>
             </form>

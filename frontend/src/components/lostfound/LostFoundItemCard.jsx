@@ -25,6 +25,10 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
   const canManage = user && (user.id === item.reporter?.id || user.role === 'ADMIN');
   const isLost = item.type === 'LOST';
 
+  let photos = [];
+  try { photos = item.photosJson ? JSON.parse(item.photosJson) : []; } catch(e) {}
+  const mainPhoto = photos.length > 0 ? photos[0] : null;
+
   return (
     <motion.div 
       layout
@@ -40,12 +44,12 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
     >
       {/* Image */}
       <div className="relative h-48 bg-surface-container-high flex items-center justify-center overflow-hidden">
-        {item.photos && item.photos.length > 0 ? (
+        {mainPhoto ? (
           <img 
-            src={item.photos[0]} 
+            src={mainPhoto} 
             alt={item.title} 
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 cursor-pointer" 
-            onClick={() => onPhotoClick && onPhotoClick(item.photos[0])}
+            onClick={() => onPhotoClick && onPhotoClick(mainPhoto)}
           />
         ) : (
           <div className="text-outline/20">

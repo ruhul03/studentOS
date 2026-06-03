@@ -34,6 +34,12 @@ public class StudyPlannerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
+    @PutMapping("/{taskId}")
+    public ResponseEntity<StudyTask> updateTask(@PathVariable("taskId") Long taskId, @Valid @RequestBody StudyTaskRequest request, @AuthenticationPrincipal User currentUser) {
+        StudyTask updatedTask = studyPlannerService.updateTask(taskId, request, currentUser);
+        return ResponseEntity.ok(updatedTask);
+    }
+
     @PutMapping("/{taskId}/toggle")
     public ResponseEntity<StudyTask> toggleTaskCompletion(@PathVariable("taskId") Long taskId, @AuthenticationPrincipal User currentUser) {
         StudyTask updatedTask = studyPlannerService.toggleTaskCompletion(taskId, currentUser);

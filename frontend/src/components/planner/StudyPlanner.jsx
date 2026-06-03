@@ -15,6 +15,7 @@ export function StudyPlanner() {
   const { tasks, isLoading, error, toggleTask, deleteTask, refetch } = useStudyTasks(user?.id);
   
   const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
   const [sortBy, setSortBy] = useState('date'); // 'date' | 'course' | 'type'
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -98,6 +99,11 @@ export function StudyPlanner() {
   if (isLoading) return <LoadingState message="Loading study tasks..." />;
   if (error) return <ErrorState message="Failed to load your study planner." onRetry={refetch} />;
 
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setShowModal(true);
+  };
+
   return (
     <div className="w-full h-full flex flex-col lg:flex-row gap-8 animate-fade-in">
       {/* Left: Weekly Calendar */}
@@ -113,6 +119,7 @@ export function StudyPlanner() {
         getTaskPosition={getTaskPosition}
         getCourseColor={getCourseColor}
         weekOffset={weekOffset}
+        onEditTask={handleEditTask}
       />
 
       {/* Right: Action Items */}
@@ -127,6 +134,7 @@ export function StudyPlanner() {
         deleteTask={deleteTask}
         getCourseColor={getCourseColor}
         tasks={tasks}
+        onEditTask={handleEditTask}
       />
 
       {/* Modern Floating Action Button */}
@@ -140,7 +148,12 @@ export function StudyPlanner() {
         <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
       </motion.button>
 
-      <PlannerModal isOpen={showModal} onClose={() => setShowModal(false)} onTaskCreated={refetch} />
+      <PlannerModal 
+        isOpen={showModal} 
+        onClose={() => { setShowModal(false); setEditingTask(null); }} 
+        onTaskCreated={refetch} 
+        initialTask={editingTask}
+      />
     </div>
   );
 }

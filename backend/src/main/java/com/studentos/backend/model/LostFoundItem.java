@@ -46,6 +46,9 @@ public class LostFoundItem {
     @Builder.Default
     private boolean resolved = false;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String photosJson;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime reportedAt;

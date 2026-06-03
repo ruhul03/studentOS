@@ -34,4 +34,6 @@ public class LostFoundRequest {
 
     @NotNull(message = "Reporter ID is required")
     private Long reporterId;
+
+    private java.util.List<String> photos;
 }
