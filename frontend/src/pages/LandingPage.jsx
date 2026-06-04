@@ -62,10 +62,10 @@ export function LandingPage() {
               Academic Precision Redefined
             </span>
             <h1 className="font-h1 text-5xl md:text-7xl font-bold text-on-surface mb-6 leading-tight tracking-tight">
-              Your Unified <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Campus Experience</span>
+              United International <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">University (UIU) Dashboard</span>
             </h1>
             <p className="font-body-lg text-lg text-on-surface-variant mb-10 max-w-[600px] leading-relaxed">
-              Centralize your academic life. From intelligent task management to campus services, StudentOS provides the focus you need to excel.
+              Centralize your UIU academic life. From intelligent task management to campus services, StudentOS provides the focus you need to excel at UIU.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button 
@@ -78,7 +78,7 @@ export function LandingPage() {
                 className="px-8 py-4 font-label-caps text-sm bg-surface-container border border-outline-variant hover:bg-surface-container-high text-on-surface rounded-xl transition-colors flex items-center gap-2 cursor-pointer"
                 onClick={() => document.getElementById('modules').scrollIntoView({ behavior: 'smooth' })}
               >
-                Explore Modules <ChevronDown size={18} />
+                Explore UIU Tools <ChevronDown size={18} />
               </button>
             </div>
           </motion.div>
@@ -87,8 +87,8 @@ export function LandingPage() {
         {/* Feature Grid (Bento Style) */}
         <section id="modules" className="w-full max-w-[1200px] mx-auto px-8 py-20 relative z-10">
           <div className="flex flex-col items-center text-center mb-16">
-            <h2 className="font-h2 text-3xl font-bold text-on-surface mb-4">Core Modules</h2>
-            <p className="font-body-lg text-on-surface-variant max-w-[500px]">Designed for high-performance student workflows.</p>
+            <h2 className="font-h2 text-3xl font-bold text-on-surface mb-4">Core UIU Modules</h2>
+            <p className="font-body-lg text-on-surface-variant max-w-[500px]">Designed specifically for high-performance UIU student workflows.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -96,15 +96,15 @@ export function LandingPage() {
             <motion.div 
               whileHover={{ y: -5 }}
               className="col-span-1 md:col-span-8 bg-surface-container border border-outline-variant rounded-2xl p-8 hover:bg-surface-container-high transition-all cursor-pointer relative overflow-hidden group"
-              onClick={() => navigate('/dashboard?tab=resources')}
+              onClick={() => navigate('/features/resources')}
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-[40px] group-hover:bg-primary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 border border-primary/20">
                   <BookOpen size={24} className="fill-current" />
                 </div>
-                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Study Resources</h3>
-                <p className="font-body-sm text-on-surface-variant max-w-[400px]">Centralized repository for notes, past papers, and academic materials. Search instantly and organize seamlessly.</p>
+                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">UIU Question Bank & Notes</h3>
+                <p className="font-body-sm text-on-surface-variant max-w-[400px]">Access past UIU midterms, finals, class notes, and slides shared by alumni and peers. Search instantly and organize seamlessly.</p>
               </div>
             </motion.div>
 
@@ -112,14 +112,14 @@ export function LandingPage() {
             <motion.div 
               whileHover={{ y: -5 }}
               className="col-span-1 md:col-span-4 bg-surface-container border border-outline-variant rounded-2xl p-8 hover:bg-surface-container-high transition-all cursor-pointer relative overflow-hidden group"
-              onClick={() => navigate('/dashboard?tab=services')}
+              onClick={() => navigate('/login')}
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-secondary/10 rounded-full blur-[40px] group-hover:bg-secondary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary mb-6 border border-secondary/20">
                   <Landmark size={24} className="fill-current" />
                 </div>
-                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Campus Services</h3>
+                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">UIU Campus Services</h3>
                 <p className="font-body-sm text-on-surface-variant">Live status of library seating, cafeteria queues, and shuttle buses.</p>
               </div>
             </motion.div>
@@ -128,15 +128,15 @@ export function LandingPage() {
             <motion.div 
               whileHover={{ y: -5 }}
               className="col-span-1 md:col-span-4 bg-surface-container border border-outline-variant rounded-2xl p-8 hover:bg-surface-container-high transition-all cursor-pointer relative overflow-hidden group"
-              onClick={() => navigate('/dashboard?tab=planner')}
+              onClick={() => navigate('/features/calculator')}
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-tertiary/10 rounded-full blur-[40px] group-hover:bg-tertiary/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6 border border-tertiary/20">
                   <Calendar size={24} className="fill-current" />
                 </div>
-                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Intelligent Planner</h3>
-                <p className="font-body-sm text-on-surface-variant">Syllabus-aware task management that prioritizes deadlines automatically.</p>
+                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">UIU Tuition Calculator</h3>
+                <p className="font-body-sm text-on-surface-variant">Accurately calculate your trimester fees and predict your CGPA.</p>
               </div>
             </motion.div>
 
@@ -144,31 +144,31 @@ export function LandingPage() {
             <motion.div 
               whileHover={{ y: -5 }}
               className="col-span-1 md:col-span-4 bg-surface-container border border-outline-variant rounded-2xl p-8 hover:bg-surface-container-high transition-all cursor-pointer relative overflow-hidden group"
-              onClick={() => navigate('/dashboard?tab=market')}
+              onClick={() => navigate('/features/marketplace')}
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary-fixed mb-6 border border-primary/30">
                   <Store size={24} className="fill-current" />
                 </div>
-                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Student Marketplace</h3>
+                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">UIU Marketplace</h3>
                 <p className="font-body-sm text-on-surface-variant">Securely buy, sell, or trade textbooks and electronics on campus.</p>
               </div>
             </motion.div>
 
-            {/* Lost & Found */}
+            {/* Course Reviews */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="col-span-1 md:col-span-4 bg-surface-container border border-outline-variant rounded-2xl p-8 hover:bg-surface-container-high transition-all cursor-pointer relative overflow-hidden group"
-              onClick={() => navigate('/dashboard?tab=lostfound')}
+              onClick={() => navigate('/features/reviews')}
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-error/10 rounded-full blur-[40px] group-hover:bg-error/20 transition-colors"></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center text-error mb-6 border border-error/20">
                   <FileSearch size={24} className="fill-current" />
                 </div>
-                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">Lost & Found</h3>
-                <p className="font-body-sm text-on-surface-variant">Community-driven reporting network to quickly recover misplaced items.</p>
+                <h3 className="font-h3 text-xl font-bold text-on-surface mb-3">UIU Faculty Reviews</h3>
+                <p className="font-body-sm text-on-surface-variant">Read anonymous student reviews of UIU faculty and courses before you enroll.</p>
               </div>
             </motion.div>
           </div>

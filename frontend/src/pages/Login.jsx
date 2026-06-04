@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { playSuccessSound, playErrorSound } from '../utils/notificationSound';
 import { GraduationCap, AlertCircle, User, Lock, ArrowRight } from 'lucide-react';
 
+import SEO from '../components/SEO/SEO';
+
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,6 +60,10 @@ export function Login() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-body-lg text-on-surface">
+      <SEO 
+        title="Login | StudentOS" 
+        description="Sign in to your StudentOS academic dashboard to manage your studies, courses, and resources." 
+      />
       {/* Top Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-md fixed top-0 z-50">
         <div className="font-h3 text-xl font-bold tracking-tight text-primary cursor-pointer flex items-center gap-2" onClick={() => navigate('/')}>

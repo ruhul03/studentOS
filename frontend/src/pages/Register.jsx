@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, UserPlus, AlertCircle, User as UserIcon, AtSign, Mail, Lock, ArrowRight } from 'lucide-react';
 
+import SEO from '../components/SEO/SEO';
+
 export function Register() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -59,6 +61,10 @@ export function Register() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-body-lg text-on-surface">
+      <SEO 
+        title="Register | StudentOS" 
+        description="Create your UIU StudentOS account to access your academic dashboard, track assignments, and connect with peers." 
+      />
       {/* Top Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-outline-variant/30 backdrop-blur-md fixed top-0 z-50">
         <div className="font-h3 text-xl font-bold tracking-tight text-primary cursor-pointer flex items-center gap-2" onClick={() => navigate('/')}>

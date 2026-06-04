@@ -284,3 +284,14 @@ The StudentOS platform is fully containerized and deployed using modern free-tie
 - **Database (Aiven)**: Uses a managed MySQL 8.0 instance. The Spring Boot backend dynamically maps the database connection using standard JDBC environment variables (`DB_URL`, `DB_USER`, `DB_PASSWORD`).
 - **Keep-Alive (UptimeRobot)**: To bypass Render's 15-minute sleep threshold (which causes 50-second cold starts), a lightweight `/api/ping` endpoint inside `PingController` is pinged every 14 minutes by UptimeRobot, keeping the JVM warm and responsive.
 - **Security / CORS**: The backend is tightly bound to the Vercel frontend domain via the `CORS_ORIGINS` environment variable mapped in `application.yml`, preventing unauthorized origin access while allowing credentials.
+
+---
+
+## 🔍 UIU Localized SEO Architecture
+
+To ensure the platform is discoverable on Google by United International University students, the React SPA implements a targeted SEO strategy:
+
+- **Public Feature Pages (`/features/*`)**: Core tools (Calculator, Marketplace, Reviews, Resources) are shielded behind authentication. To allow Google to index these tools, lightweight public landing pages exist outside the `<ProtectedRoute>`. These pages contain SEO content, Schema markup, and prompt the user to log in to access the actual tool.
+- **Dynamic Meta Tags (`react-helmet-async`)**: The `<SEO>` component dynamically updates the `<title>`, `<meta name="description">`, OpenGraph data (for social sharing previews on Facebook/Discord/WhatsApp), and Twitter Card data based on the route.
+- **JSON-LD Schema**: The application utilizes `SoftwareApplication` and `CollectionPage` structured data referencing `United International University` as the provider to dominate local search queries.
+- **Sitemap**: A static `sitemap.xml` is maintained in the `public` directory, ensuring search engine crawlers can index the public landing pages effectively.

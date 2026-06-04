@@ -136,6 +136,11 @@ function Dashboard() {
   );
 }
 
+import { FeatureCalculator } from '../../pages/features/FeatureCalculator';
+import { FeatureMarketplace } from '../../pages/features/FeatureMarketplace';
+import { FeatureReviews } from '../../pages/features/FeatureReviews';
+import { FeatureResources } from '../../pages/features/FeatureResources';
+
 function App() {
   return (
     <AuthProvider>
@@ -145,6 +150,13 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Public Feature SEO Pages */}
+          <Route path="/features/calculator" element={<FeatureCalculator />} />
+          <Route path="/features/marketplace" element={<FeatureMarketplace />} />
+          <Route path="/features/reviews" element={<FeatureReviews />} />
+          <Route path="/features/resources" element={<FeatureResources />} />
+
           <Route 
             path="/dashboard" 
             element={

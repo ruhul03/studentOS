@@ -8,6 +8,7 @@ import { useMarketplace } from '../../hooks/useMarketplace';
 import LoadingState from '../ui/LoadingState';
 import ErrorState from '../ui/ErrorState';
 import { ShoppingCart, Search, Store } from 'lucide-react';
+import SEO from '../SEO/SEO';
 
 export function StudentMarketplace({ onProfileView }) {
   const { user } = useAuth();
@@ -55,8 +56,23 @@ export function StudentMarketplace({ onProfileView }) {
   if (isLoading) return <LoadingState message="Loading campus marketplace..." />;
   if (error) return <ErrorState message="Failed to load marketplace listings." onRetry={refetch} />;
 
+  // SEO Schema for Marketplace
+  const marketplaceSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Campus Marketplace | StudentOS",
+    "description": "Buy and sell textbooks, gadgets, and campus essentials safely with peers at United International University.",
+    "url": "https://student-os-uiu.vercel.app/marketplace"
+  };
+
   return (
     <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 animate-fade-in overflow-y-auto custom-scrollbar overflow-x-hidden">
+      <SEO 
+        title="Campus Marketplace | StudentOS" 
+        description="Buy and sell textbooks, gadgets, and campus essentials safely with peers at United International University."
+        schema={marketplaceSchema}
+      />
+      
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 shrink-0">
         <div className="space-y-2">

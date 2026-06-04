@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://student-os-uiu.vercel.app/sitemap.xml
