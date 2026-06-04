@@ -236,6 +236,8 @@ erDiagram
   - `Mobile Responsiveness`: Built a `MobileNav.jsx` bottom-tab bar for mobile layouts and applied `md:` and `lg:` Tailwind breakpoints across all grid and flex components.
   - `Study Planner Fix`: Rewrote and fixed rendering bugs in the planner modules (`StudyPlanner`, `FocusList`, `WeeklyCalendarView`, `PlannerModal`, `TaskCard`) matching the new responsive design.
 - **New Features (Recent)**:
+  - `Public SEO Architecture`: Created SEO-optimized public landing pages (`/features/calculator`, `/features/marketplace`, etc.) for internal modules to allow Google indexing without bypassing authentication. App routing was updated, and a `sitemap.xml` was created for search crawlers.
+  - `Registration Email Verification`: Built a complete email verification flow. Backend now includes a `resend-verification` endpoint. Frontend has a new `VerifyEmail.jsx` screen with an auto-advancing 6-digit OTP input that supports copy/paste. The authentication routing securely blocks unverified logins and directs users to the verification screen.
   - `Centralized Inbox`: Built `Inbox.jsx` providing a full-screen, two-pane layout for all Direct Messages, fully integrated with real-time WebSockets and reachable via the main sidebar.
   - `Resource Interaction`: Added inline "Edit" controls for resource authors and a "Message" button on `ResourceCard` enabling direct user-to-author communication.
   - `Admin Course Reviews`: Added full management of `CourseReview` entities into the Admin Dashboard, introducing `TabReviews.jsx` and new robust backend administrative endpoints for review monitoring and secure deletion.
