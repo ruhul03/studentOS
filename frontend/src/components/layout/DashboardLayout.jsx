@@ -13,7 +13,7 @@ export function DashboardLayout({ children }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex-1 flex flex-col relative z-0"
+        className="flex-1 flex flex-col relative z-0 min-w-0"
       >
         {children}
       </motion.main>
