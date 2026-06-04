@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final TrafficInterceptor trafficInterceptor;
 
-    @Value("${app.cors.allowed-origins:http://localhost:5174}")
+    @Value("${app.cors.allowed-origins:http://localhost:5174,https://student-os-uiu.vercel.app,https://studentos-uiu.vercel.app}")
     private String allowedOrigins;
 
     public WebConfig(TrafficInterceptor trafficInterceptor) {
@@ -22,8 +22,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
+        String[] origins = allowedOrigins.split(",");
+        for (int i = 0; i < origins.length; i++) {
+            origins[i] = origins[i].trim();
+        }
+        
         registry.addMapping("/**")
-                .allowedOrigins(allowedOrigins)
+                .allowedOrigins(origins)
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
