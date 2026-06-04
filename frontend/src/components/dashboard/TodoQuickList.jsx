@@ -19,7 +19,7 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
   };
 
   return (
-    <section className="lg:col-span-8 bg-surface-container border border-outline-variant rounded-2xl p-8 h-full">
+    <section className="lg:col-span-8 bg-surface-container border border-outline-variant max-md:rounded-xl md:rounded-2xl max-md:p-4 md:p-8 h-full">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-black text-on-surface tracking-tight">Active To-Do</h2>

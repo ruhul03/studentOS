@@ -38,86 +38,72 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
   return (
     <>
       {/* TopNavBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant transition-colors duration-300">
-        <div className="flex items-center gap-4 min-w-[200px]">
-          <span className="text-xl font-bold text-on-surface tracking-tight cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
-        </div>
+      <nav className="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant transition-colors duration-300">
+        <div className="flex items-center justify-between px-6 h-16">
+          <div className="flex items-center gap-4 min-w-[200px]">
+            <span className="text-xl font-bold text-on-surface tracking-tight cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
+          </div>
 
-        <div className="hidden md:flex flex-1 max-w-lg mx-8">
-          <GlobalSearch onNavigate={onNavigate} />
-        </div>
-        
-        {/* Right: Actions */}
-        <div className="flex items-center justify-end gap-3">
-          <div className="flex items-center gap-1 border-r border-outline-variant pr-3">
-            <button 
-              className="md:hidden w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
-              onClick={() => setShowMobileSearch(!showMobileSearch)}
-              title="Search"
-            >
-              <Search size={20} strokeWidth={2} />
-            </button>
-            <button 
-              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
-              onClick={toggleTheme}
-              title="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun size={20} strokeWidth={2} /> : <Moon size={20} strokeWidth={2} />}
-            </button>
-            <div className="relative">
-              <NotificationPanel 
-                show={showNotificationPanel} 
-                toggleShow={() => setShowNotificationPanel(!showNotificationPanel)} 
-                wsNotifications={wsNotifications} 
-                onNavigate={onNavigate} 
-                onMessageClick={onMessageClick}
-              />
-            </div>
-            <button 
-              className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
-              onClick={() => onNavigate('settings')}
-              title="Settings"
-            >
-              <Settings size={20} strokeWidth={2} />
-            </button>
-            <button 
-              className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
-              onClick={() => onNavigate('help')}
-              title="Help Center"
-            >
-              <HelpCircle size={20} strokeWidth={2} />
-            </button>
+          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+            <GlobalSearch onNavigate={onNavigate} />
           </div>
           
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative cursor-pointer"
-            onClick={() => onNavigate('profile')}
-          >
-            <img 
-              alt="User avatar" 
-              className="w-8 h-8 rounded-full border border-outline-variant object-cover hover:border-primary transition-all shadow-sm" 
-              src={user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
-            />
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface"></div>
-          </motion.div>
+          {/* Right: Actions */}
+          <div className="flex items-center justify-end gap-3">
+            <div className="flex items-center gap-1 border-r border-outline-variant pr-3">
+              <button 
+                className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+                onClick={toggleTheme}
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={20} strokeWidth={2} /> : <Moon size={20} strokeWidth={2} />}
+              </button>
+              <div className="relative">
+                <NotificationPanel 
+                  show={showNotificationPanel} 
+                  toggleShow={() => setShowNotificationPanel(!showNotificationPanel)} 
+                  wsNotifications={wsNotifications} 
+                  onNavigate={onNavigate} 
+                  onMessageClick={onMessageClick}
+                />
+              </div>
+              <button 
+                className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+                onClick={() => onNavigate('settings')}
+                title="Settings"
+              >
+                <Settings size={20} strokeWidth={2} />
+              </button>
+              <button 
+                className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+                onClick={() => onNavigate('help')}
+                title="Help Center"
+              >
+                <HelpCircle size={20} strokeWidth={2} />
+              </button>
+            </div>
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative cursor-pointer"
+              onClick={() => onNavigate('profile')}
+            >
+              <img 
+                alt="User avatar" 
+                className="w-8 h-8 rounded-full border border-outline-variant object-cover hover:border-primary transition-all shadow-sm" 
+                src={user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
+              />
+              <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface"></div>
+            </motion.div>
+          </div>
+        </div>
+        
+        {/* Mobile Search Bar (Persistent) */}
+        <div className="md:hidden px-4 pb-3">
+          <GlobalSearch onNavigate={onNavigate} />
         </div>
       </nav>
-      
-      {/* Mobile Search Dropdown */}
-      <AnimatePresence>
-        {showMobileSearch && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="md:hidden fixed top-16 left-0 right-0 p-4 bg-surface/95 backdrop-blur-xl border-b border-outline-variant z-40"
-          >
-            <GlobalSearch onNavigate={(tab) => { onNavigate(tab); setShowMobileSearch(false); }} />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* SideNavBar */}
       <aside className="hidden md:flex fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-surface/50 backdrop-blur-md border-r border-outline-variant flex-col py-6 z-40 transition-colors duration-300">

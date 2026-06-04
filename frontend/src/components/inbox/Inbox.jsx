@@ -180,7 +180,7 @@ export function Inbox({ messageEvent, onProfileView }) {
   );
 
   return (
-    <div className="flex h-[calc(100vh-140px)] bg-surface-container rounded-3xl border border-outline-variant overflow-hidden shadow-sm">
+    <div className="flex max-md:h-[calc(100dvh-180px)] md:h-[calc(100vh-140px)] bg-surface-container max-md:rounded-2xl md:rounded-3xl border border-outline-variant overflow-hidden shadow-sm">
       
       {/* ── Left Pane: Conversation List ── */}
       <div className={`${activeChatUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-outline-variant flex-col bg-surface-container-low/30`}>

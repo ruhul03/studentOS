@@ -10,7 +10,7 @@ export function UiuCalculator() {
   const [modalData, setModalData] = useState(null);
 
   return (
-    <div className="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full animate-fade-in">
+    <div className="flex-1 max-md:pb-32 p-4 md:p-8 max-w-6xl mx-auto w-full animate-fade-in">
       {/* Header Section */}
       <div className="text-center mb-12 flex flex-col items-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">

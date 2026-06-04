@@ -105,7 +105,7 @@ export function StudyPlanner() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row gap-8 animate-fade-in">
+    <div className="w-full h-full flex flex-col lg:flex-row gap-8 animate-fade-in max-md:pb-24 max-md:overflow-y-auto custom-scrollbar">
       {/* Left: Weekly Calendar */}
       <WeeklyCalendarView 
         weekData={weekData}

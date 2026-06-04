@@ -66,7 +66,7 @@ export function StudentMarketplace({ onProfileView }) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 animate-fade-in overflow-y-auto custom-scrollbar overflow-x-hidden">
+    <div className="flex flex-col h-full w-full max-w-7xl mx-auto max-md:pb-32 md:pb-16 px-4 lg:px-0 animate-fade-in overflow-y-auto custom-scrollbar overflow-x-hidden">
       <SEO 
         title="Campus Marketplace | StudentOS" 
         description="Buy and sell textbooks, gadgets, and campus essentials safely with peers at United International University."
