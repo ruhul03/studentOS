@@ -93,15 +93,25 @@ export function Login() {
           
           <AnimatePresence mode="wait">
             {error && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-6 p-3 rounded-lg bg-error/10 border border-error/20 text-error font-body-sm text-sm flex items-center gap-2"
-              >
-                <AlertCircle size={18} />
-                {error}
-              </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-6 p-3 rounded-lg bg-error/10 border border-error/20 text-error font-body-sm text-sm flex flex-col gap-2"
+                >
+                  <div className="flex items-start gap-2">
+                    <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                  {error.includes('not verified') && (
+                    <button
+                      onClick={() => navigate(`/verify?email=${encodeURIComponent(email)}`)}
+                      className="text-xs font-bold underline hover:text-error/80 self-start ml-6 cursor-pointer"
+                    >
+                      Click here to enter your verification code
+                    </button>
+                  )}
+                </motion.div>
             )}
           </AnimatePresence>
           

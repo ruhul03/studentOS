@@ -47,7 +47,7 @@ export function Register() {
       });
 
       if (response.ok) {
-        navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
+        navigate(`/verify?email=${encodeURIComponent(email)}`);
       } else {
         const errorText = await response.text();
         setError(errorText || 'Registration failed.');

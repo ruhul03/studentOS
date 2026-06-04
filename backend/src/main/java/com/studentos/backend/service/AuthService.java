@@ -86,6 +86,25 @@ public class AuthService {
         }).orElse(false);
     }
 
+    @Transactional
+    public void resendVerificationCode(String email) throws IllegalArgumentException {
+        User user = userRepository.findByEmailIgnoreCase(email.trim())
+                .orElseThrow(() -> new IllegalArgumentException("No user found with this email."));
+
+        if (user.isVerified()) {
+            throw new IllegalArgumentException("Account is already verified.");
+        }
+
+        SecureRandom random = new SecureRandom();
+        String verificationCode = String.format("%06d", random.nextInt(1000000));
+        
+        user.setVerificationCode(verificationCode);
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+    }
+
     public User loginUser(LoginRequest loginRequest) throws IllegalArgumentException, SecurityException {
         String identifier = loginRequest.getEmail() != null ? loginRequest.getEmail().trim() : "";
         if (identifier.isBlank()) {

@@ -140,6 +140,7 @@ import { FeatureCalculator } from '../../pages/features/FeatureCalculator';
 import { FeatureMarketplace } from '../../pages/features/FeatureMarketplace';
 import { FeatureReviews } from '../../pages/features/FeatureReviews';
 import { FeatureResources } from '../../pages/features/FeatureResources';
+import { VerifyEmail } from '../../pages/VerifyEmail';
 
 function App() {
   return (
@@ -150,6 +151,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify" element={<VerifyEmail />} />
           
           {/* Public Feature SEO Pages */}
           <Route path="/features/calculator" element={<FeatureCalculator />} />

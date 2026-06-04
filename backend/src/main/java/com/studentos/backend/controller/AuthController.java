@@ -45,6 +45,16 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code or email.");
     }
 
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerification(@RequestBody Map<String, String> request) {
+        try {
+            authService.resendVerificationCode(request.get("email"));
+            return ResponseEntity.ok(Collections.singletonMap("message", "A new verification code has been sent."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         try {
