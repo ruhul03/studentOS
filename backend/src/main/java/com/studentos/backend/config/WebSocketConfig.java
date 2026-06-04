@@ -24,8 +24,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
+        String[] origins = allowedOrigins.split(",");
+        for (int i = 0; i < origins.length; i++) {
+            origins[i] = origins[i].trim();
+        }
+
         registry.addEndpoint("/ws-studentos")
-                .setAllowedOrigins(allowedOrigins)
+                .setAllowedOrigins(origins)
                 .withSockJS();
     }
 }
