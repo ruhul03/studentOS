@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 @Service
 @SuppressWarnings("null")
@@ -19,11 +20,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -39,18 +42,25 @@ public class AuthService {
             throw new IllegalArgumentException("Username is already taken.");
         }
 
+        SecureRandom random = new SecureRandom();
+        String verificationCode = String.format("%06d", random.nextInt(1000000));
+
         User user = User.builder()
                 .name(registration.getName())
                 .username(registration.getUsername())
                 .email(registration.getEmail())
                 .password(passwordEncoder.encode(registration.getPassword()))
                 .role("STUDENT")
-                .isVerified(true)
-                .verificationCode(null)
+                .isVerified(false)
+                .verificationCode(verificationCode)
+                .verificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15))
                 .updateCount(0)
                 .build();
 
         User savedUser = userRepository.save(user);
+        
+        emailService.sendVerificationEmail(savedUser.getEmail(), verificationCode);
+
         String token = jwtUtil.generateToken(savedUser.getUsername(), savedUser.getRole());
         savedUser.setToken(token);
 
@@ -63,8 +73,12 @@ public class AuthService {
 
         return userRepository.findByEmailIgnoreCase(email.trim()).map(user -> {
             if (user.getVerificationCode() != null && user.getVerificationCode().equals(code)) {
+                if (user.getVerificationCodeExpiresAt() != null && user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+                    throw new IllegalArgumentException("Verification code has expired. Please request a new one.");
+                }
                 user.setVerified(true);
                 user.setVerificationCode(null);
+                user.setVerificationCodeExpiresAt(null);
                 userRepository.save(user);
                 return true;
             }
@@ -107,7 +121,11 @@ public class AuthService {
             SecureRandom random = new SecureRandom();
             String verificationCode = String.format("%06d", random.nextInt(1000000));
             user.setVerificationCode(verificationCode);
+            user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
             userRepository.save(user);
+            
+            emailService.sendPasswordResetEmail(user.getEmail(), verificationCode);
+            
             return verificationCode;
         }).orElseThrow(() -> new IllegalArgumentException("No user found with this email."));
     }
@@ -119,11 +137,16 @@ public class AuthService {
 
         return userRepository.findByEmailIgnoreCase(email.trim()).map(user -> {
             if (user.getVerificationCode() == null || !user.getVerificationCode().equals(code)) {
-                throw new IllegalArgumentException("Invalid or expired verification code.");
+                throw new IllegalArgumentException("Invalid verification code.");
+            }
+            
+            if (user.getVerificationCodeExpiresAt() != null && user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+                throw new IllegalArgumentException("Verification code has expired. Please request a new one.");
             }
 
             user.setVerified(true);
             user.setVerificationCode(null);
+            user.setVerificationCodeExpiresAt(null);
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
             return true;

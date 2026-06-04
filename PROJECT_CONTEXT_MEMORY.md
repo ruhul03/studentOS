@@ -272,3 +272,15 @@ erDiagram
     *   Database: Saved to `study_tasks` table.
     *   Response: Returns saved entity, Frontend state updates, triggering a re-render.
 4.  **Launch Mechanism**: The `run-all.bat` script is a utility that simultaneously spins up the Vite development server and the Maven Spring Boot application.
+
+---
+
+## 🚀 Production Deployment Architecture
+
+The StudentOS platform is fully containerized and deployed using modern free-tier PaaS and DBaaS providers.
+
+- **Frontend (Vercel)**: Deployed as a static React/Vite site. Automatically rebuilt on pushes to GitHub. The frontend environment is securely linked to the backend via `VITE_API_URL` and `VITE_WS_URL`.
+- **Backend API (Render)**: Deployed as a Docker Web Service. The application runs Spring Boot 3 inside an `eclipse-temurin:17-jre-alpine` container.
+- **Database (Aiven)**: Uses a managed MySQL 8.0 instance. The Spring Boot backend dynamically maps the database connection using standard JDBC environment variables (`DB_URL`, `DB_USER`, `DB_PASSWORD`).
+- **Keep-Alive (UptimeRobot)**: To bypass Render's 15-minute sleep threshold (which causes 50-second cold starts), a lightweight `/api/ping` endpoint inside `PingController` is pinged every 14 minutes by UptimeRobot, keeping the JVM warm and responsive.
+- **Security / CORS**: The backend is tightly bound to the Vercel frontend domain via the `CORS_ORIGINS` environment variable mapped in `application.yml`, preventing unauthorized origin access while allowing credentials.

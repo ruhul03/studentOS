@@ -4,6 +4,17 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:salman7?}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: ${MAIL_HOST:smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME:your_mailtrap_user}
+    password: ${MAIL_PASSWORD:your_mailtrap_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     open-in-view: false
     hibernate:

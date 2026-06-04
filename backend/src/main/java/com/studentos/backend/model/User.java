@@ -64,6 +64,9 @@ public class User implements UserDetails {
     @JsonIgnore
     private String verificationCode;
 
+    @JsonIgnore
+    private LocalDateTime verificationCodeExpiresAt;
+
     @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private int updateCount = 0;
