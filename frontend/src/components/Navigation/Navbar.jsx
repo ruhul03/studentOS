@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Folder, Calendar, BookOpen, Search, 
@@ -18,6 +18,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [isNewEntryOpen, setIsNewEntryOpen] = useState(false);
 
   // Mapping site features to the side nav
@@ -50,6 +51,13 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
         <div className="flex items-center justify-end gap-3">
           <div className="flex items-center gap-1 border-r border-outline-variant pr-3">
             <button 
+              className="md:hidden w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+              title="Search"
+            >
+              <Search size={20} strokeWidth={2} />
+            </button>
+            <button 
               className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
               onClick={toggleTheme}
               title="Toggle Theme"
@@ -66,14 +74,14 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
               />
             </div>
             <button 
-              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+              className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
               onClick={() => onNavigate('settings')}
               title="Settings"
             >
               <Settings size={20} strokeWidth={2} />
             </button>
             <button 
-              className="w-9 h-9 rounded-full bg-transparent text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
+              className="hidden md:flex w-9 h-9 rounded-full bg-transparent text-on-surface-variant items-center justify-center cursor-pointer transition-colors hover:bg-surface-container-high hover:text-on-surface" 
               onClick={() => onNavigate('help')}
               title="Help Center"
             >
@@ -96,6 +104,20 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
           </motion.div>
         </div>
       </nav>
+      
+      {/* Mobile Search Dropdown */}
+      <AnimatePresence>
+        {showMobileSearch && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden fixed top-16 left-0 right-0 p-4 bg-surface/95 backdrop-blur-xl border-b border-outline-variant z-40"
+          >
+            <GlobalSearch onNavigate={(tab) => { onNavigate(tab); setShowMobileSearch(false); }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* SideNavBar */}
       <aside className="hidden md:flex fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-surface/50 backdrop-blur-md border-r border-outline-variant flex-col py-6 z-40 transition-colors duration-300">

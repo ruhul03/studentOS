@@ -183,7 +183,7 @@ export function Inbox({ messageEvent, onProfileView }) {
     <div className="flex h-[calc(100vh-140px)] bg-surface-container rounded-3xl border border-outline-variant overflow-hidden shadow-sm">
       
       {/* ── Left Pane: Conversation List ── */}
-      <div className="w-80 border-r border-outline-variant flex flex-col bg-surface-container-low/30">
+      <div className={`${activeChatUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-outline-variant flex-col bg-surface-container-low/30`}>
         <div className="p-4 border-b border-outline-variant/50">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-on-surface mb-0">Inbox</h2>
@@ -288,12 +288,18 @@ export function Inbox({ messageEvent, onProfileView }) {
       </div>
 
       {/* ── Right Pane: Active Chat ── */}
-      <div className="flex-1 flex flex-col bg-surface-container-lowest">
+      <div className={`${!activeChatUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-surface-container-lowest`}>
         {activeChatUser ? (
           <>
             {/* Chat Header */}
             <div className="p-4 border-b border-outline-variant/50 bg-surface-container-low/50 backdrop-blur-md flex items-center justify-between shadow-sm z-10">
               <div className="flex items-center gap-3">
+                <button 
+                  className="md:hidden p-2 -ml-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
+                  onClick={() => setActiveChatUser(null)}
+                >
+                  <ArrowLeft size={20} />
+                </button>
                 <div 
                   className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary cursor-pointer hover:bg-primary/20 transition-colors overflow-hidden"
                   onClick={() => onProfileView?.(activeChatUser.id)}
