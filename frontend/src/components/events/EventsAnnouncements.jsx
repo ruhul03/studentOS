@@ -119,7 +119,7 @@ export function EventsAnnouncements() {
   };
 
   return (
-    <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full animate-fade-in flex flex-col gap-8 h-full overflow-y-auto custom-scrollbar overflow-x-hidden">
+    <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full animate-fade-in flex flex-col gap-8 md:h-full md:overflow-y-auto md:custom-scrollbar overflow-x-hidden">
       {/* Page Header */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 shrink-0">
         <div className="space-y-2">
