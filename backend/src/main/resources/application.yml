@@ -16,6 +16,10 @@ spring:
 jwt:
   secret: ${JWT_SECRET:thisIsAVeryLongAndSecureDevelopmentSecretKeyForStudentOS12345!@#}
 
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5174}
+
 server:
   port: 8081
   servlet:
