@@ -41,7 +41,6 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           animation: ['framer-motion'],
-          utils: ['lucide-react'],
           websocket: ['@stomp/stompjs', 'sockjs-client'],
         }
       }

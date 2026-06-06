@@ -48,7 +48,7 @@ export function Profile() {
   );
 
   return (
-    <div className="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full h-full overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+    <div className="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full h-full overflow-y-auto max-md:p-4 max-md:pb-32" style={{ scrollbarWidth: 'thin' }}>
       {(!isOwnProfile || userId) && (
         <button 
           className="mb-6 flex items-center gap-2 text-outline hover:text-white transition-colors text-sm font-medium cursor-pointer" 
@@ -63,7 +63,7 @@ export function Profile() {
         <div className="relative group shrink-0">
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-2 border-surface-variant bg-surface-container flex items-center justify-center relative">
             {viewedUser?.profilePicture ? (
-              <img src={viewedUser.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+              <img src={viewedUser.profilePicture} alt="Profile" className="w-full h-full object-cover" loading="lazy" decoding="async" />
             ) : (
               <div className="text-outline flex items-center justify-center">
                 <UserIcon size={64} strokeWidth={1} />
@@ -93,7 +93,7 @@ export function Profile() {
       </div>
 
       {/* Bento Grid - Profile Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-md:gap-4 mb-12">
         {/* Detail Card 1: ID & Batch */}
         <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 hover:bg-surface-bright transition-colors shadow-sm">
           <div className="flex items-center gap-3 mb-4 text-primary">
@@ -122,7 +122,7 @@ export function Profile() {
             <Contact size={24} />
             <h3 className="font-h3 text-h3 text-on-surface">Contact Information</h3>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-md:gap-4">
             <div>
               <p className="font-label-caps text-xs text-outline mb-1 uppercase tracking-wider font-semibold">University Email</p>
               <p className="font-body-lg text-sm text-on-surface truncate">{viewedUser?.email}</p>

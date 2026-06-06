@@ -138,7 +138,7 @@ export function EventsAnnouncements() {
           {canManage && (
             <button 
               onClick={handleOpenCreate}
-              className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 whitespace-nowrap cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 whitespace-nowrap cursor-pointer max-md:hidden"
             >
               <PlusCircle size={20} strokeWidth={2.5} />
               New Event
@@ -185,7 +185,7 @@ export function EventsAnnouncements() {
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-md:pb-32 md:pb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:pb-20 max-md:flex max-md:flex-row max-md:overflow-x-auto max-md:snap-x max-md:snap-mandatory max-md:gap-4 max-md:pb-32 no-scrollbar max-md:-mx-4 max-md:px-4">
             <AnimatePresence mode="popLayout">
               {filteredEvents.map((event, idx) => (
                 <EventCard 
@@ -209,6 +209,16 @@ export function EventsAnnouncements() {
           </div>
         )}
       </div>
+
+      {/* Mobile FAB */}
+      {canManage && (
+        <button 
+          onClick={handleOpenCreate}
+          className="md:hidden fixed bottom-24 right-4 z-40 w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl shadow-primary/30 flex items-center justify-center active:scale-95 transition-transform"
+        >
+          <PlusCircle size={24} />
+        </button>
+      )}
 
       <EventModal 
         show={showModal} 

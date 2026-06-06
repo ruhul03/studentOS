@@ -44,7 +44,7 @@ export function ResourceCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: idx * 0.04, duration: 0.3 }}
-      className={`group flex flex-col bg-surface-container border border-outline-variant/50 border-l-4 ${cfg.border} rounded-2xl overflow-hidden hover:border-outline hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-300`}
+      className={`group flex flex-col bg-surface-container max-md:bg-transparent border border-outline-variant/50 border-l-4 ${cfg.border} rounded-2xl max-md:rounded-none max-md:border-x-0 max-md:border-t-0 max-md:border-b max-md:border-b-outline-variant/30 max-md:border-l-4 overflow-hidden hover:border-outline hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-300 max-md:hover:shadow-none max-md:hover:-translate-y-0`}
     >
       {/* ── Card Header: Type + Actions ── */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">

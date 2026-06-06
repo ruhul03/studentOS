@@ -77,14 +77,15 @@ export function Register() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4 mt-24 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <main className="flex-1 flex items-center justify-center p-4 max-md:p-0 mt-24 max-md:mt-0 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none max-md:hidden"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-[420px] bg-surface-container border border-outline-variant rounded-2xl p-8 shadow-2xl relative z-10 my-8"
+          className="w-full max-w-[420px] max-md:max-w-none max-md:min-h-[100dvh] bg-surface-container max-md:bg-transparent border border-outline-variant max-md:border-none rounded-2xl max-md:rounded-none p-8 max-md:p-6 max-md:pt-28 shadow-2xl max-md:shadow-none relative z-10 my-8 max-md:my-0 flex flex-col max-md:justify-center"
         >
           <div className="text-center mb-8 flex flex-col items-center">
             <UserPlus className="text-primary mb-4" size={36} strokeWidth={1.5} />

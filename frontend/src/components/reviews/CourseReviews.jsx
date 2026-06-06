@@ -161,8 +161,8 @@ export function CourseReviews() {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar">
-      <div className="max-w-6xl mx-auto space-y-12 pb-20">
+    <div className="w-full h-full overflow-y-auto custom-scrollbar relative">
+      <div className="max-w-6xl mx-auto space-y-12 max-md:space-y-6 pb-20 max-md:pb-32 max-md:px-4">
         {/* Header Section */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -170,7 +170,7 @@ export function CourseReviews() {
               <h1 className="text-3xl font-black text-on-surface mb-2 tracking-tight">Course Reviews</h1>
               <p className="text-base text-on-surface-variant/60">Real insights from students to help you build the perfect schedule.</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 max-md:hidden">
               <button 
                 onClick={() => setShowRequestForm(true)}
                 className="px-6 py-3 bg-white/5 border border-white/5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] text-on-surface-variant hover:text-on-surface hover:bg-white/10 transition-all"
@@ -247,7 +247,7 @@ export function CourseReviews() {
               {[1, 2, 3].map(i => <div key={i} className="h-64 bg-surface-container-low/40 rounded-[2rem] animate-pulse" />)}
             </div>
           ) : filteredReviews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-md:gap-4">
               {filteredReviews.map((review, idx) => {
                 const themes = [
                   { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
@@ -280,6 +280,22 @@ export function CourseReviews() {
             </div>
           )}
         </section>
+
+        {/* Mobile FABs */}
+        <div className="md:hidden fixed bottom-24 right-4 left-4 z-40 flex gap-3">
+          <button 
+            onClick={() => setShowRequestForm(true)}
+            className="flex-1 py-4 bg-surface-container-high border border-outline-variant/50 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-on-surface shadow-xl active:scale-95 transition-transform backdrop-blur-xl"
+          >
+            Ask Review
+          </button>
+          <button 
+            onClick={() => setShowForm(true)}
+            className="flex-1 py-4 bg-primary text-on-primary rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/30 active:scale-95 transition-transform"
+          >
+            Write Review
+          </button>
+        </div>
 
         {/* Forms */}
         <ReviewForm 

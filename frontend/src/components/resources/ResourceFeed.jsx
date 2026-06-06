@@ -144,10 +144,10 @@ export function ResourceFeed({ onProfileView, onMessageClick }) {
 
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar">
-      <div className="max-w-6xl mx-auto space-y-8 pb-20">
+      <div className="max-w-6xl mx-auto space-y-8 pb-20 max-md:px-0 max-md:space-y-4">
 
         {/* ── Page Header ── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2 max-md:px-4">
           <div>
             <h1 className="text-3xl font-bold text-on-surface tracking-tight">Study Resources</h1>
             <p className="text-sm text-on-surface-variant mt-1">Discover notes, past papers, and guides shared by your peers.</p>
@@ -162,7 +162,7 @@ export function ResourceFeed({ onProfileView, onMessageClick }) {
         </div>
 
         {/* ── Search & Filters ── */}
-        <div className="space-y-4">
+        <div className="space-y-4 max-md:px-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" size={20} />
             <input 
@@ -208,7 +208,7 @@ export function ResourceFeed({ onProfileView, onMessageClick }) {
 
         {/* ── Results Count ── */}
         {!loading && filteredResources.length > 0 && (
-          <p className="text-xs text-on-surface-variant">
+          <p className="text-xs text-on-surface-variant max-md:px-4">
             Showing <span className="font-semibold text-on-surface">{filteredResources.length}</span> resource{filteredResources.length !== 1 ? 's' : ''}
             {activeFilter !== 'All Resources' && <> in <span className="font-semibold text-primary">{activeFilter}</span></>}
           </p>
@@ -222,7 +222,7 @@ export function ResourceFeed({ onProfileView, onMessageClick }) {
             ))}
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-md:gap-0">
             <AnimatePresence mode="popLayout">
               {filteredResources.map((res, idx) => (
                 <ResourceCard 

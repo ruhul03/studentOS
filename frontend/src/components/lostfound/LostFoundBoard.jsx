@@ -177,9 +177,9 @@ export function LostFoundBoard({ onProfileView }) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 animate-fade-in overflow-y-auto custom-scrollbar">
+    <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 max-md:px-0 animate-fade-in overflow-y-auto custom-scrollbar">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 shrink-0">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 shrink-0 max-md:px-4 max-md:pt-4 max-md:mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2 mb-1">
             <span className="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
@@ -203,7 +203,7 @@ export function LostFoundBoard({ onProfileView }) {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleOpenCreate}
-            className="flex-1 sm:flex-none px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+            className="flex-1 sm:flex-none px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 max-md:hidden"
           >
             <PlusCircle size={20} />
             Report Item
@@ -212,7 +212,7 @@ export function LostFoundBoard({ onProfileView }) {
       </div>
 
       {/* Search Bar & Fast Filters */}
-      <div className="bg-surface-container border border-outline-variant/30 rounded-3xl p-2 mb-10 flex flex-col md:flex-row gap-2 items-stretch shrink-0 shadow-inner">
+      <div className="bg-surface-container border border-outline-variant/30 max-md:border-x-0 max-md:rounded-none rounded-3xl p-2 mb-10 max-md:mb-0 flex flex-col md:flex-row gap-2 items-stretch shrink-0 shadow-inner">
         <div className="relative flex-1 group">
           <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" />
           <input 
@@ -251,7 +251,7 @@ export function LostFoundBoard({ onProfileView }) {
             ))}
           </div>
         ) : filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-md:gap-0 pb-24">
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item) => (
                 <LostFoundItemCard 
@@ -277,6 +277,14 @@ export function LostFoundBoard({ onProfileView }) {
           </div>
         )}
       </div>
+
+      {/* Mobile FAB */}
+      <button 
+        onClick={handleOpenCreate}
+        className="md:hidden fixed bottom-24 right-4 z-40 w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl shadow-primary/30 flex items-center justify-center active:scale-95 transition-transform"
+      >
+        <PlusCircle size={24} />
+      </button>
 
       {/* Modals */}
       <LostFoundForm 

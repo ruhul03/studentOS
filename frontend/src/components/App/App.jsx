@@ -1,30 +1,32 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
-import { Login } from '../../pages/Login';
-import { Register } from '../../pages/Register';
-import { ResourceFeed } from '../resources/ResourceFeed';
-import { CampusServicesDirectory } from '../services/CampusServicesDirectory';
-import { StudyPlanner } from '../planner/StudyPlanner';
-import { UiuCalculator } from '../calculator/UiuCalculator';
-import { LostFoundBoard } from '../lostfound/LostFoundBoard';
-import { StudentMarketplace } from '../marketplace/StudentMarketplace';
-import { CourseReviews } from '../reviews/CourseReviews';
-import { Inbox } from '../inbox/Inbox';
-import { LandingPage } from '../../pages/LandingPage';
-import { UserDashboard } from '../dashboard/UserDashboard';
-import { AdminDashboard } from '../../pages/AdminDashboard';
-import { ForgotCredentials } from '../../pages/ForgotCredentials';
-import { ActivityHistory } from '../dashboard/ActivityHistory';
-import { About } from '../../pages/About';
-import { Privacy } from '../../pages/Privacy';
-import { Terms } from '../../pages/Terms';
-import { Profile } from '../../pages/Profile';
 import ScrollToTop from './ScrollToTop';
-import { EventsAnnouncements } from '../events/EventsAnnouncements';
-import { SettingsPage } from '../dashboard/SettingsPage';
-import { HelpPage } from '../dashboard/HelpPage';
+import LoadingState from '../ui/LoadingState';
+
+const Login = lazy(() => import('../../pages/Login').then(m => ({ default: m.Login })));
+const Register = lazy(() => import('../../pages/Register').then(m => ({ default: m.Register })));
+const ResourceFeed = lazy(() => import('../resources/ResourceFeed').then(m => ({ default: m.ResourceFeed })));
+const CampusServicesDirectory = lazy(() => import('../services/CampusServicesDirectory').then(m => ({ default: m.CampusServicesDirectory })));
+const StudyPlanner = lazy(() => import('../planner/StudyPlanner').then(m => ({ default: m.StudyPlanner })));
+const UiuCalculator = lazy(() => import('../calculator/UiuCalculator').then(m => ({ default: m.UiuCalculator })));
+const LostFoundBoard = lazy(() => import('../lostfound/LostFoundBoard').then(m => ({ default: m.LostFoundBoard })));
+const StudentMarketplace = lazy(() => import('../marketplace/StudentMarketplace').then(m => ({ default: m.StudentMarketplace })));
+const CourseReviews = lazy(() => import('../reviews/CourseReviews').then(m => ({ default: m.CourseReviews })));
+const Inbox = lazy(() => import('../inbox/Inbox').then(m => ({ default: m.Inbox })));
+const LandingPage = lazy(() => import('../../pages/LandingPage').then(m => ({ default: m.LandingPage })));
+const UserDashboard = lazy(() => import('../dashboard/UserDashboard').then(m => ({ default: m.UserDashboard })));
+const AdminDashboard = lazy(() => import('../../pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const ForgotCredentials = lazy(() => import('../../pages/ForgotCredentials').then(m => ({ default: m.ForgotCredentials })));
+const ActivityHistory = lazy(() => import('../dashboard/ActivityHistory').then(m => ({ default: m.ActivityHistory })));
+const About = lazy(() => import('../../pages/About').then(m => ({ default: m.About })));
+const Privacy = lazy(() => import('../../pages/Privacy').then(m => ({ default: m.Privacy })));
+const Terms = lazy(() => import('../../pages/Terms').then(m => ({ default: m.Terms })));
+const Profile = lazy(() => import('../../pages/Profile').then(m => ({ default: m.Profile })));
+const EventsAnnouncements = lazy(() => import('../events/EventsAnnouncements').then(m => ({ default: m.EventsAnnouncements })));
+const SettingsPage = lazy(() => import('../dashboard/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const HelpPage = lazy(() => import('../dashboard/HelpPage').then(m => ({ default: m.HelpPage })));
 import { useWebSockets } from '../../hooks/useWebSockets';
 import { ProtectedRoute, AdminRoute } from '../routes/ProtectedRoutes';
 import { DashboardLayout } from '../layout/DashboardLayout';
@@ -101,25 +103,27 @@ function Dashboard() {
               transition={isMobile ? { duration: 0 } : { duration: 0.25, ease: "easeInOut" }}
               className="flex flex-col flex-1 h-full w-full"
             >
-              {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
-              {activeTab === 'inbox' && <Inbox messageEvent={messageEvent} onProfileView={setSelectedUserProfile} />}
-              {activeTab === 'resources' && <ResourceFeed onProfileView={setSelectedUserProfile} onMessageClick={setChatOpenUserId} />}
-              {activeTab === 'services' && <CampusServicesDirectory />}
-              {activeTab === 'planner' && <StudyPlanner />}
-              {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}
-              {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
-              {activeTab === 'events' && <EventsAnnouncements />}
-              {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
-              {activeTab === 'calculator' && <UiuCalculator />}
-              {(activeTab === 'profile' || queryParams.get('viewUserId')) && <Profile />}
-              {activeTab === 'settings' && <SettingsPage />}
-              {activeTab === 'help' && <HelpPage />}
-              {activeTab === 'activity' && (
-                <ActivityHistory 
-                  onBack={() => handleTabChange('home')} 
-                  onNavigate={handleTabChange}
-                />
-              )}
+              <Suspense fallback={<LoadingState message="Loading module..." />}>
+                {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}
+                {activeTab === 'inbox' && <Inbox messageEvent={messageEvent} onProfileView={setSelectedUserProfile} />}
+                {activeTab === 'resources' && <ResourceFeed onProfileView={setSelectedUserProfile} onMessageClick={setChatOpenUserId} />}
+                {activeTab === 'services' && <CampusServicesDirectory />}
+                {activeTab === 'planner' && <StudyPlanner />}
+                {activeTab === 'lostfound' && <LostFoundBoard onProfileView={setSelectedUserProfile} />}
+                {activeTab === 'market' && <StudentMarketplace onProfileView={setSelectedUserProfile} />}
+                {activeTab === 'events' && <EventsAnnouncements />}
+                {activeTab === 'reviews' && <CourseReviews onProfileView={setSelectedUserProfile} />}
+                {activeTab === 'calculator' && <UiuCalculator />}
+                {(activeTab === 'profile' || queryParams.get('viewUserId')) && <Profile />}
+                {activeTab === 'settings' && <SettingsPage />}
+                {activeTab === 'help' && <HelpPage />}
+                {activeTab === 'activity' && (
+                  <ActivityHistory 
+                    onBack={() => handleTabChange('home')} 
+                    onNavigate={handleTabChange}
+                  />
+                )}
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -139,11 +143,11 @@ function Dashboard() {
   );
 }
 
-import { FeatureCalculator } from '../../pages/features/FeatureCalculator';
-import { FeatureMarketplace } from '../../pages/features/FeatureMarketplace';
-import { FeatureReviews } from '../../pages/features/FeatureReviews';
-import { FeatureResources } from '../../pages/features/FeatureResources';
-import { VerifyEmail } from '../../pages/VerifyEmail';
+const FeatureCalculator = lazy(() => import('../../pages/features/FeatureCalculator').then(m => ({ default: m.FeatureCalculator })));
+const FeatureMarketplace = lazy(() => import('../../pages/features/FeatureMarketplace').then(m => ({ default: m.FeatureMarketplace })));
+const FeatureReviews = lazy(() => import('../../pages/features/FeatureReviews').then(m => ({ default: m.FeatureReviews })));
+const FeatureResources = lazy(() => import('../../pages/features/FeatureResources').then(m => ({ default: m.FeatureResources })));
+const VerifyEmail = lazy(() => import('../../pages/VerifyEmail').then(m => ({ default: m.VerifyEmail })));
 
 function App() {
   const [isWakingServer, setIsWakingServer] = useState(false);
@@ -179,47 +183,49 @@ function App() {
       )}
       <BrowserRouter>
         <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify" element={<VerifyEmail />} />
-          
-          {/* Public Feature SEO Pages */}
-          <Route path="/features/calculator" element={<FeatureCalculator />} />
-          <Route path="/features/marketplace" element={<FeatureMarketplace />} />
-          <Route path="/features/reviews" element={<FeatureReviews />} />
-          <Route path="/features/resources" element={<FeatureResources />} />
+        <Suspense fallback={<LoadingState fullScreen message="Loading page..." />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify" element={<VerifyEmail />} />
+            
+            {/* Public Feature SEO Pages */}
+            <Route path="/features/calculator" element={<FeatureCalculator />} />
+            <Route path="/features/marketplace" element={<FeatureMarketplace />} />
+            <Route path="/features/reviews" element={<FeatureReviews />} />
+            <Route path="/features/resources" element={<FeatureResources />} />
 
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin" 
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            } 
-          />
-          <Route 
-            path="/profile/:userId" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="/forgot-credentials" element={<ForgotCredentials />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-        </Routes>
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/profile/:userId" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/forgot-credentials" element={<ForgotCredentials />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   );

@@ -91,6 +91,8 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
             >
               <img 
                 alt="User avatar" 
+                loading="lazy"
+                decoding="async"
                 className="w-8 h-8 rounded-full border border-outline-variant object-cover hover:border-primary transition-all shadow-sm" 
                 src={user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuBnZ3E8X1IRNERQut9WUf356uZAIJpnr1PG42j8TaoX_XHzTZHXhT-KpQKE-dC6VTdwqkj-jbOibovk45uE_HizMCc70hdyAwcL2TidaO26m_sckadfC5J39QwCGNNSqdH0njMCmLQ9mk608iML0PMlEvoa2q3ryRLxyzpxtHj8GETUC-XI-o4xD0M6CpZZqoNJu1EjwSx_KGU1XdjwpJfvPC3ffuY1taAP__KYVI3yVrvy4K2LkWmd7gq3Pcuuvwmgd3jw0Bs-bnI"} 
               />

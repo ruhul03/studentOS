@@ -180,11 +180,11 @@ export function Inbox({ messageEvent, onProfileView }) {
   );
 
   return (
-    <div className="flex max-md:h-[calc(100dvh-180px)] md:h-[calc(100vh-140px)] bg-surface-container max-md:rounded-2xl md:rounded-3xl border border-outline-variant overflow-hidden shadow-sm">
+    <div className="flex max-md:h-full md:h-[calc(100vh-140px)] bg-surface-container max-md:bg-transparent max-md:rounded-none md:rounded-3xl border border-outline-variant max-md:border-none overflow-hidden shadow-sm max-md:shadow-none max-md:-mx-4 max-md:-mt-4">
       
       {/* ── Left Pane: Conversation List ── */}
-      <div className={`${activeChatUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-outline-variant flex-col bg-surface-container-low/30`}>
-        <div className="p-4 border-b border-outline-variant/50">
+      <div className={`${activeChatUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-outline-variant max-md:border-none flex-col bg-surface-container-low/30 max-md:bg-transparent max-md:h-[calc(100dvh-180px)]`}>
+        <div className="p-4 border-b border-outline-variant/50 max-md:border-none max-md:px-4 max-md:pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-on-surface mb-0">Inbox</h2>
             <button 
@@ -202,7 +202,7 @@ export function Inbox({ messageEvent, onProfileView }) {
               placeholder={isSearchingUsers ? "Search users by name or username..." : "Search conversations..."}
               value={isSearchingUsers ? userSearchQuery : searchQuery}
               onChange={(e) => isSearchingUsers ? handleUserSearch(e.target.value) : setSearchQuery(e.target.value)}
-              className="w-full bg-surface-container-high border border-outline-variant rounded-xl pl-9 pr-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full bg-surface-container-high border border-outline-variant max-md:border-none max-md:bg-surface-container-highest rounded-xl pl-9 pr-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ export function Inbox({ messageEvent, onProfileView }) {
                     setUserSearchQuery(''); 
                     setUserSearchResults([]); 
                   }}
-                  className="p-4 border-b border-outline-variant/30 cursor-pointer hover:bg-surface-container-highest transition-colors flex items-center gap-3"
+                  className="p-4 max-md:px-4 border-b border-outline-variant/30 max-md:border-none cursor-pointer hover:bg-surface-container-highest transition-colors flex items-center gap-3"
                 >
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 overflow-hidden shadow-sm">
                     {u.profilePicture ? (
@@ -256,10 +256,10 @@ export function Inbox({ messageEvent, onProfileView }) {
               <div 
                 key={conv.otherUser.id}
                 onClick={() => setActiveChatUser(conv.otherUser)}
-                className={`p-4 border-b border-outline-variant/30 cursor-pointer hover:bg-surface-container-highest transition-colors ${activeChatUser?.id === conv.otherUser.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''}`}
+                className={`p-4 max-md:px-4 border-b border-outline-variant/30 max-md:border-none cursor-pointer hover:bg-surface-container-highest transition-colors ${activeChatUser?.id === conv.otherUser.id ? 'bg-primary/5 border-l-2 border-l-primary max-md:border-l-0' : ''}`}
               >
                 <div className="flex gap-3 items-center">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 overflow-hidden shadow-sm">
+                  <div className="w-12 h-12 rounded-xl max-md:rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 overflow-hidden shadow-sm">
                     {conv.otherUser.profilePicture ? (
                       <img src={conv.otherUser.profilePicture} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -288,11 +288,11 @@ export function Inbox({ messageEvent, onProfileView }) {
       </div>
 
       {/* ── Right Pane: Active Chat ── */}
-      <div className={`${!activeChatUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-surface-container-lowest`}>
+      <div className={`${!activeChatUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-surface-container-lowest max-md:fixed max-md:inset-0 max-md:z-[100] max-md:bg-background`}>
         {activeChatUser ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-outline-variant/50 bg-surface-container-low/50 backdrop-blur-md flex items-center justify-between shadow-sm z-10">
+            <div className="p-4 max-md:pt-[max(1rem,env(safe-area-inset-top))] border-b border-outline-variant/50 bg-surface-container-low/50 max-md:bg-surface-container max-md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shadow-sm z-10">
               <div className="flex items-center gap-3">
                 <button 
                   className="md:hidden p-2 -ml-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
@@ -438,7 +438,7 @@ export function Inbox({ messageEvent, onProfileView }) {
             </div>
 
             {/* Chat Input */}
-            <div className="p-4 bg-surface-container-low border-t border-outline-variant/50">
+            <div className="p-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom))] bg-surface-container-low border-t border-outline-variant/50">
               <form onSubmit={handleSendMessage} className="flex gap-3 max-w-4xl mx-auto">
                 <input 
                   type="text" 

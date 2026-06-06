@@ -42,7 +42,7 @@ export function LostFoundItemCard({ item, user, onEdit, onDelete, onResolve, onP
         boxShadow: "0 20px 40px -12px rgba(0,0,0,0.5), 0 0 20px -5px var(--md-sys-color-primary-fixed-dim, rgba(129, 140, 248, 0.1))"
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`bg-surface-container border border-outline-variant/20 rounded-2xl overflow-hidden flex flex-col transition-colors duration-300 hover:border-primary/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] ${item.resolved ? 'opacity-60 grayscale' : ''}`}
+      className={`bg-surface-container border border-outline-variant/20 rounded-2xl max-md:rounded-none max-md:border-x-0 max-md:border-t-0 max-md:border-b-outline-variant/40 overflow-hidden flex flex-col transition-colors duration-300 hover:border-primary/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] max-md:shadow-none ${item.resolved ? 'opacity-60 grayscale' : ''}`}
     >
       {/* Image */}
       <div className="relative h-48 bg-surface-container-high flex items-center justify-center overflow-hidden">

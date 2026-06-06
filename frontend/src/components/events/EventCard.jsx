@@ -22,7 +22,7 @@ export function EventCard({ event, index, canManage, onEdit, onDelete }) {
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="col-span-1 md:col-span-2 lg:col-span-2 bg-surface-container-low rounded-2xl hover:bg-surface-container transition-all duration-300 group cursor-pointer overflow-hidden flex flex-col sm:flex-row h-auto sm:h-72 border border-outline-variant shadow-sm"
+        className="col-span-1 md:col-span-2 lg:col-span-2 bg-surface-container-low rounded-2xl hover:bg-surface-container transition-all duration-300 group cursor-pointer overflow-hidden flex flex-col sm:flex-row h-auto sm:h-72 border border-outline-variant shadow-sm max-md:min-w-[85vw] max-md:snap-center"
       >
         <div className="w-full sm:w-2/5 h-48 sm:h-full relative overflow-hidden bg-surface-container-highest flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent z-10 sm:bg-gradient-to-r"></div>
@@ -75,7 +75,7 @@ export function EventCard({ event, index, canManage, onEdit, onDelete }) {
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 hover:bg-surface-container transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between h-72 border-t-4 ${theme.border} shadow-sm`}
+      className={`bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 hover:bg-surface-container transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between h-72 border-t-4 ${theme.border} shadow-sm max-md:min-w-[75vw] max-md:snap-center`}
     >
       <div className={`absolute top-0 right-0 w-32 h-32 ${theme.bg} blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-opacity-20 transition-all`}></div>
       

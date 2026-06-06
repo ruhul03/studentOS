@@ -52,15 +52,15 @@ export function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Sidebar */}
-        <aside className="md:col-span-4 flex flex-col gap-2">
+        <aside className="md:col-span-4 flex flex-col gap-2 max-md:flex-row max-md:overflow-x-auto max-md:pb-4 no-scrollbar max-md:-mx-4 max-md:px-4">
           {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => { setActiveSection(section.id); playTabSound(); }}
-              className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${
+              className={`flex shrink-0 items-center gap-4 px-5 max-md:px-4 py-4 max-md:py-3 rounded-2xl max-md:rounded-xl transition-all font-bold text-sm group ${
                 activeSection === section.id 
                   ? 'bg-primary text-on-primary shadow-xl shadow-primary/30' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                  : 'text-on-surface-variant hover:bg-surface-container max-md:hover:bg-transparent hover:text-on-surface'
               }`}
             >
               <section.icon size={22} className={`${activeSection === section.id ? 'fill-current' : ''}`} />
@@ -73,8 +73,8 @@ export function SettingsPage() {
         </aside>
 
         {/* Content Area */}
-        <main className="md:col-span-8 bg-surface-container border border-outline-variant/30 rounded-[2.5rem] p-8 min-h-[550px] shadow-2xl relative overflow-hidden flex flex-col">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
+        <main className="md:col-span-8 bg-surface-container max-md:bg-transparent border border-outline-variant/30 max-md:border-none rounded-[2.5rem] max-md:rounded-none p-8 max-md:p-0 min-h-[550px] max-md:min-h-0 shadow-2xl max-md:shadow-none relative overflow-hidden flex flex-col">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-50 max-md:hidden"></div>
           
           <div className="flex-1 relative z-10">
             <AnimatePresence mode="wait">
@@ -101,7 +101,7 @@ export function SettingsPage() {
             </AnimatePresence>
           </div>
 
-          <div className="pt-10 mt-auto flex items-center justify-between border-t border-outline-variant/10 relative z-10">
+          <div className="pt-10 max-md:pt-6 mt-auto flex max-md:flex-col items-center justify-between gap-4 border-t border-outline-variant/10 max-md:border-t-0 relative z-10">
             <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-50">Last synchronized: {new Date().toLocaleTimeString()}</p>
             <button 
               onClick={handleSave}
