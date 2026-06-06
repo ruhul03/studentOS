@@ -1,12 +1,12 @@
 export function AdminTable({ title, description, headers, children, action }) {
   return (
     <div className="bg-surface-container rounded-3xl border border-outline-variant/30 overflow-hidden shadow-2xl">
-      <div className="p-8 border-b border-outline-variant/10 bg-white/5 flex items-center justify-between">
+      <div className="p-6 md:p-8 border-b border-outline-variant/10 bg-white/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h3 className="text-xl font-black text-white uppercase tracking-tight">{title}</h3>
           <p className="text-on-surface-variant text-xs mt-1">{description}</p>
         </div>
-        {action}
+        {action && <div className="self-start sm:self-auto">{action}</div>}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left">

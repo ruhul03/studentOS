@@ -6,7 +6,7 @@ import { fetchWithAuth } from '../api';
 import { useAdminStats } from '../hooks/useAdminStats';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
-import { LayoutDashboard, Users, GraduationCap, Calendar, Store, Tag, LineChart, Shield, ArrowLeft, User, AlertCircle, CheckCircle, X, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Calendar, Store, Tag, LineChart, Shield, ArrowLeft, User, AlertCircle, CheckCircle, X, MessageSquare, Menu } from 'lucide-react';
 
 // Sub-components
 import { TabOverview } from '../components/admin/TabOverview';
@@ -24,6 +24,7 @@ export function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('stats');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [message, setMessage] = useState(null);
   
   // Data States
@@ -181,25 +182,41 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="dark bg-[#0a0a0c] text-on-surface min-h-screen flex selection:bg-primary/30">
+    <div className="dark bg-[#0a0a0c] text-on-surface min-h-screen flex selection:bg-primary/30 overflow-x-hidden">
+      {/* Sidebar Backdrop Overlay on Mobile */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-30 md:hidden transition-opacity duration-300" 
+          onClick={() => setSidebarOpen(false)} 
+        />
+      )}
+
       {/* Sidebar */}
-      <nav className="fixed left-0 top-0 h-full flex flex-col w-64 bg-surface-container/30 backdrop-blur-3xl border-r border-outline-variant/20 z-40">
+      <nav className={`fixed left-0 top-0 h-full flex flex-col w-64 bg-surface-container-high/90 md:bg-surface-container/30 backdrop-blur-3xl border-r border-outline-variant/20 z-40 transition-transform duration-300 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : 'max-md:-translate-x-full'}`}>
         <div className="p-8 pb-10">
-          <div className="flex items-center gap-3 mb-10 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
-              <Shield size={24} />
+          <div className="flex items-center justify-between gap-3 mb-10">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => { navigate('/'); setSidebarOpen(false); }}>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
+                <Shield size={24} />
+              </div>
+              <div>
+                <h1 className="text-xl font-black tracking-tighter text-white leading-none">StudentOS</h1>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mt-1 block">Admin Core</span>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-black tracking-tighter text-white leading-none">StudentOS</h1>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mt-1 block">Admin Core</span>
-            </div>
+            <button 
+              onClick={() => setSidebarOpen(false)}
+              className="p-1.5 hover:bg-white/10 rounded-xl md:hidden text-on-surface-variant hover:text-white cursor-pointer"
+            >
+              <X size={20} />
+            </button>
           </div>
 
           <div className="flex flex-col gap-1">
             {menuItems.map(item => (
               <button 
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
                 className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm group ${
                   activeTab === item.id 
                     ? 'bg-primary text-on-primary shadow-xl shadow-primary/20' 
@@ -222,9 +239,18 @@ export function AdminDashboard() {
       </nav>
 
       {/* Main Content */}
-      <main className="ml-64 flex-1 flex flex-col min-h-screen">
-        <header className="fixed top-0 right-0 z-30 flex items-center justify-between px-10 h-20 bg-[#0a0a0c]/60 backdrop-blur-xl w-[calc(100%-16rem)] border-b border-outline-variant/10">
-          <h2 className="text-sm font-black uppercase tracking-[0.3em] text-on-surface-variant">System Management Console</h2>
+      <main className="md:ml-64 flex-1 flex flex-col min-h-screen">
+        <header className="fixed top-0 right-0 z-30 flex items-center justify-between px-4 md:px-10 h-20 bg-[#0a0a0c]/60 backdrop-blur-xl w-full md:w-[calc(100%-16rem)] border-b border-outline-variant/10">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 md:hidden text-on-surface-variant hover:text-white hover:bg-white/5 rounded-xl cursor-pointer"
+            >
+              <Menu size={24} />
+            </button>
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-on-surface-variant max-md:hidden">System Management Console</h2>
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-on-surface-variant md:hidden">Admin</h2>
+          </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm font-bold text-white">{user?.name}</p>
@@ -236,7 +262,7 @@ export function AdminDashboard() {
           </div>
         </header>
 
-        <div className="p-10 pt-28 max-w-7xl mx-auto w-full">
+        <div className="p-4 md:p-10 pt-24 md:pt-28 max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
             {message && (
               <motion.div 

@@ -5,7 +5,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
   return (
     <div className="space-y-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+        <div className="bg-surface-container border border-outline-variant rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl -ml-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <h3 className="text-2xl font-black text-white tracking-tight mb-8 relative z-10">Registration Growth</h3>
           <div className="h-64 flex items-end gap-2 relative z-10">
@@ -30,7 +30,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
           </div>
         </div>
 
-        <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+        <div className="bg-surface-container border border-outline-variant rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <h3 className="text-2xl font-black text-white tracking-tight mb-8 relative z-10">Department Distribution</h3>
           <div className="space-y-6 relative z-10 overflow-y-auto max-h-64 pr-2 sidebar-nav">
@@ -59,7 +59,7 @@ export function TabAnalytics({ growthData, deptData, topContributors, totalUsers
         </div>
       </div>
 
-      <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+      <div className="bg-surface-container border border-outline-variant rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden group">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 rounded-full blur-[100px] pointer-events-none opacity-50"></div>
         <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <h3 className="text-3xl font-black text-white tracking-tighter mb-2">Platform Super-Contributors</h3>

@@ -29,7 +29,7 @@ export function TabUsers({ users, onToggleRole, onDeleteUser }) {
             </span>
           </td>
           <td className="py-5 px-8 text-right">
-            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex justify-end gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
               <button onClick={() => onToggleRole(u.id)} className="w-9 h-9 rounded-xl bg-white/5 border border-outline-variant/30 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all" title="Toggle Role">
                 <Shield size={18} />
               </button>

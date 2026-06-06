@@ -51,14 +51,14 @@ export function TabOverview({ stats, health, onShowDiagnostics }) {
         />
       </div>
 
-      <div className="bg-surface-container border border-outline-variant rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+      <div className="bg-surface-container border border-outline-variant rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div className="flex items-center justify-between mb-12 relative z-10">
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between mb-8 sm:mb-12 relative z-10">
           <div>
             <h3 className="text-3xl font-black text-white tracking-tight">System Status Intelligence</h3>
             <p className="text-on-surface-variant text-sm mt-1">Real-time health telemetry from the production cluster.</p>
           </div>
-          <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+          <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20 self-start sm:self-auto">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-xs font-black text-emerald-500 uppercase tracking-widest">Core Nominal</span>
           </div>
@@ -88,7 +88,7 @@ export function TabOverview({ stats, health, onShowDiagnostics }) {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-outline-variant/10 flex items-center justify-between relative z-10">
+        <div className="mt-12 pt-8 border-t border-outline-variant/10 flex flex-col sm:flex-row gap-6 sm:items-center justify-between relative z-10">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
               <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Server Uptime</span>
