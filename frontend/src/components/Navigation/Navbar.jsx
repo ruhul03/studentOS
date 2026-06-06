@@ -38,8 +38,10 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
   return (
     <>
       {/* TopNavBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant transition-colors duration-300">
-        <div className="flex items-center justify-between px-6 h-16">
+      <nav className="fixed top-0 left-0 w-full z-50 transition-colors duration-300">
+        {/* Absolute background layer to fix Safari clipping bug */}
+        <div className="absolute inset-0 bg-surface/90 backdrop-blur-xl border-b border-outline-variant pointer-events-none"></div>
+        <div className="relative z-10 flex items-center justify-between px-4 md:px-6 h-16">
           <div className="flex items-center gap-4 min-w-[200px]">
             <span className="text-xl font-bold text-on-surface tracking-tight cursor-pointer" onClick={() => onNavigate('home')}>StudentOS</span>
           </div>
@@ -102,7 +104,7 @@ export function Navbar({ activeTab, onNavigate, wsNotifications, onMessageClick,
         </div>
         
         {/* Mobile Search Bar (Persistent) */}
-        <div className="md:hidden px-4 pb-3">
+        <div className="relative z-10 md:hidden px-4 pb-4">
           <GlobalSearch onNavigate={onNavigate} />
         </div>
       </nav>

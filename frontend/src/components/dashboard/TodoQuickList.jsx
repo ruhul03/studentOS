@@ -33,11 +33,11 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
         </button>
       </div>
 
-      <div className="relative flex items-center gap-3 mb-6 bg-surface-container-high p-2 rounded-xl border border-outline-variant/50 group focus-within:border-primary transition-all shadow-inner">
-        <PlusSquare size={20} className="text-outline ml-2 group-focus-within:text-primary transition-colors" />
+      <div className="relative flex items-center gap-2 md:gap-3 mb-6 bg-surface-container-high p-1.5 md:p-2 rounded-xl border border-outline-variant/50 group focus-within:border-primary transition-all shadow-inner">
+        <PlusSquare size={20} className="text-outline ml-1 md:ml-2 group-focus-within:text-primary transition-colors shrink-0" />
         <input
           type="text"
-          className="flex-1 bg-transparent border-none text-sm text-on-surface placeholder:text-outline/70 focus:ring-0 py-2 outline-none"
+          className="flex-1 min-w-0 bg-transparent border-none text-sm text-on-surface placeholder:text-outline/70 focus:ring-0 py-2 outline-none px-1"
           placeholder="What needs to be done?"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -45,7 +45,7 @@ export function TodoQuickList({ todos, onToggle, onDelete, onAdd, text, setText,
           disabled={isAdding}
         />
         <button
-          className="bg-primary text-on-primary px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale cursor-pointer"
+          className="bg-primary text-on-primary px-4 md:px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale cursor-pointer shrink-0 whitespace-nowrap"
           onClick={onAdd}
           disabled={isAdding || !text.trim()}
         >
