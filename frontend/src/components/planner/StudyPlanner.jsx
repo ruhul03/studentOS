@@ -9,10 +9,13 @@ import { FocusList } from './FocusList';
 import LoadingState from '../ui/LoadingState';
 import ErrorState from '../ui/ErrorState';
 import { Plus } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function StudyPlanner() {
   const { user } = useAuth();
   const { tasks, isLoading, error, toggleTask, deleteTask, refetch } = useStudyTasks(user?.id);
+  const isMobile = useIsMobile();
+  const [activePlannerTab, setActivePlannerTab] = useState('checklist'); // 'checklist' | 'calendar'
   
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -106,42 +109,68 @@ export function StudyPlanner() {
 
   return (
     <div className="w-full md:h-full flex flex-col lg:flex-row gap-8 animate-fade-in max-md:pb-24 md:custom-scrollbar">
+      {/* Mobile Segmented Planner Tabs */}
+      {isMobile && (
+        <div className="flex items-center gap-1.5 p-1 bg-surface-container-high/60 rounded-xl border border-outline-variant/30 backdrop-blur-md mb-2 shrink-0 w-full">
+          <button
+            onClick={() => setActivePlannerTab('checklist')}
+            className={`flex-1 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer ${
+              activePlannerTab === 'checklist' ? 'bg-primary text-on-primary shadow-md' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Checklist
+          </button>
+          <button
+            onClick={() => setActivePlannerTab('calendar')}
+            className={`flex-1 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer ${
+              activePlannerTab === 'calendar' ? 'bg-primary text-on-primary shadow-md' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Calendar
+          </button>
+        </div>
+      )}
+
       {/* Left: Weekly Calendar */}
-      <WeeklyCalendarView 
-        weekData={weekData}
-        formatWeekRange={formatWeekRange}
-        setWeekOffset={setWeekOffset}
-        playTabSound={playTabSound}
-        isToday={isToday}
-        dayNames={dayNames}
-        timeSlots={timeSlots}
-        calendarTasks={calendarTasks}
-        getTaskPosition={getTaskPosition}
-        getCourseColor={getCourseColor}
-        weekOffset={weekOffset}
-        onEditTask={handleEditTask}
-      />
+      {(!isMobile || activePlannerTab === 'calendar') && (
+        <WeeklyCalendarView 
+          weekData={weekData}
+          formatWeekRange={formatWeekRange}
+          setWeekOffset={setWeekOffset}
+          playTabSound={playTabSound}
+          isToday={isToday}
+          dayNames={dayNames}
+          timeSlots={timeSlots}
+          calendarTasks={calendarTasks}
+          getTaskPosition={getTaskPosition}
+          getCourseColor={getCourseColor}
+          weekOffset={weekOffset}
+          onEditTask={handleEditTask}
+        />
+      )}
 
       {/* Right: Action Items */}
-      <FocusList 
-        pendingTasks={pendingTasks}
-        completedTasks={completedTasks}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        playTabSound={playTabSound}
-        calcDaysLeft={calcDaysLeft}
-        toggleTask={toggleTask}
-        deleteTask={deleteTask}
-        getCourseColor={getCourseColor}
-        tasks={tasks}
-        onEditTask={handleEditTask}
-      />
+      {(!isMobile || activePlannerTab === 'checklist') && (
+        <FocusList 
+          pendingTasks={pendingTasks}
+          completedTasks={completedTasks}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          playTabSound={playTabSound}
+          calcDaysLeft={calcDaysLeft}
+          toggleTask={toggleTask}
+          deleteTask={deleteTask}
+          getCourseColor={getCourseColor}
+          tasks={tasks}
+          onEditTask={handleEditTask}
+        />
+      )}
 
       {/* Modern Floating Action Button */}
       <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-12 right-12 z-[60] w-16 h-16 bg-primary text-on-primary rounded-[2rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center transition-all group overflow-hidden cursor-pointer"
+        className="fixed max-md:bottom-24 md:bottom-12 right-6 md:right-12 z-[60] w-16 h-16 bg-primary text-on-primary rounded-[2rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center transition-all group overflow-hidden cursor-pointer"
         onClick={() => setShowModal(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>

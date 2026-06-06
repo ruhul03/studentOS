@@ -6,9 +6,12 @@ import { StatCards } from './StatCards';
 import { ScheduleTimeline } from './ScheduleTimeline';
 import { CampusLife } from './CampusLife';
 import { TodoQuickList } from './TodoQuickList';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function UserDashboard({ onTabChange }) {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const [activeMobileTab, setActiveMobileTab] = useState('tasks');
   const [statsData, setStatsData] = useState({ totalCourses: 0, pendingTasks: 0, sharedResources: 0, completedTasks: 0 });
   const [recentActivities, setRecentActivities] = useState([]);
   const [todos, setTodos] = useState([]);
@@ -193,6 +196,102 @@ export function UserDashboard({ onTabChange }) {
     return (
       <div className="flex items-center justify-center h-96 w-full">
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col gap-6 w-full pb-24 px-4 animate-fade-in">
+        {/* Header */}
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black text-on-surface tracking-tight">Dashboard</h1>
+          <p className="text-on-surface-variant text-xs font-medium opacity-80">Welcome back, {user?.name?.split(' ')[0] || 'Student'}.</p>
+        </div>
+
+        {/* Swipeable Stats */}
+        <div className="flex overflow-x-auto gap-4 pb-2 snap-x scrollbar-none -mx-4 px-4 shrink-0">
+          <StatCards stats={statsData} user={user} onTabChange={onTabChange} />
+        </div>
+
+        {/* Segmented Tab Controls */}
+        <div className="flex items-center gap-1.5 p-1 bg-surface-container-high/60 rounded-xl border border-outline-variant/30 backdrop-blur-md shrink-0">
+          <button
+            onClick={() => setActiveMobileTab('tasks')}
+            className={`flex-1 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer ${
+              activeMobileTab === 'tasks' ? 'bg-primary text-on-primary shadow-md' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Tasks
+          </button>
+          <button
+            onClick={() => setActiveMobileTab('campus')}
+            className={`flex-1 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer ${
+              activeMobileTab === 'campus' ? 'bg-primary text-on-primary shadow-md' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Campus Life
+          </button>
+          {recentActivities.length > 0 && (
+            <button
+              onClick={() => setActiveMobileTab('recent')}
+              className={`flex-1 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer ${
+                activeMobileTab === 'recent' ? 'bg-primary text-on-primary shadow-md' : 'text-on-surface-variant hover:bg-surface-container'
+              }`}
+            >
+              Updates
+            </button>
+          )}
+        </div>
+
+        {/* Tab Contents */}
+        <div className="flex flex-col gap-6">
+          {activeMobileTab === 'tasks' && (
+            <>
+              <ScheduleTimeline schedule={schedule} onTabChange={onTabChange} />
+              <TodoQuickList 
+                todos={todos} 
+                onToggle={handleToggleTodo} 
+                onDelete={handleDeleteTodo} 
+                onAdd={handleAddQuickTodo}
+                text={newTodoText}
+                setText={setNewTodoText}
+                isAdding={isAddingTodo}
+                onTabChange={onTabChange}
+              />
+            </>
+          )}
+          
+          {activeMobileTab === 'campus' && (
+            <CampusLife events={events} onTabChange={onTabChange} />
+          )}
+
+          {activeMobileTab === 'recent' && recentActivities.length > 0 && (
+            <section className="bg-surface-container border border-outline-variant rounded-2xl p-6">
+               <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-black text-on-surface tracking-tight">Recent Actions</h2>
+                <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+              </div>
+              <div className="space-y-4">
+                {recentActivities.slice(0, 4).map((activity) => (
+                  <div key={activity.id} className="flex gap-4 items-center p-3 rounded-xl bg-surface-container-low/50 border border-transparent" onClick={() => onTabChange('activity')}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                      activity.status === 'success' ? 'bg-secondary/10 text-secondary' : 'bg-primary/10 text-primary'
+                    }`}>
+                      {activity.type === 'planner' ? <Zap size={18} /> : activity.type === 'resources' ? <FileText size={18} /> : <Bell size={18} />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-on-surface truncate leading-none mb-1.5">{activity.title}</p>
+                      <p className="text-[11px] text-on-surface-variant font-medium opacity-80 uppercase tracking-wider">
+                         {new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       </div>
     );
   }

@@ -7,11 +7,13 @@ import { MarketplaceForm } from './MarketplaceForm';
 import { useMarketplace } from '../../hooks/useMarketplace';
 import LoadingState from '../ui/LoadingState';
 import ErrorState from '../ui/ErrorState';
-import { ShoppingCart, Search, Store } from 'lucide-react';
+import { ShoppingCart, Search, Store, Plus } from 'lucide-react';
 import SEO from '../SEO/SEO';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function StudentMarketplace({ onProfileView }) {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -87,15 +89,17 @@ export function StudentMarketplace({ onProfileView }) {
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer"
-            onClick={handleOpenCreate}
-          >
-            <ShoppingCart size={20} strokeWidth={2.5} />
-            List New Item
-          </motion.button>
+          {!isMobile && (
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer"
+              onClick={handleOpenCreate}
+            >
+              <ShoppingCart size={20} strokeWidth={2.5} />
+              List New Item
+            </motion.button>
+          )}
         </div>
       </div>
 
@@ -160,6 +164,17 @@ export function StudentMarketplace({ onProfileView }) {
           </div>
         )}
       </div>
+
+      {isMobile && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-24 right-6 z-[60] w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer animate-fade-in"
+          onClick={handleOpenCreate}
+        >
+          <Plus size={28} />
+        </motion.button>
+      )}
 
       <MarketplaceForm 
         show={showForm}

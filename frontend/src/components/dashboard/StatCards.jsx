@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { BadgeInfo, CheckSquare, FolderOpen, CheckCircle } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function StatCards({ stats, user, onTabChange }) {
+  const isMobile = useIsMobile();
   const items = [
     { label: 'Enrollment Batch', val: user?.batch || 'N/A', icon: BadgeInfo, color: 'primary', tab: 'profile' },
     { label: 'Pending Tasks', val: stats.pendingTasks, icon: CheckSquare, color: 'secondary', tab: 'planner' },
@@ -10,7 +12,7 @@ export function StatCards({ stats, user, onTabChange }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className={isMobile ? "flex gap-4 scroll-smooth w-max snap-mandatory" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"}>
       {items.map((stat, i) => {
         const Icon = stat.icon;
         return (
@@ -19,9 +21,9 @@ export function StatCards({ stats, user, onTabChange }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            whileHover={{ y: -4, scale: 1.02 }}
+            whileHover={isMobile ? {} : { y: -4, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`relative overflow-hidden bg-surface-container border border-outline-variant rounded-2xl p-6 cursor-pointer group transition-all hover:shadow-xl hover:shadow-black/10`}
+            className={isMobile ? `shrink-0 w-[200px] snap-center bg-surface-container border border-outline-variant rounded-2xl p-6 cursor-pointer group transition-all` : `relative overflow-hidden bg-surface-container border border-outline-variant rounded-2xl p-6 cursor-pointer group transition-all hover:shadow-xl hover:shadow-black/10`}
             onClick={() => onTabChange(stat.tab)}
           >
             <div className={`absolute -right-4 -bottom-4 w-24 h-24 bg-${stat.color}/5 rounded-full blur-2xl group-hover:bg-${stat.color}/10 transition-colors`}></div>
