@@ -20,7 +20,7 @@ export function ScheduleTimeline({ schedule, onTabChange }) {
         </div>
         <button 
           onClick={() => onTabChange('planner')}
-          className="text-[10px] font-bold text-primary border border-primary/20 bg-primary/5 px-4 py-1.5 rounded-full hover:bg-primary hover:text-on-primary transition-all active:scale-95 cursor-pointer"
+          className="text-[10px] font-bold text-primary border border-primary/20 bg-primary/5 px-4 py-1.5 rounded-full hover:bg-primary hover:text-on-primary transition-all active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
         >
           OPEN PLANNER
         </button>
