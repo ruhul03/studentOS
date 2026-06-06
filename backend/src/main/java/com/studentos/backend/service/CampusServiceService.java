@@ -7,6 +7,7 @@ import com.studentos.backend.repository.CampusServiceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +83,7 @@ public class CampusServiceService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalTime start = LocalTime.parse(parts[0].trim().toUpperCase(), formatter);
             LocalTime end = LocalTime.parse(parts[1].trim().toUpperCase(), formatter);
-            LocalTime now = LocalTime.now();
+            LocalTime now = LocalTime.now(ZoneId.of("Asia/Dhaka"));
 
             if (now.isAfter(start) && now.isBefore(end)) {
                 service.setStatus("Open");

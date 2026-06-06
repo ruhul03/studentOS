@@ -120,21 +120,20 @@ export function ResourceCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {!res.anonymous && res.uploader?.id && currentUser?.id !== res.uploader?.id && onMessageClick && (
             <button
               onClick={() => onMessageClick(res.uploader.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-surface-container-high text-on-surface-variant border border-outline-variant/60 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer"
+              className="flex items-center justify-center w-[28px] h-[28px] rounded-lg bg-surface-container-high text-on-surface-variant border border-outline-variant/60 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer"
               title="Message Author"
             >
               <MessageCircle size={14} />
-              <span>Message</span>
             </button>
           )}
           <button
             onClick={() => handleUpvote(res.id)}
             disabled={!!userUpvotes[res.id]}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 h-[28px] rounded-lg text-[11px] font-semibold transition-all duration-200 cursor-pointer ${
               userUpvotes[res.id]
                 ? 'bg-primary text-on-primary shadow-md shadow-primary/30'
                 : 'bg-surface-container-high text-on-surface-variant border border-outline-variant/60 hover:border-primary/50 hover:text-primary hover:bg-primary/5'
@@ -149,7 +148,7 @@ export function ResourceCard({
             href={res.fileUrl?.startsWith('http') ? res.fileUrl : `${import.meta.env.VITE_API_URL}${res.fileUrl || ''}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all duration-200 shadow-sm cursor-pointer"
+            className="flex items-center justify-center gap-1.5 px-3 h-[28px] rounded-lg text-[11px] font-semibold bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all duration-200 shadow-sm cursor-pointer"
             download
             title="Download resource"
           >

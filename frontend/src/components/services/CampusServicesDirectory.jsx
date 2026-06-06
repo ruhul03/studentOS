@@ -148,9 +148,9 @@ export function CampusServicesDirectory() {
                       <div className={`px-2 py-1 flex items-center gap-1 rounded text-xs font-bold tracking-widest uppercase border ${
                         isOpen 
                           ? 'border-secondary/30 text-secondary bg-secondary/5' 
-                          : 'border-outline-variant text-outline bg-surface-container-high'
+                          : 'border-outline/50 text-on-surface-variant bg-surface-container shadow-sm'
                       }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-secondary' : 'bg-outline'}`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-secondary' : 'bg-on-surface-variant/70'}`}></div>
                         {service.status}
                       </div>
                     </div>

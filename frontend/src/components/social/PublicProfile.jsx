@@ -44,10 +44,10 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
         onClick={e => e.stopPropagation()}
       >
         {/* Glow Effect */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[60px] rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none max-md:hidden"></div>
         
         <button 
-          className="absolute top-6 right-6 w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all" 
+          className="absolute top-6 right-6 w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all z-20" 
           onClick={onClose}
         >
           <X size={20} />
@@ -62,7 +62,7 @@ export function PublicProfile({ userId, onClose, onStartChat }) {
             )}
           </div>
           <h2 className="text-2xl font-black text-on-surface tracking-tight">{profile.username}</h2>
-          <p className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">{profile.email}</p>
+          <p className="text-sm font-medium text-on-surface-variant/80 lowercase truncate w-full text-center px-4" title={profile.email}>{profile.email}</p>
         </div>
 
         <div className="space-y-3 mb-8 relative z-10">
