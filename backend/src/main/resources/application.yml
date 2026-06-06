@@ -4,6 +4,13 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:salman7?}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 5
+      keepalive-time: 30000
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
   mail:
     host: ${MAIL_HOST:smtp.mailtrap.io}
     port: ${MAIL_PORT:2525}

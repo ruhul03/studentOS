@@ -29,9 +29,9 @@ export function UserDashboard({ onTabChange }) {
     return fetch(url, { ...options, headers });
   }, [user?.token]);
 
-  const refreshDashboard = useCallback(async () => {
+  const refreshDashboard = useCallback(async (silent = false) => {
     if (!user?.id) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const [statsRes, todosRes, eventsRes, activitiesRes] = await Promise.all([
         fetchWithAuth(`${API}/api/users/${user.id}/stats`),
@@ -55,7 +55,7 @@ export function UserDashboard({ onTabChange }) {
     } catch (err) {
       console.error('Dashboard sync failed', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [user?.id, API, fetchWithAuth]);
 
@@ -64,35 +64,108 @@ export function UserDashboard({ onTabChange }) {
   }, [refreshDashboard]);
 
   const handleToggleTodo = async (taskId) => {
+    const previousTodos = [...todos];
+    const previousSchedule = [...schedule];
+    const previousStats = { ...statsData };
+
+    let isNowCompleted = false;
+    const updatedTodos = todos.map(t => {
+      if (t.id === taskId) {
+        isNowCompleted = !t.completed;
+        return { ...t, completed: isNowCompleted };
+      }
+      return t;
+    });
+    setTodos(updatedTodos);
+    setSchedule(prev => prev.filter(t => t.id !== taskId || !isNowCompleted));
+    setStatsData(prev => ({
+      ...prev,
+      pendingTasks: isNowCompleted ? Math.max(0, prev.pendingTasks - 1) : prev.pendingTasks + 1,
+      completedTasks: isNowCompleted ? prev.completedTasks + 1 : Math.max(0, prev.completedTasks - 1)
+    }));
+
     try {
       const resp = await fetchWithAuth(`${API}/api/planner/${taskId}/toggle`, { method: 'PUT' });
-      if (resp.ok) refreshDashboard();
+      if (resp.ok) {
+        refreshDashboard(true);
+      } else {
+        throw new Error('Failed to toggle task');
+      }
     } catch (err) {
       console.error('Failed to toggle task', err);
+      setTodos(previousTodos);
+      setSchedule(previousSchedule);
+      setStatsData(previousStats);
     }
   };
 
   const handleDeleteTodo = async (taskId) => {
+    const previousTodos = [...todos];
+    const previousSchedule = [...schedule];
+    const previousStats = { ...statsData };
+
+    const targetTodo = todos.find(t => t.id === taskId);
+    if (!targetTodo) return;
+
+    setTodos(prev => prev.filter(t => t.id !== taskId));
+    setSchedule(prev => prev.filter(t => t.id !== taskId));
+    setStatsData(prev => ({
+      ...prev,
+      pendingTasks: !targetTodo.completed ? Math.max(0, prev.pendingTasks - 1) : prev.pendingTasks,
+      completedTasks: targetTodo.completed ? Math.max(0, prev.completedTasks - 1) : prev.completedTasks
+    }));
+
     try {
       const resp = await fetchWithAuth(`${API}/api/planner/${taskId}`, { method: 'DELETE' });
-      if (resp.ok) refreshDashboard();
+      if (resp.ok) {
+        refreshDashboard(true);
+      } else {
+        throw new Error('Failed to delete task');
+      }
     } catch (err) {
       console.error('Failed to delete task', err);
+      setTodos(previousTodos);
+      setSchedule(previousSchedule);
+      setStatsData(previousStats);
     }
   };
 
   const handleAddQuickTodo = async () => {
     if (!newTodoText.trim()) return;
+    const text = newTodoText.trim();
+    setNewTodoText('');
     setIsAddingTodo(true);
-    try {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const dueDate = tomorrow.toISOString().split('T')[0] + 'T23:59:00';
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dueDate = tomorrow.toISOString().split('T')[0] + 'T23:59:00';
+
+    const tempId = Date.now();
+    const tempTodo = {
+      id: tempId,
+      title: text,
+      description: '',
+      courseCode: 'General',
+      type: 'Assignment',
+      dueDate,
+      completed: false,
+    };
+
+    const previousTodos = [...todos];
+    const previousSchedule = [...schedule];
+    const previousStats = { ...statsData };
+
+    setTodos(prev => [tempTodo, ...prev].slice(0, 5));
+    setStatsData(prev => ({
+      ...prev,
+      pendingTasks: prev.pendingTasks + 1
+    }));
+
+    try {
       const resp = await fetchWithAuth(`${API}/api/planner`, {
         method: 'POST',
         body: JSON.stringify({
-          title: newTodoText.trim(),
+          title: text,
           description: '',
           courseCode: 'General',
           type: 'Assignment',
@@ -101,11 +174,16 @@ export function UserDashboard({ onTabChange }) {
         }),
       });
       if (resp.ok) {
-        setNewTodoText('');
-        refreshDashboard();
+        refreshDashboard(true);
+      } else {
+        throw new Error('Failed to add task');
       }
     } catch (err) {
       console.error('Failed to add quick todo', err);
+      setTodos(previousTodos);
+      setSchedule(previousSchedule);
+      setStatsData(previousStats);
+      setNewTodoText(text);
     } finally {
       setIsAddingTodo(false);
     }
