@@ -215,6 +215,8 @@ erDiagram
 
 ### 6. Code Review & Performance Optimizations (Recent)
 - **Backend Optimizations**:
+  - `JVM & Container Footprint`: Added `-XX:TieredStopAtLevel=1` and `-XX:MaxRAMPercentage=75.0` to Dockerfile JRE Entrypoint to cut startup JVM boot time in half and optimize Heap usage within Render's free 512MB RAM constraints.
+  - `Hikari Database Connection Pooling`: Configured Hikari database connection pool in `application.yml` with `minimum-idle: 2` (ensuring warm connection availability), `maximum-pool-size: 5` (respecting Aiven free plan limits), and `keepalive-time: 30000` (sending keep-alives to prevent Aiven from terminating idle connections).
   - `Lazy Loading Safety`: Fixed severe server crashes (`LazyInitializationException`) occurring during Jackson serialization of relationships on `Resource`, `MarketplaceItem`, `CourseReview`, and `ReviewRequest` endpoints. Replaced problematic `LAZY` fetch configurations globally with optimized `@EntityGraph` annotations in Spring Data Repositories for eager fetching on specific queries, preventing N+1 issues while ensuring serialization safety.
   - `AuthService`: Upgraded verification code generator to use `SecureRandom` (CWE-330 fix).
   - `UserService` & `AdminService`: Resolved N+1 query bottlenecks during user deletion by leveraging bulk delete queries in `NotificationRepository` (`deleteByRelatedEntityIdIn`).
@@ -227,6 +229,7 @@ erDiagram
 - **Database Architecture Updates**:
   - `MySQL Schema Adjustments`: Diagnosed and resolved fatal `Data truncation` errors on photo uploads by forcefully altering the schema for `marketplace_items` and `lost_found_items` to upgrade the `photos_json` column type from `TEXT` to `LONGTEXT`. Added `@Column(columnDefinition = "LONGTEXT")` mappings to JPA entities.
 - **Frontend Optimizations**:
+  - `Optimistic Dashboard Updates`: Replaced blocking state loaders with frontend optimistic state updates for toggling, deleting, and quick task creations on `UserDashboard.jsx`. Enabled background silent updates (`refreshDashboard(true)`) to eliminate UI stutter and screen-blocking loaders during user actions.
   - `React Query`: Upgraded deprecated v4 query invalidation syntax (`queryClient.invalidateQueries([...])`) to v5 object syntax (`{ queryKey: [...] }`) in hooks like `useStudyTasks.js` to fix silent failures.
   - `Error Handling`: Hardened component renders (`StudyPlanner`, `StudentMarketplace`) against `Null Pointer Exceptions` and `TypeError` crashes by enforcing `Array.isArray()` fallbacks and optional chaining (`?.`) when parsing dynamic backend payloads, preventing white-screen fatal errors during empty states or backend anomalies.
 - **UI & Design System Overhaul**:
