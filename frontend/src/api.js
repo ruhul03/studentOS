@@ -22,30 +22,40 @@ export const fetchWithAuth = async (url, options = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
-  try {
-    const response = await fetch(url, { ...options, headers });
-    
-    // Only log in development to prevent information leakage in production
-    if (import.meta.env.DEV) {
-      console.log(`API [${options.method || 'GET'}] ${url} -> ${response.status}`);
-    }
-    
-    if (response.status === 401) {
-      console.warn('Unauthorized request - check token');
-      localStorage.removeItem('studentos_user');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login?expired=true';
-      }
-    }
+  const maxRetries = (!options.method || options.method === 'GET') ? 1 : 0;
+  let attempt = 0;
 
-    return response;
-  } catch (error) {
-    console.error(`Network Error on [${options.method || 'GET'}] ${url}:`, error);
-    // Return a synthesized response object so the app doesn't crash on network failures
-    return {
-      ok: false,
-      status: 503,
-      json: async () => ({ message: 'Network error. Please check your connection.' })
-    };
+  while (attempt <= maxRetries) {
+    try {
+      const response = await fetch(url, { ...options, headers });
+      
+      // Only log in development to prevent information leakage in production
+      if (import.meta.env.DEV) {
+        console.log(`API [${options.method || 'GET'}] ${url} -> ${response.status}`);
+      }
+      
+      if (response.status === 401) {
+        console.warn('Unauthorized request - check token');
+        localStorage.removeItem('studentos_user');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login?expired=true';
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error(`Network Error on [${options.method || 'GET'}] ${url} (Attempt ${attempt + 1}):`, error);
+      if (attempt < maxRetries) {
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2s before retry
+        continue;
+      }
+      // Return a synthesized response object so the app doesn't crash on network failures
+      return {
+        ok: false,
+        status: 503,
+        json: async () => ({ message: 'Network error. Please check your connection.' })
+      };
+    }
   }
 };

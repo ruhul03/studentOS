@@ -5,6 +5,10 @@
       "destination": "https://studentos-8avo.onrender.com/api/:path*"
     },
     {
+      "source": "/ws-studentos/:path*",
+      "destination": "https://studentos-8avo.onrender.com/ws-studentos/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

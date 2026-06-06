@@ -11,7 +11,7 @@ export function useWebSockets(userId = null) {
     if (!userId) return;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL),
+      webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL || '/ws-studentos'),
       debug: () => {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
