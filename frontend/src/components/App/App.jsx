@@ -146,6 +146,15 @@ import { FeatureResources } from '../../pages/features/FeatureResources';
 import { VerifyEmail } from '../../pages/VerifyEmail';
 
 function App() {
+  useEffect(() => {
+    const API = import.meta.env.VITE_API_URL;
+    if (API) {
+      fetch(`${API}/api/ping`).catch(() => {
+        // Silently catch errors if backend is starting up or offline
+      });
+    }
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
