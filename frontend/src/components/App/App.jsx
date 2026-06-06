@@ -31,11 +31,13 @@ import { DashboardLayout } from '../layout/DashboardLayout';
 import { Navbar } from '../Navigation/Navbar';
 import { MobileNav } from '../Navigation/MobileNav';
 import { ChatManager } from '../social/ChatManager';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 function Dashboard() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { notifications: wsNotifications, messageEvent, clearNotification, setMessageEvent } = useWebSockets(user?.id);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
   const [chatOpenUserId, setChatOpenUserId] = useState(null);
@@ -93,10 +95,10 @@ function Dashboard() {
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
+              initial={isMobile ? { opacity: 1 } : { opacity: 0, y: 10 }}
+              animate={isMobile ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={isMobile ? { opacity: 1 } : { opacity: 0, y: -10 }}
+              transition={isMobile ? { duration: 0 } : { duration: 0.25, ease: "easeInOut" }}
               className="flex flex-col flex-1 h-full w-full"
             >
               {activeTab === 'home' && <UserDashboard onTabChange={handleTabChange} />}

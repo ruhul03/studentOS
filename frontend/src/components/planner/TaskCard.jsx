@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
 import { Trash2, AlertCircle, Clock } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function TaskCard({ task, isOverdue, isUrgent, daysLeft, onToggle, onDelete, onEdit, courseColor }) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
-      layout
+      layout={!isMobile}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}

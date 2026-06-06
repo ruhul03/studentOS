@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { TaskCard } from './TaskCard';
 import { ListTodo, Check, Trash2, CheckSquare } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export function FocusList({
   pendingTasks,
@@ -15,6 +16,8 @@ export function FocusList({
   tasks,
   onEditTask
 }) {
+  const isMobile = useIsMobile();
+
   return (
     <section className="flex-1 bg-surface-container-low border border-outline-variant rounded-3xl flex flex-col h-full relative overflow-hidden shadow-2xl">
       <div className="p-8 border-b border-outline-variant/30 bg-surface-container-high/30 backdrop-blur-md">
@@ -73,7 +76,7 @@ export function FocusList({
 
             <div className="space-y-2">
               {completedTasks.slice(0, 5).map(task => (
-                <motion.div layout key={task.id} className="group bg-surface-container/30 rounded-xl p-3 flex gap-4 opacity-50 hover:opacity-100 transition-opacity">
+                <motion.div layout={!isMobile} key={task.id} className="group bg-surface-container/30 rounded-xl p-3 flex gap-4 opacity-50 hover:opacity-100 transition-opacity">
                   <button onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0 cursor-pointer">
                     <Check size={14} strokeWidth={3} className="text-on-primary" />
                   </button>
