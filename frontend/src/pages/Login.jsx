@@ -11,9 +11,17 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [expiredMsg, setExpiredMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired') === 'true') {
+      setExpiredMsg('Your session has expired or is invalid. Please log in again to continue.');
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -24,6 +32,7 @@ export function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setExpiredMsg('');
     setLoading(true);
 
     try {
@@ -92,6 +101,17 @@ export function Login() {
           </div>
           
           <AnimatePresence mode="wait">
+            {expiredMsg && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-6 p-3 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary font-body-sm text-sm flex items-start gap-2"
+                >
+                  <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                  <span>{expiredMsg}</span>
+                </motion.div>
+            )}
             {error && (
                 <motion.div 
                   initial={{ opacity: 0, height: 0 }}

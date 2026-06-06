@@ -32,6 +32,10 @@ export const fetchWithAuth = async (url, options = {}) => {
     
     if (response.status === 401) {
       console.warn('Unauthorized request - check token');
+      localStorage.removeItem('studentos_user');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login?expired=true';
+      }
     }
 
     return response;
