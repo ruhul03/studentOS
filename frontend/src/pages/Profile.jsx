@@ -48,7 +48,7 @@ export function Profile() {
   );
 
   return (
-    <div className="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full h-full overflow-y-auto max-md:p-4 max-md:pb-32" style={{ scrollbarWidth: 'thin' }}>
+    <div className="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full md:h-full md:overflow-y-auto max-md:p-4 max-md:pb-32" style={{ scrollbarWidth: 'thin' }}>
       {(!isOwnProfile || userId) && (
         <button 
           className="mb-6 flex items-center gap-2 text-outline hover:text-white transition-colors text-sm font-medium cursor-pointer" 

@@ -161,7 +161,7 @@ export function CourseReviews() {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar relative">
+    <div className="w-full md:h-full md:overflow-y-auto custom-scrollbar relative">
       <div className="max-w-6xl mx-auto space-y-12 max-md:space-y-6 pb-20 max-md:pb-32 max-md:px-4">
         {/* Header Section */}
         <div className="space-y-6">

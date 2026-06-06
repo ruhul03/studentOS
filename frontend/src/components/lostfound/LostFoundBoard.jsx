@@ -177,7 +177,7 @@ export function LostFoundBoard({ onProfileView }) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 max-md:px-0 animate-fade-in overflow-y-auto custom-scrollbar">
+    <div className="flex flex-col md:h-full w-full max-w-7xl mx-auto pb-16 px-4 lg:px-0 max-md:px-0 animate-fade-in md:overflow-y-auto custom-scrollbar">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 shrink-0 max-md:px-4 max-md:pt-4 max-md:mb-6">
         <div className="space-y-2">

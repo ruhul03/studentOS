@@ -143,7 +143,7 @@ export function ResourceFeed({ onProfileView, onMessageClick }) {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar">
+    <div className="w-full md:h-full md:overflow-y-auto custom-scrollbar">
       <div className="max-w-6xl mx-auto space-y-8 pb-20 max-md:px-0 max-md:space-y-4">
 
         {/* ── Page Header ── */}

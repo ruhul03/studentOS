@@ -69,7 +69,7 @@ export function CampusServicesDirectory() {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full md:h-full md:overflow-y-auto custom-scrollbar">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header & Search Section */}
         <div className="space-y-6">
