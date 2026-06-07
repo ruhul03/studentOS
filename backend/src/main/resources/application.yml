@@ -11,20 +11,11 @@ spring:
       idle-timeout: 60000
       max-lifetime: 1800000
       connection-timeout: 30000
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:your.email@gmail.com}
-    password: ${MAIL_PASSWORD:your_google_app_password}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 3000
-          timeout: 3000
-          writetimeout: 3000
+  resend:
+    api:
+      key: ${RESEND_API_KEY:default_key_here}
+    from:
+      email: ${RESEND_FROM_EMAIL:onboarding@resend.dev}
   jpa:
     open-in-view: false
     hibernate:
