@@ -14,11 +14,14 @@ import java.time.Duration;
 @Slf4j
 public class EmailService {
 
-    @Value("${resend.api.key:}")
-    private String resendApiKey;
+    @Value("${brevo.api.key:}")
+    private String brevoApiKey;
 
-    @Value("${resend.from.email:onboarding@resend.dev}")
+    @Value("${brevo.from.email:your_email@gmail.com}")
     private String fromEmail;
+
+    @Value("${brevo.from.name:StudentOS}")
+    private String fromName;
 
     private final HttpClient httpClient;
 
@@ -28,10 +31,10 @@ public class EmailService {
                 .build();
     }
 
-    private void sendResendEmail(String to, String subject, String text) {
-        if (resendApiKey == null || resendApiKey.isEmpty() || resendApiKey.equals("default_key_here")) {
-            log.warn("Resend API key is missing. Skipping email send. (OTP was logged above)");
-            return; // Skip sending if key isn't configured so it doesn't fail registration
+    private void sendBrevoEmail(String to, String subject, String text) {
+        if (brevoApiKey == null || brevoApiKey.isEmpty() || brevoApiKey.equals("default_key_here")) {
+            log.warn("Brevo API key is missing. Skipping email send. (OTP was logged above)");
+            return; // Skip sending if key isn't configured
         }
 
         try {
@@ -39,22 +42,23 @@ public class EmailService {
             String escapedText = text.replace("\n", "\\n").replace("\"", "\\\"");
             
             String jsonBody = String.format(
-                "{\"from\":\"%s\",\"to\":\"%s\",\"subject\":\"%s\",\"text\":\"%s\"}",
-                fromEmail, to, subject, escapedText
+                "{\"sender\":{\"name\":\"%s\",\"email\":\"%s\"},\"to\":[{\"email\":\"%s\"}],\"subject\":\"%s\",\"textContent\":\"%s\"}",
+                fromName, fromEmail, to, subject, escapedText
             );
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.resend.com/emails"))
-                    .header("Authorization", "Bearer " + resendApiKey)
-                    .header("Content-Type", "application/json")
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("api-key", brevoApiKey)
+                    .header("accept", "application/json")
+                    .header("content-type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 400) {
-                log.warn("Failed to send email via Resend. Status: {}, Body: {}", response.statusCode(), response.body());
-                throw new IllegalArgumentException("Failed to send email. Please check your Resend configuration.");
+                log.warn("Failed to send email via Brevo. Status: {}, Body: {}", response.statusCode(), response.body());
+                throw new IllegalArgumentException("Failed to send email. Please check your Brevo configuration.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -62,7 +66,7 @@ public class EmailService {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("Exception sending email via Resend: {}", e.getMessage());
+            log.warn("Exception sending email via Brevo: {}", e.getMessage());
             throw new IllegalArgumentException("Failed to send email due to a network error.");
         }
     }
@@ -71,13 +75,13 @@ public class EmailService {
         log.info("REGISTRATION OTP FOR {}: {}", to, code);
         String subject = "StudentOS - Verify your Email";
         String text = "Welcome to StudentOS!\n\nYour email verification code is: " + code + "\n\nThis code will expire in 15 minutes.\n\nThanks,\nThe StudentOS Team";
-        sendResendEmail(to, subject, text);
+        sendBrevoEmail(to, subject, text);
     }
 
     public void sendPasswordResetEmail(String to, String code) {
         log.info("PASSWORD RESET OTP FOR {}: {}", to, code);
         String subject = "StudentOS - Password Reset Request";
         String text = "Hello,\n\nYou requested a password reset for your StudentOS account.\n\nYour reset code is: " + code + "\n\nThis code will expire in 15 minutes.\nIf you did not request this, please ignore this email.\n\nThanks,\nThe StudentOS Team";
-        sendResendEmail(to, subject, text);
+        sendBrevoEmail(to, subject, text);
     }
 }

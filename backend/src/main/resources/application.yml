@@ -11,11 +11,12 @@ spring:
       idle-timeout: 60000
       max-lifetime: 1800000
       connection-timeout: 30000
-  resend:
+  brevo:
     api:
-      key: ${RESEND_API_KEY:default_key_here}
+      key: ${BREVO_API_KEY:default_key_here}
     from:
-      email: ${RESEND_FROM_EMAIL:onboarding@resend.dev}
+      email: ${BREVO_FROM_EMAIL:your_email@gmail.com}
+      name: ${BREVO_FROM_NAME:StudentOS}
   jpa:
     open-in-view: false
     hibernate:
