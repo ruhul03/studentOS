@@ -18,17 +18,21 @@ export function PasswordResetForm({
       onSubmit={handleResetPassword}
       className="flex flex-col gap-5"
     >
+      {/* Hidden inputs to trick Chrome aggressive autofill */}
+      <input type="text" style={{ display: 'none' }} aria-hidden="true" autoComplete="username" />
+      <input type="password" style={{ display: 'none' }} aria-hidden="true" autoComplete="current-password" />
       <div className="flex flex-col gap-2">
         <label className="font-label-caps text-xs text-on-surface-variant">Verification Code</label>
         <div className="relative flex items-center">
           <KeyRound size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
+          <input type="password" style={{display: 'none'}} />
           <input 
             type="text" 
             value={code}
             onChange={(e) => setCode(e.target.value)}
             required
             placeholder="6-digit code"
-            autoComplete="one-time-code"
+            autoComplete="off"
             className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
           />
         </div>
