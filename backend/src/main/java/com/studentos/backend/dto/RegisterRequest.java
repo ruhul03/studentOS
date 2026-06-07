@@ -24,7 +24,6 @@ public class RegisterRequest {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)?uiu\\.ac\\.bd$", message = "Please use a valid UIU email address (e.g., student@bscse.uiu.ac.bd)")
     private String email;
 
     @NotBlank(message = "Password is required")

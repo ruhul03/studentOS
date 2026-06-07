@@ -12,10 +12,10 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
   mail:
-    host: ${MAIL_HOST:smtp.mailtrap.io}
-    port: ${MAIL_PORT:2525}
-    username: ${MAIL_USERNAME:your_mailtrap_user}
-    password: ${MAIL_PASSWORD:your_mailtrap_password}
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your.email@gmail.com}
+    password: ${MAIL_PASSWORD:your_google_app_password}
     properties:
       mail:
         smtp:

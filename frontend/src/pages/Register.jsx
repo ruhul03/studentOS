@@ -23,8 +23,8 @@ export function Register() {
   }, [user, navigate]);
 
   const isValidEmail = (email) => {
-    // Restrict to *.uiu.ac.bd domains
-    const regex = /^[\w-.]+@([\w-]+\.)?uiu\.ac\.bd$/;
+    // Basic email validation
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
@@ -33,7 +33,7 @@ export function Register() {
     setError('');
 
     if (!isValidEmail(email)) {
-      setError('Please use a valid UIU email address (e.g., student@bscse.uiu.ac.bd).');
+      setError('Please use a valid email address.');
       return;
     }
 
@@ -151,7 +151,7 @@ export function Register() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-label-caps text-xs text-on-surface-variant">Email</label>
+                <label className="font-label-caps text-xs text-on-surface-variant">Email <span className="text-[10px] text-primary normal-case font-normal ml-1">(University mail preferred)</span></label>
                 <div className="relative flex items-center">
                   <Mail size={18} className="absolute left-3 text-on-surface-variant opacity-70" />
                   <input
@@ -159,7 +159,7 @@ export function Register() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    placeholder="kobita154@bscse.uiu.ac.bd"
+                    placeholder="student@example.com"
                     className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
                   />
                 </div>
