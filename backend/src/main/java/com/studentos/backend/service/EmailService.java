@@ -3,7 +3,6 @@ package com.studentos.backend.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +15,6 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    @Async
     public void sendVerificationEmail(String to, String code) {
         log.info("REGISTRATION OTP FOR {}: {}", to, code);
         try {
@@ -27,10 +25,10 @@ public class EmailService {
             mailSender.send(message);
         } catch (org.springframework.mail.MailException e) {
             log.warn("Failed to send verification email to {} (Check your SMTP credentials).", to);
+            throw new IllegalArgumentException("Failed to send email. Please check your SMTP credentials or try again later.");
         }
     }
 
-    @Async
     public void sendPasswordResetEmail(String to, String code) {
         log.info("PASSWORD RESET OTP FOR {}: {}", to, code);
         try {
@@ -41,6 +39,7 @@ public class EmailService {
             mailSender.send(message);
         } catch (org.springframework.mail.MailException e) {
             log.warn("Failed to send password reset email to {} (Check your SMTP credentials).", to);
+            throw new IllegalArgumentException("Failed to send password reset email. Please check your SMTP credentials.");
         }
     }
 }
