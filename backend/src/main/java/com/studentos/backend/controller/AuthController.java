@@ -80,10 +80,9 @@ public class AuthController {
     public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody ForgotRequest request) {
         try {
             String code = authService.requestPasswordReset(request.getEmail());
-            log.warn("PASSWORD RESET CODE FOR {}: {}", request.getEmail(), code);
+            // code is logged by EmailService now
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Reset code generated. Please check your email/console.");
-            response.put("code", code);
+            response.put("message", "Reset code generated. Please check your email.");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

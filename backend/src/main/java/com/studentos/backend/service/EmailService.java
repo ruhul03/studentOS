@@ -1,11 +1,13 @@
 package com.studentos.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
@@ -16,6 +18,7 @@ public class EmailService {
 
     @Async
     public void sendVerificationEmail(String to, String code) {
+        log.info("REGISTRATION OTP FOR {}: {}", to, code);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("StudentOS - Verify your Email");
@@ -25,6 +28,7 @@ public class EmailService {
 
     @Async
     public void sendPasswordResetEmail(String to, String code) {
+        log.info("PASSWORD RESET OTP FOR {}: {}", to, code);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("StudentOS - Password Reset Request");
