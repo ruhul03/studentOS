@@ -22,6 +22,9 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 3000
+          timeout: 3000
+          writetimeout: 3000
   jpa:
     open-in-view: false
     hibernate:
