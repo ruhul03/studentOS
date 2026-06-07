@@ -28,6 +28,7 @@ export function PasswordResetForm({
             onChange={(e) => setCode(e.target.value)}
             required
             placeholder="6-digit code"
+            autoComplete="one-time-code"
             className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
           />
         </div>
@@ -43,6 +44,7 @@ export function PasswordResetForm({
             onChange={(e) => setNewPassword(e.target.value)}
             required
             placeholder="••••••••"
+            autoComplete="new-password"
             className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
           />
         </div>
@@ -58,6 +60,7 @@ export function PasswordResetForm({
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             placeholder="••••••••"
+            autoComplete="new-password"
             className="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-sm"
           />
         </div>
