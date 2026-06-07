@@ -39,6 +39,44 @@ StudentOS is a premium, all-in-one university management and productivity dashbo
 - **Email Delivery**: Brevo HTTP API via Java `HttpClient`
 - **Real-time**: Spring WebSocket STOMP
 
+## 📁 Project Architecture
+
+```text
+studentOS/
+├── frontend/                     # React + Vite SPA
+│   ├── public/                   # Static assets & SEO (sitemap.xml)
+│   ├── src/
+│   │   ├── components/           # Feature-based modular components
+│   │   │   ├── admin/            # Admin console & analytics
+│   │   │   ├── dashboard/        # Student dashboard widgets
+│   │   │   ├── marketplace/      # Peer-to-peer trading
+│   │   │   ├── planner/          # Study planner & calendar
+│   │   │   ├── social/           # Centralized Messaging Inbox
+│   │   │   └── ...               # (Resources, LostFound, Reviews, etc.)
+│   │   ├── context/              # Global React Context (Auth, Theme)
+│   │   ├── hooks/                # Custom React Query & WebSocket hooks
+│   │   └── pages/                # Route entry points (lazy-loaded)
+│   ├── index.css                 # Tailwind & Glassmorphism variables
+│   └── vite.config.js            # Build & proxy configurations
+│
+├── backend/                      # Spring Boot 3 REST API
+│   ├── src/main/java/com/studentos/backend/
+│   │   ├── controller/           # REST endpoints & STOMP Message mappings
+│   │   ├── service/              # Core business logic & Brevo Email Engine
+│   │   ├── repository/           # Spring Data JPA interfaces (@EntityGraph)
+│   │   ├── model/                # JPA Entities (User, StudyTask, etc.)
+│   │   ├── dto/                  # Data Transfer Objects
+│   │   ├── config/               # Security, CORS, and WebSocket configuration
+│   │   └── exception/            # Global Exception Handlers
+│   ├── src/main/resources/
+│   │   └── application.yml       # Production/Local environment configuration
+│   └── pom.xml                   # Maven dependencies
+│
+├── run-all.bat                   # Interactive TUI launcher for dev environments
+├── PROJECT_CONTEXT_MEMORY.md     # In-depth architectural documentation
+└── DEPLOYMENT_GUIDE.md           # Step-by-step production hosting manual
+```
+
 ## ⚙️ Getting Started (Local Development)
 
 ### Prerequisites
