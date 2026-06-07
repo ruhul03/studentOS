@@ -11,86 +11,69 @@ StudentOS is a premium, all-in-one university management and productivity dashbo
 
 - **Personalized Student Dashboard**: A real-time overview of academic stats, pending tasks, and recent campus activities.
 - **Admin Console**: Robust management panel for administrators to oversee users, moderate resources, and update campus services.
-- **Study Planner**: Comprehensive task management with priority tracking, due date notifications, and automated scheduling.
-- **Resource Hub**: Peer-to-peer academic resource sharing with advanced filtering and global search.
-- **Student Marketplace**: Secure platform for campus-wide trading of books, electronics, and essentials.
-- **Lost & Found Board**: Real-time community board with instant messaging for item recovery.
+- **Real-Time Centralized Inbox**: Full-screen, two-pane messaging layout integrated with WebSockets (STOMP) for live peer-to-peer chat.
+- **Study Planner**: Comprehensive task management with priority tracking, due date notifications, and automated weekly calendar scheduling.
+- **Resource Hub**: Peer-to-peer academic resource sharing with advanced filtering, global search, and inline editing.
+- **Student Marketplace**: Secure platform for campus-wide trading of books and electronics (Prices localized to ৳ BDT).
+- **Lost & Found Board**: Real-time community board with instant messaging for item recovery and status tracking.
 - **Tuition Fee Calculator**: Accurate fee estimation tailored to university-specific credit and waiver systems.
-- **Social Messaging**: Integrated chat system for real-time collaboration between students.
-- **Real-time Notifications**: Instant updates via WebSockets for system alerts and private messages.
-- **Dark-First Modern UI**: Sleek, glassmorphic interface built with Tailwind CSS and Framer Motion animations.
+- **Course & Faculty Reviews**: Transparent review system allowing students to request and write reviews for specific courses.
+- **Secure Authentication & Verification**: JWT-based stateless authentication with a complete email verification and password reset flow powered by the Brevo HTTP API.
+- **Dark-First Modern UI**: Sleek, glassmorphic interface built with Tailwind CSS variables and Framer Motion animations, optimized for absolute speed via `React.lazy()` micro-chunking.
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **React (Vite)**: Optimized single-page application framework.
-- **Tailwind CSS**: Utility-first styling for a premium, responsive UI.
-- **Framer Motion**: Smooth, high-fidelity animations and transitions.
-- **WebSockets (STOMP/SockJS)**: Real-time full-duplex communication.
-- **React Router 6**: Dynamic routing with protected/admin access levels.
+- **Framework**: React 18 (Vite)
+- **Styling**: Tailwind CSS (Dynamic Light/Dark Themes)
+- **Animations**: Framer Motion
+- **State Management**: TanStack React Query (Server State) & Context API
+- **Real-time**: SockJS + STOMP (WebSockets)
+- **Routing**: React Router 6
 
 ### Backend
-- **Spring Boot**: High-performance RESTful API architecture.
-- **Spring Security + JWT**: Secure authentication and stateless session management.
-- **Spring Data JPA**: Advanced ORM for MySQL database interactions.
-- **STOMP Messaging**: WebSocket protocol for real-time events.
-- **Lombok & SLF4J**: Clean boilerplate-free code with professional logging.
+- **Framework**: Java 17 + Spring Boot 3.2.x
+- **Security**: Spring Security + JWT
+- **ORM**: Spring Data JPA (Hibernate)
+- **Database**: MySQL 8.0 (Hosted on Aiven)
+- **Email Delivery**: Brevo HTTP API via Java `HttpClient`
+- **Real-time**: Spring WebSocket STOMP
 
-## 📁 Project Architecture
-
-```text
-studentOS/
-├── frontend/             # React + Vite Application
-│   ├── src/
-│   │   ├── components/   # Atomic & Layout components
-│   │   ├── hooks/        # Custom logic (WebSockets, Auth)
-│   │   ├── context/      # Global State Management
-│   │   └── pages/        # Main Dashboard & Admin Views
-├── backend/              # Spring Boot Application
-│   ├── src/main/java/    # MVC Architecture (Controller, Service, Repository)
-│   └── src/main/resources # Application configuration & Database migrations
-└── run-all.bat           # Automated environment launcher
-```
-
-## ⚙️ Getting Started
+## ⚙️ Getting Started (Local Development)
 
 ### Prerequisites
 - **Node.js** (v18.0+)
 - **Java JDK** 17+
 - **MySQL Server** 8.0+
 
-### Database Setup
+### 1. Database Setup
 1. Create a MySQL database named `studentos`.
-2. Configure your database credentials in `backend/src/main/resources/application.yml`.
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:mysql://localhost:3306/studentos?createDatabaseIfNotExist=true
-       username: your_username
-       password: your_password
-   ```
+2. Configure your credentials in `backend/src/main/resources/application.yml`.
 
-### Execution
-Run the `run-all.bat` script in the root directory to launch both services simultaneously.
+### 2. Environment Variables
+You will need to set the following environment variables (or rely on their local defaults in `application.yml`):
+- `BREVO_API_KEY`: Your API key from Brevo.com (for sending verification emails).
+- `BREVO_FROM_EMAIL`: Your verified sender email on Brevo.
+- `JWT_SECRET`: A secure 64+ character string for token generation.
+
+### 3. Execution
+Run the `run-all.bat` script in the root directory. It features a robust Text User Interface (TUI) to launch both the frontend and backend services simultaneously.
 
 Alternatively, follow the manual setup:
-- **Backend**: `cd backend` then `./mvnw spring-boot:run`
-- **Frontend**: `cd frontend` then `npm install` and `npm run dev`
+- **Backend**: `cd backend` then `./mvnw spring-boot:run` (Runs on port `8081`)
+- **Frontend**: `cd frontend` then `npm install` and `npm run dev` (Runs on port `5174`)
 
 ---
 
-## 🔍 Manual Verification
+## 🚀 Production Deployment Architecture
 
-To ensure everything is connected and functioning correctly:
+StudentOS is fully containerized and deployed using modern PaaS and DBaaS providers:
 
-1. **Backend Connectivity**: Check the terminal logs for `BUILD SUCCESS`. Once running, verify API access at `http://localhost:8081`.
-2. **Database Integrity**: Log into your MySQL CLI and run:
-   ```sql
-   USE studentos;
-   SHOW TABLES;
-   ```
-   You should see tables like `users`, `campus_events`, `study_tasks`, etc.
-3. **Frontend Diagnostics**: Open the browser console (`F12`) on `http://localhost:5174`. Check the **Network** tab to ensure API calls to `:8081` are returning `200 OK`.
+- **Frontend (Vercel)**: Deployed as a static React/Vite site. Automatically rebuilt on pushes to GitHub. The frontend environment is securely linked to the backend via `VITE_API_URL` and `VITE_WS_URL`.
+- **Backend API (Render)**: Deployed as a Docker Web Service. The application runs Spring Boot 3 inside an `eclipse-temurin:17-jre-alpine` container, optimized with strict JVM memory limits to operate within Render's 512MB free tier constraint.
+- **Database (Aiven)**: Uses a managed MySQL 8.0 instance. Connected via standard JDBC configuration.
+- **Email (Brevo)**: Uses the Brevo REST API over standard HTTP (port 443) to bypass Render's strict outbound SMTP port blocking (ports 25, 465, 587).
+- **Keep-Alive**: A lightweight `/api/ping` endpoint is pinged every 14 minutes by UptimeRobot to prevent the Render instance from spinning down and causing cold starts.
 
 ## 📄 License
 This project is developed as part of the AOOP Course (2026). All rights reserved.
