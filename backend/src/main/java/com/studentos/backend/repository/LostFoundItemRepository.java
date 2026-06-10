@@ -13,10 +13,10 @@ public interface LostFoundItemRepository extends JpaRepository<LostFoundItem, Lo
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     Optional<LostFoundItem> findById(Long id);
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
-    List<LostFoundItem> findByResolvedFalseOrderByReportedAtDesc();
+    List<LostFoundItem> findAllByOrderByResolvedAscReportedAtDesc();
     
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
-    List<LostFoundItem> findByTypeIgnoreCaseAndResolvedFalseOrderByReportedAtDesc(String type);
+    List<LostFoundItem> findByTypeIgnoreCaseOrderByResolvedAscReportedAtDesc(String type);
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"reporter"})
     List<LostFoundItem> findAll();
     

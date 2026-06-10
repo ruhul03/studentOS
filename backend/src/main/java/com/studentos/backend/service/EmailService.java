@@ -85,3 +85,4 @@ public class EmailService {
         sendBrevoEmail(to, subject, text);
     }
 }
+

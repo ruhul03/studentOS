@@ -28,9 +28,9 @@ public class LostFoundService {
 
     public List<LostFoundItem> getActiveItems(String type) {
         if (type != null && !type.isEmpty()) {
-            return itemRepository.findByTypeIgnoreCaseAndResolvedFalseOrderByReportedAtDesc(type);
+            return itemRepository.findByTypeIgnoreCaseOrderByResolvedAscReportedAtDesc(type);
         }
-        return itemRepository.findByResolvedFalseOrderByReportedAtDesc();
+        return itemRepository.findAllByOrderByResolvedAscReportedAtDesc();
     }
 
     public LostFoundItem reportItem(LostFoundRequest request, User currentUser) {
