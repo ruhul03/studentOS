@@ -33,4 +33,7 @@ Thumbs.db
 .agents 
 skills-lock.json
 
+#md files
 deployment_guide.md
+postman_api_guide.md
+project_context_memory.md
