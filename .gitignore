@@ -34,6 +34,6 @@ Thumbs.db
 skills-lock.json
 
 #md files
-deployment_guide.md
-postman_api_guide.md
-project_context_memory.md
+DEPLOYMENT_GUIDE.md
+POSTMAN_API_GUIDE.md
+PROJECT_CONTEXT_MEMORY.md
